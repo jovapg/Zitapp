@@ -1,0 +1,162 @@
+body {
+  background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
+  background-image: url('../img/fondo azul.png');
+  background-size: cover;
+  background-position: center;
+  font-family: 'Poppins', sans-serif;
+  color: #f5f5f5;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+
+/* Contenedor principal (card general) */
+.login-card {
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 30px;
+  padding: 40px;
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  gap: 50px;
+  box-shadow: 0 0 25px rgba(58, 134, 255, 0.6);
+  backdrop-filter: blur(15px);
+}
+
+/* Panel izquierdo */
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items:center;
+  flex: 1;
+}
+
+/* Panel derecho (formulario) */
+.right-panel {
+  flex: 1;
+}
+
+/* logo */
+.logo-section {
+  gap: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.logo-icon {
+  width: 100px;
+  height: 100px;
+}
+
+.logo-text {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.login-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.right-panel .login-title {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.login-subtitle {
+  font-size: 20px;
+  color: #c3c3c3;
+}
+
+/* Botón redondo con logo */
+.login-btn {
+  background: radial-gradient url(../img/logo.png);
+  border: 2px solid #0e0e0e;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(0, 72, 255, 0.5);
+  transition: transform 0.3s ease;
+}
+
+.login-btn:hover {
+  transform: scale(1.05);
+}
+
+.btn-icon {
+  width: 30px;
+  height: 30px;
+}
+
+/* Inputs */
+.form-control {
+  background-color: #1f1f1f;
+  border: 1px solid #333;
+  color: #fff;
+}
+
+.form-control::placeholder {
+  color: #888;
+}
+
+/* Botón de iniciar sesión */
+.btn-primary {
+  background-color: #3a86ff;
+  width: 100px;
+  border: none;
+  border-radius: 25px;
+  transition: 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #1362ea;
+}
+
+/* Social login */
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+  align-items: center;       
+  justify-content: center; 
+  
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #1f1f1f;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 25px;
+  padding: 10px 20px;
+  width: 200px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.social-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.social-login button:hover {
+  background-color: #333;
+}
+
+/* Separador */
+.separator {
+  text-align: center;
+  margin: 20px 0;
+  color: #aaa;
+}
