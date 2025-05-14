@@ -1,21 +1,29 @@
-import React from 'react';
+import  { useState } from 'react';
 import Nav from '../components/Nav';
 import Topbar from '../components/Topbar';
 import Categories from '../components/Categories';
 import TusCitas from '../components/tuscitas';
 
 export default function HomePageuser() {
+    const [currentView, setCurrentView] = useState('tuscitas');
+
+    const handleNavigate = (view) => {
+        console.log(`Navigating to: ${view}`);
+        setCurrentView(view);
+    };
+
     return (
         <>
             <div className="dashboard-layout">
-                <Nav />
+                <Nav onNavigate={handleNavigate} />
                 <div className="main-content">
-                    <Topbar />
-                    <TusCitas />
+                    <Topbar onNavigate={handleNavigate} />
+
+                    {currentView === 'tuscitas' && <TusCitas />}
+                    {currentView === 'categorias' && <Categories />}
                 </div>
             </div>
 
-            {/* Estilos */}
             <style>{`
                 .dashboard-layout {
                     display: flex;
@@ -45,44 +53,7 @@ export default function HomePageuser() {
                     overflow-y: auto;
                     padding: 1rem 2rem;
                 }
-
-                .topbar {
-                    position: sticky;
-                    top: 0;
-                    z-index: 10;
-                    background-color: rgba(0, 0, 0, 0.4);
-                    backdrop-filter: blur(6px);
-                    color: white;
-                }
-
-                .topbar-btn {
-                    transition: transform 0.2s ease;
-                    cursor: pointer;
-                }
-
-                .topbar-btn:hover {
-                    transform: scale(1.1);
-                }
-
-                .search-bar input::placeholder {
-                    color: #ccc;
-                }
-
-                .search-bar input:focus {
-                    box-shadow: none;
-                    outline: none;
-                    border-color: #0d6efd;
-                    background-color: rgba(255, 255, 255, 0.05);
-                }
-
-                .content-section {
-                    display: flex;
-                    gap: 24px;
-                    margin-top: 1rem;
-                }
             `}</style>
-
-
         </>
     );
 }

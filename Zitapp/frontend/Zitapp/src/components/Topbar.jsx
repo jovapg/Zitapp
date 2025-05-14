@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Topbar() {
+export default function Topbar({ onNavigate }) {
     return (
         <>
             <div className="topbar d-flex justify-content-between align-items-center p-3">
@@ -10,7 +10,12 @@ export default function Topbar() {
                         Administra y planea tus citas de la mejor manera a un click
                     </p>
                     <div className="d-flex gap-2 align-items-center flex-wrap">
-                        <span className="badge rounded-pill bg-primary px-3 py-2 topbar-btn">CATEGORIAS</span>
+                        <span
+                            className="badge rounded-pill bg-primary px-3 py-2 topbar-btn"
+                            onClick={() => onNavigate('categorias')}
+                        >
+                            CATEGORIAS
+                        </span>
                         <span className="badge rounded-pill bg-primary px-3 py-2 topbar-btn">CERCA DE TI</span>
                         <span className="badge rounded-pill bg-primary px-3 py-2 topbar-btn">MAPA</span>
 

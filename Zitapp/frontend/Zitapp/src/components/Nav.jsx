@@ -1,6 +1,6 @@
 import fondologin from '../assets/img/logo.png';
 
-export default function Nav() {
+export default function Nav({ onNavigate }) {
     return (
         <div className="sidebar">
             <div className="mb-4 text-center">
@@ -13,22 +13,28 @@ export default function Nav() {
             </div>
             <ul className="nav nav-pills flex-column mb-auto">
                 <li className="nav-item mb-3">
-                    <a href="/negocios" className="nav-link dashboard-btn text-white">
+                    <button
+                        onClick={() => onNavigate('categorias')}
+                        className="nav-link dashboard-btn text-white btn btn-link text-start"
+                    >
+                        <i className="bi bi-circle me-2"></i> Categorías
+                    </button>
+                </li>
+                <li className="nav-item mb-3">
+                    <button
+                        onClick={() => onNavigate('tuscitas')}
+                        className="nav-link dashboard-btn text-white btn btn-link text-start"
+                    >
+                        <i className="bi bi-circle me-2"></i> Tus Citas
+                    </button>
+                </li>
+                <li className="nav-item mb-3">
+                    <a href="" className="nav-link dashboard-btn text-white">
                         <i className="bi bi-circle me-2"></i> Ver Negocios
                     </a>
                 </li>
                 <li className="nav-item mb-3">
-                    <a href="/categorias" className="nav-link dashboard-btn text-white">
-                        <i className="bi bi-circle me-2"></i> Categorías
-                    </a>
-                </li>
-                <li className="nav-item mb-3">
-                    <a href="/tuscitas" className="nav-link dashboard-btn text-white">
-                        <i className="bi bi-circle me-2"></i> Tus Citas
-                    </a>
-                </li>
-                <li className="nav-item mb-3">
-                    <a href="/calendar" className="nav-link dashboard-btn text-white">
+                    <a href="" className="nav-link dashboard-btn text-white">
                         <i className="bi bi-circle me-2"></i> Calendar
                     </a>
                 </li>
