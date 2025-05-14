@@ -5,8 +5,8 @@ export default function Topbar() {
         <>
             <div className="topbar d-flex justify-content-between align-items-center p-3">
                 <div>
-                    <h2 className="mt-2">¡Haz las cosas sencillas!</h2>
-                    <p className="text-muted">
+                    <h2 className="mt-2 text-white">¡Haz las cosas sencillas!</h2>
+                    <p className="text">
                         Administra y planea tus citas de la mejor manera a un click
                     </p>
                     <div className="d-flex gap-2 align-items-center flex-wrap">

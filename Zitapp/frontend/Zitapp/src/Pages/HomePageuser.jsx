@@ -1,47 +1,17 @@
 import React from 'react';
 import Nav from '../components/Nav';
 import Topbar from '../components/Topbar';
+import Categories from '../components/Categories';
+import TusCitas from '../components/tuscitas';
 
 export default function HomePageuser() {
     return (
         <>
             <div className="dashboard-layout">
                 <Nav />
-
                 <div className="main-content">
                     <Topbar />
-
-                    <div className="d-flex content-section">
-                        {/* Left Column */}
-                        <div className="flex-grow-1">
-                            <div className="p-3 mb-4 rounded" style={{ background: "rgba(35, 35, 60, 0.8)" }}>
-                                <h6 className="text-info">Today</h6>
-                                <p className="mb-1 fw-bold">ESTAS SON TUS CITAS PENDIENTES</p>
-                                <p className="mb-1">Description:</p>
-                                <small>08:00 AM - 10:00 AM</small>
-                            </div>
-                            <div className="p-3 mb-4 rounded" style={{ background: "rgba(40, 40, 90, 0.85)" }}>
-                                <h6 className="text-info">RECORDATORIO</h6>
-                                <p className="mb-1 fw-bold">LLEVA UN RECORDATORIO DE TUS CITAS</p>
-                                <p>No tienes ningún recordatorio creado</p>
-                            </div>
-                        </div>
-
-                        {/* Right Column */}
-                        <div className="p-3 rounded" style={{ width: "360px", background: "rgba(45, 45, 70, 0.85)" }}>
-                            <div className="p-3 mb-4 rounded" style={{ background: "rgba(55, 55, 90, 0.9)" }}>
-                                <h6>Tarjetas de negocios con posibles citas</h6>
-                                <p>Aca van algunas tarjetas de negocio que pueden interesarte</p>
-                                <button className="btn btn-sm btn-primary d-block mt-2">Botón para abrir el negocio</button>
-                            </div>
-                            <div className="p-3 mb-4 rounded" style={{ background: "rgba(55, 55, 100, 0.9)" }}>
-                                <h6>Barbería</h6>
-                                <p>Nuestra barbería es la mejor, agenda tu cita ya</p>
-                                <p>Cel: 3012408555</p>
-                                <button className="btn btn-sm btn-outline-light">Más info</button>
-                            </div>
-                        </div>
-                    </div>
+                    <TusCitas />
                 </div>
             </div>
 
@@ -111,6 +81,8 @@ export default function HomePageuser() {
                     margin-top: 1rem;
                 }
             `}</style>
+
+
         </>
     );
 }
