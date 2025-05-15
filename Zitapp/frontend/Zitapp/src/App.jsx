@@ -8,6 +8,7 @@ import BusinessCalendar from './Pages/Calendar/BusinessCalendar'
 import Nav from './components/Nav'
 import Topbar from './components/Topbar'
 import Categories from './components/Categories'
+import HomePagenegocio from './Pages/HomePagenegocio'
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path="/HomePageuser" element={<HomePageuser />} />
         <Route path="/calendar/user" element={<UserCalendar />} />
         <Route path="/calendar/business" element={<BusinessCalendar />} />
+        <Route path="/HomePagenegocio" element={<HomePagenegocio />} />
         <Route path="/Nav" element={<Nav />} />
         <Route path="/Topbar" element={<Topbar />} />
         <Route path="/Categories" element={<Categories />} />
