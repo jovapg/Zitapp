@@ -6,6 +6,7 @@ import HomePageuser from './Pages/HomePageuser'
 import Nav from './components/Nav'
 import Topbar from './components/Topbar'
 import Categories from './components/Categories'
+import HomePagenegocio from './Pages/HomePagenegocio'
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/LoginPage" element={<LoginPage />} />
         <Route path="/HomePageuser" element={<HomePageuser />} />
+        <Route path="/HomePagenegocio" element={<HomePagenegocio />} />
         <Route path="/Nav" element={<Nav />} />
         <Route path="/Topbar" element={<Topbar />} />
         <Route path="/Categories" element={<Categories />} />
