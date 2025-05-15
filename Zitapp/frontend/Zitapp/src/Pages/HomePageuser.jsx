@@ -2,7 +2,8 @@ import  { useState } from 'react';
 import Nav from '../components/Nav';
 import Topbar from '../components/Topbar';
 import Categories from '../components/Categories';
-import TusCitas from '../components/tuscitas';
+import TusCitas from '../components/Tuscitas';
+import UserCalendar from './Calendar/UserCalendar';
 
 export default function HomePageuser() {
     const [currentView, setCurrentView] = useState('tuscitas');
@@ -21,6 +22,7 @@ export default function HomePageuser() {
 
                     {currentView === 'tuscitas' && <TusCitas />}
                     {currentView === 'categorias' && <Categories />}
+                    {currentView === 'calendar' && <UserCalendar />}
                 </div>
             </div>
 

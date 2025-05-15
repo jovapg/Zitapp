@@ -34,9 +34,12 @@ export default function Nav({ onNavigate }) {
                     </a>
                 </li>
                 <li className="nav-item mb-3">
-                    <a href="" className="nav-link dashboard-btn text-white">
+                    <button
+                        onClick={() => onNavigate('calendar')}
+                        className="nav-link dashboard-btn text-white btn btn-link text-start"
+                    >
                         <i className="bi bi-circle me-2"></i> Calendar
-                    </a>
+                    </button>
                 </li>
             </ul>
             <div className="mt-auto">
