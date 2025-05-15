@@ -29,9 +29,12 @@ export default function NavNegocio({ onNavigate }) {
                     </a>
                 </li>
                 <li className="nav-item mb-3">
-                    <a href="" className="nav-link dashboard-btn text-white">
-                        <i className="bi bi-circle me-2"></i>  mi Calendar
-                    </a>
+                    <button
+                        onClick={() => onNavigate('calendar')}
+                        className="nav-link dashboard-btn text-white btn btn-link text-start"
+                    >
+                        <i className="bi bi-circle me-2"></i> Calendar
+                    </button>
                 </li>
             </ul>
             <div className="mt-auto">

@@ -1,9 +1,11 @@
 
 import  { useState } from 'react';
-import NavNegocio from '../components/Navnegocio';
+import NavNegocio from '../components/NavNegocio';
+import fondoAzul from '../assets/img/fondo_azul_editado.png';
 import TopbarNegocio from '../components/TopbarNegocio';
 import Categories from '../components/Categories';
 import CitasNegocio from '../components/CitasNegocio';
+import BusinessCalendar from './Calendar/BusinessCalendar';
 
 export default function HomePagenegocio() {
     
@@ -24,6 +26,7 @@ export default function HomePagenegocio() {
     
                         {currentView === 'tuscitas' && <CitasNegocio />}
                         {currentView === 'categorias' && <Categories />}
+                        {currentView === 'calendar' && <BusinessCalendar />}
                     </div>
                 </div>
     
@@ -44,7 +47,7 @@ export default function HomePagenegocio() {
                         left: 0;
                         right: 0;
                         bottom: 0;
-                        background-image: url('https://images.unsplash.com/photo-1522199710521-72d69614c702?fit=crop&w=1950&q=80');
+                        background-image: url(${fondoAzul});
                         background-size: cover;
                         background-position: center;
                         filter: brightness(0.4);
