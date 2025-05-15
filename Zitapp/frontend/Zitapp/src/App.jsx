@@ -5,6 +5,7 @@ import LoginPage from './Pages/LoginPage'
 import HomePageuser from './Pages/HomePageuser'
 import Nav from './components/Nav'
 import Topbar from './components/Topbar'
+import Register from './Pages/Register'
 
 function App() {
 
@@ -17,18 +18,19 @@ function App() {
         <Route path="/FirsPage" element={<FirsPage />} />
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/LoginPage" element={<LoginPage />} />
+        <Route path="/Register" element={<Register/>}/>
         <Route path="/HomePageuser" element={<HomePageuser />} />
         <Route path="/Nav" element={<Nav />} />
         <Route path="/Topbar" element={<Topbar />} />
- 
 
-        
+
+
 
 
       </Routes>
 
     </>
-      
+
   )
 }
 
