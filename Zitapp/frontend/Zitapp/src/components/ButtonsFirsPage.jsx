@@ -51,14 +51,14 @@ export default function ButtonsFirsPage() {
           className="power-button"
           onClick={() => navigate('/LoginPage')}
         >
-          <span>Login Usuario</span>
+          <span>Login</span>
         </div>
-        <div
+        {/* <div
           className="power-button"
           onClick={() => navigate('/LoginBusiness')}
         >
           <span>Login Negocio</span>
-        </div>
+        </div> */}
         <div
           className="power-button"
           onClick={() => navigate('/Register')}
