@@ -1,6 +1,6 @@
 import fondologin from '../assets/img/logo.png';
 
-export default function Nav({ onNavigate }) {
+export default function NavNegocio({ onNavigate }) {
     return (
         <div className="sidebar">
             <div className="mb-4 text-center">
@@ -21,16 +21,11 @@ export default function Nav({ onNavigate }) {
                     </button>
                 </li>
                 <li className="nav-item mb-3">
-                    <button
-                        onClick={() => onNavigate('tuscitas')}
-                        className="nav-link dashboard-btn text-white btn btn-link text-start"
-                    >
-                        <i className="bi bi-circle me-2"></i> Tus Citas
-                    </button>
+
                 </li>
                 <li className="nav-item mb-3">
                     <a href="" className="nav-link dashboard-btn text-white">
-                        <i className="bi bi-circle me-2"></i> Ver Negocios
+                        <i className="bi bi-circle me-2"></i> Mi Negocio
                     </a>
                 </li>
                 <li className="nav-item mb-3">

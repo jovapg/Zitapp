@@ -1,8 +1,8 @@
 import React from 'react';
 import { FaGoogle, FaApple } from 'react-icons/fa';
-import { Navigate } from 'react-router-dom';
+
 import fondologin from '../assets/img/logo.png';
-import fondoAzuli from '../assets/img/fondo Azul.png';
+import fondoAzuli from '../assets/img/fondo_azul_editado.png'
 
 export default function LoginPage() {
     return (
