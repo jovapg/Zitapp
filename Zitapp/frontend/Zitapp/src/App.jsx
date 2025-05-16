@@ -7,9 +7,6 @@ import UserCalendar from './Pages/Calendar/UserCalendar'
 import BusinessCalendar from './Pages/Calendar/BusinessCalendar'
 import Nav from './components/Nav'
 import Topbar from './components/Topbar'
-import Register from './Pages/Register'
-import Categories from './components/Categories'
-import HomePagenegocio from './Pages/HomePagenegocio'
 
 function App() {
 
@@ -18,9 +15,12 @@ function App() {
     <>
 
       <Routes>
+         
         <Route path="/" element={<FirsPage />} />
         <Route path="/FirsPage" element={<FirsPage />} />
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/Admin" element={<LoginAdmin />} />
+         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/LoginPage" element={<LoginPage />} />
         <Route path="/Register" element={<Register/>}/>
         <Route path="/HomePageuser" element={<HomePageuser />} />
