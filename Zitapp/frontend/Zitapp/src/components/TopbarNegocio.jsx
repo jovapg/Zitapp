@@ -1,36 +1,15 @@
-import React from 'react';
 
-export default function Topbar({ onNavigate }) {
+
+export default function TopbarNegocio({ onNavigate }) {
     return (
         <>
             <div className="topbar d-flex justify-content-between align-items-center p-3">
                 <div>
                     <h2 className="mt-2 text-white">¡Haz las cosas sencillas!</h2>
                     <p className="text">
-                        Administra y planea tus citas de la mejor manera a un click
+                        Administra y planea tu agenda de la mejor manera a un click
                     </p>
-                    <div className="d-flex gap-2 align-items-center flex-wrap">
-                        <span
-                            className="badge rounded-pill bg-primary px-3 py-2 topbar-btn"
-                            onClick={() => onNavigate('categorias')}
-                        >
-                            CATEGORIAS
-                        </span>
-                        <span className="badge rounded-pill bg-primary px-3 py-2 topbar-btn">CERCA DE TI</span>
-                        <span className="badge rounded-pill bg-primary px-3 py-2 topbar-btn">MAPA</span>
 
-                        <div className="d-flex align-items-center search-bar px-2 py-1 rounded text-black">
-                            <input
-                                type="text"
-                                className="form-control form-control-sm text-white bg-transparent border-1 border-light me-2"
-                                placeholder="Buscar..."
-                                style={{ minWidth: "270px", borderRadius: "50px" }}
-                            />
-                            <button className="btn btn-sm btn-outline-light" style={{ borderRadius: "8px" }}>
-                                🔍
-                            </button>
-                        </div>
-                    </div>
                 </div>
                 <div className="d-flex align-items-center gap-3">
                     <h3 className="btn btn-sm btn-outline-light topbar-btn">Nombre del Usuario</h3>

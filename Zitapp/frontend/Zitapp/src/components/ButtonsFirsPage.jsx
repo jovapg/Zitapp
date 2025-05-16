@@ -1,6 +1,6 @@
 import fondoAzul from '../assets/img/fondo_azul_editado.png';
 import logo from '../assets/img/logo.png';
-import { useNavigate } from 'react-router-dom'; // <-- usa useNavigate en lugar de Navigate
+import { useNavigate } from 'react-router-dom'; 
 
 export default function ButtonsFirsPage() {
   const navigate = useNavigate(); // <-- inicializa navigate
@@ -47,14 +47,14 @@ export default function ButtonsFirsPage() {
           className="power-button"
           onClick={() => navigate('/LoginPage')}
         >
-          <span>Login Usuario</span>
+          <span>Login</span>
         </div>
-        <div
+        {/* <div
           className="power-button"
           onClick={() => navigate('/LoginBusiness')}
         >
           <span>Login Negocio</span>
-        </div>
+        </div> */}
         <div
           className="power-button"
           onClick={() => navigate('/Register')}
