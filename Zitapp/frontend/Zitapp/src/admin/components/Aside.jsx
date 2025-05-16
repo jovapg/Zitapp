@@ -9,7 +9,7 @@ export default function Aside() {
         {/* <!-- Sidebar - Brand --> */}
         <a
           className="sidebar-brand d-flex align-items-center justify-content-center"
-          href="*"
+          href="/LoginPage"
         >
           <div className="sidebar-brand-icon rotate-n-15">
             <img
@@ -48,7 +48,29 @@ export default function Aside() {
             aria-controls="collapseTwo"
           >
             <i className="fas fa-fw fa-cog"></i>
-            <span>Productos</span>
+            <span>admin negocios</span>
+          </a>
+                    <a
+            className="nav-link collapsed"
+            href="#"
+            data-toggle="collapse"
+            data-target="#collapseTwo"
+            aria-expanded="true"
+            aria-controls="collapseTwo"
+          >
+            <i className="fas fa-fw fa-cog"></i>
+            <span>admin usuarios</span>
+          </a>
+                              <a
+            className="nav-link collapsed"
+            href="#"
+            data-toggle="collapse"
+            data-target="#collapseTwo"
+            aria-expanded="true"
+            aria-controls="collapseTwo"
+          >
+            <i className="fas fa-fw fa-cog"></i>
+            <span>Logout</span>
           </a>
           <div
             id="collapseTwo"

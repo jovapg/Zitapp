@@ -7,7 +7,11 @@ import UserCalendar from './Pages/Calendar/UserCalendar'
 import BusinessCalendar from './Pages/Calendar/BusinessCalendar'
 import Nav from './components/Nav'
 import Topbar from './components/Topbar'
-
+import LoginAdmin from './Pages/LoginAdmin'
+import Dashboard from './admin/page/Dashboard'
+import Register from './Pages/Register'
+import HomePagenegocio from './Pages/HomePagenegocio'
+import Categories from './components/Categories'
 function App() {
 
 
