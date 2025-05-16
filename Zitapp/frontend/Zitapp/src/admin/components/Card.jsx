@@ -12,7 +12,7 @@ export default function Card() {
                 Usuarios Registrados
               </div>
               <div className="h5 mb-0 font-weight-bold text-white-800">
-                200
+                97
               </div>
             </div>
             <div className="col-auto">
@@ -20,7 +20,11 @@ export default function Card() {
             </div>
           </div>
         </div>
+        
+
+        
       </div>
+      
     </div>
   );
 }

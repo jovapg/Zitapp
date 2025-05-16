@@ -5,7 +5,8 @@ export default function Footer() {
     <footer className="foo sticky-footer">
       <div className="container my-auto">
         <div className="copyright text-center my-auto">
-          <span>Copyright &copy; Your Website 2021</span>
+    
+          <span> ZITAPP</span>
         </div>
       </div>
       <style>

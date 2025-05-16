@@ -3,6 +3,7 @@ import React from 'react';
 export default function Topbar({ onNavigate }) {
     return (
         <>
+       
             <div className="topbar d-flex justify-content-between align-items-center p-3">
                 <div>
                     <h2 className="mt-2 text-white">¡Haz las cosas sencillas!</h2>
@@ -42,6 +43,7 @@ export default function Topbar({ onNavigate }) {
                     />
                 </div>
             </div>
+             <br /> <br />
 
             {/* Estilos específicos del Topbar */}
             <style>{`
