@@ -19,12 +19,8 @@ export default function ButtonsFirsPage() {
       {/* Botón Admin */}
       <div className="position-absolute top-0 end-0 m-3">
         <button
-          className="btn btn-outline-light rounded-pill px-4 border-2"
-          style={{
-            borderColor: '#6f42c1',
-            color: 'white',
-            fontWeight: 'bold',
-          }}
+          className=" btadmin  btn btn-outline-light rounded-pill px-4 border-2"
+       onClick={() => navigate('/Admin')}
         >
           Admin
         </button>
@@ -105,7 +101,14 @@ export default function ButtonsFirsPage() {
           padding: 5px;
           font-size: 1.1rem;
         }
-      `}</style>
+        .btadmin {
+             borderColor: '#6f42c1',
+            color: 'white',
+            fontWeight: 'bold',
+           }
+
+      `
+      }</style>
     </div>
   );
 }

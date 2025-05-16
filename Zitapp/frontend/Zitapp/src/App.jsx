@@ -5,6 +5,8 @@ import LoginPage from './Pages/LoginPage'
 import HomePageuser from './Pages/HomePageuser'
 import Nav from './components/Nav'
 import Topbar from './components/Topbar'
+import LoginAdmin from './Pages/LoginAdmin'
+import  Dashboard from './admin/page/Dashboard'
 
 function App() {
 
@@ -13,9 +15,12 @@ function App() {
     <>
 
       <Routes>
+         
         <Route path="/" element={<FirsPage />} />
         <Route path="/FirsPage" element={<FirsPage />} />
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/Admin" element={<LoginAdmin />} />
+         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/LoginPage" element={<LoginPage />} />
         <Route path="/HomePageuser" element={<HomePageuser />} />
         <Route path="/Nav" element={<Nav />} />
