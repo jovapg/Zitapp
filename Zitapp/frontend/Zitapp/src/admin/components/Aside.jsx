@@ -9,7 +9,7 @@ export default function Aside() {
         {/* <!-- Sidebar - Brand --> */}
         <a
           className="sidebar-brand d-flex align-items-center justify-content-center"
-          href="*"
+          href="/LoginPage"
         >
           <div className="sidebar-brand-icon rotate-n-15">
             <img
