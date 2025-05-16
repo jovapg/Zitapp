@@ -48,7 +48,29 @@ export default function Aside() {
             aria-controls="collapseTwo"
           >
             <i className="fas fa-fw fa-cog"></i>
-            <span>Productos</span>
+            <span>admin negocios</span>
+          </a>
+                    <a
+            className="nav-link collapsed"
+            href="#"
+            data-toggle="collapse"
+            data-target="#collapseTwo"
+            aria-expanded="true"
+            aria-controls="collapseTwo"
+          >
+            <i className="fas fa-fw fa-cog"></i>
+            <span>admin usuarios</span>
+          </a>
+                              <a
+            className="nav-link collapsed"
+            href="#"
+            data-toggle="collapse"
+            data-target="#collapseTwo"
+            aria-expanded="true"
+            aria-controls="collapseTwo"
+          >
+            <i className="fas fa-fw fa-cog"></i>
+            <span>Logout</span>
           </a>
           <div
             id="collapseTwo"
