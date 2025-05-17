@@ -1,6 +1,7 @@
 import React from "react";
 
 export default function Card() {
+  
   return (
     <div className="col-xl-3 col-md-6 mb-4">
       <div className="card border-left-primary shadow h-100 py-2 bg-secondary text-white">
