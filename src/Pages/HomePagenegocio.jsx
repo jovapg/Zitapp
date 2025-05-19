@@ -27,6 +27,7 @@ export default function HomePagenegocio() {
                         {currentView === 'tuscitas' && <CitasNegocio />}
                         {currentView === 'categorias' && <Categories />}
                         {currentView === 'calendar' && <BusinessCalendar />}
+                     
                     </div>
                 </div>
     

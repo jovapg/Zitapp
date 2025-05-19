@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react'
+
 import { Routes, Route, Navigate } from 'react-router-dom'
+import 'leaflet/dist/leaflet.css';
+
 import FirsPage from './Pages/FirsPage'
 import LoginPage from './Pages/LoginPage'
 import HomePageuser from './Pages/HomePageuser'
@@ -12,6 +15,8 @@ import Dashboard from './admin/page/Dashboard'
 import Register from './Pages/Register'
 import HomePagenegocio from './Pages/HomePagenegocio'
 import Categories from './components/Categories'
+import BusinessMap from './components/BusinessMap'
+import Notfound from './components/notfound';
 function App() {
 
 
@@ -21,8 +26,7 @@ function App() {
       <Routes>
          
         <Route path="/" element={<FirsPage />} />
-        <Route path="/FirsPage" element={<FirsPage />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/FirsPage" element={<FirsPage />} />       
         <Route path="/Admin" element={<LoginAdmin />} />
          <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/LoginPage" element={<LoginPage />} />
@@ -34,6 +38,8 @@ function App() {
         <Route path="/Nav" element={<Nav />} />
         <Route path="/Topbar" element={<Topbar />} />
         <Route path="/Categories" element={<Categories />} />
+        <Route path="/BusinessMap" element={<BusinessMap />} />
+         <Route path="*" element={<Notfound />} />
 
       </Routes>
 

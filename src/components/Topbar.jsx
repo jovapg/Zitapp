@@ -1,9 +1,10 @@
-import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Topbar({ onNavigate }) {
+    const navigate = useNavigate();
     return (
         <>
-       
+
             <div className="topbar d-flex justify-content-between align-items-center p-3">
                 <div>
                     <h2 className="mt-2 text-white">¡Haz las cosas sencillas!</h2>
@@ -17,8 +18,15 @@ export default function Topbar({ onNavigate }) {
                         >
                             CATEGORIAS
                         </span>
-                        <span className="badge rounded-pill bg-primary px-3 py-2 topbar-btn">CERCA DE TI</span>
-                        <span className="badge rounded-pill bg-primary px-3 py-2 topbar-btn">MAPA</span>
+
+                        <span
+                            className="badge rounded-pill bg-primary px-3 py-2 topbar-btn"
+                            onClick={() => onNavigate('mapa')}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            CERCA DE TI
+                        </span>
+
 
                         <div className="d-flex align-items-center search-bar px-2 py-1 rounded text-black">
                             <input
@@ -43,7 +51,7 @@ export default function Topbar({ onNavigate }) {
                     />
                 </div>
             </div>
-             <br /> <br />
+            <br /> <br />
 
             {/* Estilos específicos del Topbar */}
             <style>{`
