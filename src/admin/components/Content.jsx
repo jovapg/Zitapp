@@ -5,7 +5,7 @@ import Grafica from "./grafica";
 import Info from "./Info";
 import fondoAzul from "../../assets/img/fondo_azul_editado.png";
 
-export default function Content() {
+export default function Content({toggleSidebar}) {
   return (
     <>
       <div id="content-wrapper" className="d-flex flex-column">
@@ -24,7 +24,7 @@ export default function Content() {
             flexDirection: "column",
           }}
         >
-          <Header />
+          <Header toggleSidebar={toggleSidebar} />
           <div className="container-fluid">
             <div className="d-sm-flex align-items-center justify-content-between mb-4">
 
