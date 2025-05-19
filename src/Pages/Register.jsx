@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import fondoAzuli from '../assets/img/fondo Azul.png';
+import { useNavigate } from 'react-router-dom'; 
+
 
 export default function Register() {
+      const navigate = useNavigate(); 
+
+
     let [userType, setUserType] = useState('');
     let [step, setStep] = useState(0); // 0 = formulario, 1 = preguntas business, 2 = tarjeta extra
     let [selectedCategory, setSelectedCategory] = useState([]);
@@ -111,14 +116,6 @@ export default function Register() {
                         <h2 className="text-center text-white mb-2">Create an Account</h2>
                         <p className="text-center text-light mb-4" style={{ fontSize: '14px' }}>Start your journey with Zitapp</p>
                         <form>
-                            <div className="">
-                                <input type="text" className="form-control bg-dark text-white mb-3" placeholder="Full Name" required />
-
-                            </div>
-                            <input type="date" className="form-control bg-dark text-white mb-3" placeholder="Date of Birth" required />
-                            <input type="email" className="form-control bg-dark text-white mb-3" placeholder="Email" required />
-                            <input type="tel" className="form-control bg-dark text-white mb-3" placeholder="Phone Number" required />
-                            <input type="password" className="form-control bg-dark text-white mb-3" placeholder="Password" required />
 
                             <div className="d-flex justify-content-around text-white mb-3">
                                 <div className="form-check">
@@ -129,9 +126,21 @@ export default function Register() {
                                 <div className="form-check">
                                     <input className="form-check-input" type="radio" name="userType" value="business"
                                         checked={userType === 'business'} onChange={() => { setUserType('business'); setStep(1); }} />
-                                    <label className="form-check-label">Business</label>
+                                    <label className="form-check-label">Busines</label>
                                 </div>
                             </div>
+                            <div className="">
+                                <input type="text" className="form-control bg-dark text-white mb-3" placeholder="Full Name" required />
+
+                            </div>
+
+
+                            <input type="date" className="form-control bg-dark text-white mb-3" placeholder="Date of Birth" required />
+                            <input type="email" className="form-control bg-dark text-white mb-3" placeholder="Email" required />
+                            <input type="tel" className="form-control bg-dark text-white mb-3" placeholder="Phone Number" required />
+                            <input type="password" className="form-control bg-dark text-white mb-3" placeholder="Password" required />
+
+
 
                             {userType === 'client' && (
                                 <>
@@ -163,7 +172,8 @@ export default function Register() {
                             </div>
 
                             <p className="text-center text-white mt-3">
-                                Already have an account? <a href="/login" className="text-info">Log In</a>
+                                Already have an account? <a  className="text-info"
+                                onClick={() => navigate('/LoginPage')}>Log In</a>
                             </p>
                         </form>
 

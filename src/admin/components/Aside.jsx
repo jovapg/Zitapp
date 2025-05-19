@@ -1,4 +1,4 @@
-import logo from "../../assets/img/logo.png";
+import logo from "../../assets/img/LOGO Zitapp.png";
 export default function Aside() {
   return (
 

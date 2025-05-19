@@ -1,10 +1,12 @@
 import React from 'react';
 import { FaGoogle, FaApple } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; 
 
-import fondologin from '../assets/img/logo.png';
+import fondologin from '../assets/img/LOGO Zitapp.png';
 import fondoAzuli from '../assets/img/fondo_azul_editado.png'
 
 export default function LoginPage() {
+     const navigate = useNavigate(); 
     return (
         <>
             <div
@@ -71,7 +73,9 @@ export default function LoginPage() {
 
                         <p className="mt-4 text-center text-light">
                             Don’t have an account?{' '}
-                            <a href="#" className="text-decoration-none text-info">Create Account</a>
+                            <a  className="text-decoration-none text-info"
+                            onClick={() => navigate('/Register')}
+                            >Create Account</a>
                         </p>
                     </div>
                 </div>

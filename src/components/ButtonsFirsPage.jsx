@@ -1,5 +1,5 @@
 import fondoAzul from '../assets/img/fondo_azul_editado.png';
-import logo from '../assets/img/logo.png';
+import logo from '../assets/img/LOGO Zitapp.png';
 import { useNavigate } from 'react-router-dom'; 
 
 export default function ButtonsFirsPage() {
