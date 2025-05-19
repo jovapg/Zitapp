@@ -276,7 +276,7 @@ export default function UserCalendar() {
   // Lista de citas (para vista móvil o complementaria)
   const renderAppointmentsList = () => {
     return (
-      <div className="appointments-list mt-4">
+      <div className="appointments-list mt-4 ">
         <h3>Mis Citas</h3>
         {filteredAppointments.length === 0 ? (
           <div className="alert alert-info">No hay citas para mostrar.</div>
@@ -306,7 +306,7 @@ export default function UserCalendar() {
 
   // Estilo para el contenedor del calendario
   const containerStyle = {
-    backgroundColor: 'rgba(103, 103, 103, 0.7)',
+    backgroundColor: 'rgba(43, 38, 107, 0.7)',
     color: 'white',
     padding: '20px',
     borderRadius: '8px',

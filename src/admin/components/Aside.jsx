@@ -19,7 +19,7 @@ export default function Aside() {
           style={{ width: "70px", height: "70px" }}
         />
       </div>
-      <span>ZITAPP</span>
+       <h2 className="text-white fw-bold">ZITAPP</h2>
     </a>
 
     <hr className="sidebar-divider" />

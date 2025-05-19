@@ -101,8 +101,8 @@ export default function Register() {
 
                 <div className="row mb-3">
                     <div className="col-md-6">
-                        <label>Dirección o ubicación</label>
-                        <input type="text" className="form-control bg-dark text-white" placeholder="Dirección" />
+                        <label>Coordenadas de tu negocio</label>
+                        <input type="text" className="form-control bg-dark text-white" placeholder=" coordenadass de tu negocio ej:6.2610634, -75.445731 " />
                     </div>
                     <div className="col-md-6">
                         <label>Servicios que prestas</label>

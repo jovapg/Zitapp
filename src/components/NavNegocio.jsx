@@ -1,4 +1,4 @@
-import fondologin from '../assets/img/logo.png';
+import fondologin from '../assets/img/LOGO Zitapp.png';
 
 export default function NavNegocio({ onNavigate }) {
     return (
@@ -10,6 +10,7 @@ export default function NavNegocio({ onNavigate }) {
                     className="img-fluid mt-2"
                     style={{ width: '90px' }}
                 />
+                <h2 className="text-white fw-bold">ZITAPP</h2>
             </div>
             <ul className="nav nav-pills flex-column mb-auto">
                 <li className="nav-item mb-3">

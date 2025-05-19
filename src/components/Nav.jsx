@@ -1,4 +1,4 @@
-import fondologin from '../assets/img/logo.png';
+import fondologin from '../assets/img/LOGO Zitapp.png';
 
 export default function Nav({ onNavigate }) {
     return (
@@ -9,7 +9,10 @@ export default function Nav({ onNavigate }) {
                     alt="login icon"
                     className="img-fluid mt-2"
                     style={{ width: '90px' }}
+                    
                 />
+                <h2 className="text-white fw-bold">ZITAPP</h2>
+
             </div>
             <ul className="nav nav-pills flex-column mb-auto">
                 <li className="nav-item mb-3">
@@ -28,11 +31,7 @@ export default function Nav({ onNavigate }) {
                         <i className="bi bi-circle me-2"></i> Tus Citas
                     </button>
                 </li>
-                <li className="nav-item mb-3">
-                    <a href="" className="nav-link dashboard-btn text-white">
-                        <i className="bi bi-circle me-2"></i> Ver Negocios
-                    </a>
-                </li>
+
                 <li className="nav-item mb-3">
                     <button
                         onClick={() => onNavigate('calendar')}
