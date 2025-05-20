@@ -1,117 +1,120 @@
 import logo from "../../assets/img/LOGO Zitapp.png";
-export default function Aside() {
+import "./css/Aside.css";
+
+export default function Aside({ isVisible, onSelectView }) {
+  if (!isVisible) return null;
+
+  // Función para manejar el click y avisar al Dashboard qué vista mostrar
+  const handleClick = (view) => (e) => {
+    e.preventDefault(); // prevenir que el enlace recargue la página
+    onSelectView(view);
+  };
+
   return (
-
-<div className="d-flex flex-column" style={{ height: '100vh' }}>
-  <ul
-    className="Aside navbar-nav sidebar sidebar-dark accordion d-flex flex-column"
-    id="accordionSidebar"
-  >
-    {/* Brand */}
-    <a
-      className="sidebar-brand d-flex align-items-center justify-content-center"
-      href="/LoginPage"
-    >
-      <div className="sidebar-brand-icon rotate-n-15">
-        <img
-          src={logo}
-          alt="Icono"
-          style={{ width: "70px", height: "70px" }}
-        />
-      </div>
-      <span>ZITAPP</span>
-    </a>
-
-    <hr className="sidebar-divider" />
-
-    {/* Heading */}
-    <div className="sidebar-heading">Módulos</div>
-
-    {/* Nav Items */}
-    <li className="nav-item">
-      <a
-        className="nav-link collapsed"
-        href="#"
-        data-toggle="collapse"
-        data-target="#collapseTwo"
-        aria-expanded="true"
-        aria-controls="collapseTwo"
+    <div className={`Aside ${isVisible ? "show" : "collapsed"}`}>
+      <ul
+        className="navbar-nav sidebar sidebar-dark accordion d-flex flex-column"
+        id="accordionSidebar"
       >
-        <i className="fas fa-fw fa-cog"></i>
-        <span>Admin Negocios</span>
-      </a>
+        {/* Brand */}
+        <a
+          className="sidebar-brand d-flex align-items-center justify-content-center"
+          href="/Admin"
+          onClick={handleClick("home")}
+        >
+          <div className="sidebar-brand-icon rotate-n-15">
+            <img
+              src={logo}
+              alt="Icono"
+              style={{ width: "70px", height: "70px" }}
+            />
+          </div>
+        </a>
 
-      <a
-        className="nav-link collapsed"
-        href="#"
-        data-toggle="collapse"
-        data-target="#collapseTwo"
-        aria-expanded="true"
-        aria-controls="collapseTwo"
-      >
-        <i className="fas fa-fw fa-cog"></i>
-        <span>Admin Usuarios</span>
-      </a>
+        <hr className="sidebar-divider" />
 
-      <a href="#" className="nav-link collapsed">
-        <i className="fas fa-download fa-sm text-white-50"></i> Generar Reporte
-      </a>
-    </li>
+        {/* Heading */}
+        <div className="sidebar-heading">Módulos</div>
 
-    <hr className="sidebar-divider my-4" />
+        {/* Nav Items */}
+        <li className="nav-item">
+          <button className="nav-link dropdown">
+            <i className="fas fa-fw fa-cog"></i>
+            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              Admin Negocios
+            </span>
+            <ul className="dropdown-menu">
+              <li>
+                <a href="#" className="dropdown-item" onClick={handleClick("negocios")}>Negocios</a>
+              </li>
+              <li>
+                <a href="#" className="dropdown-item" onClick={handleClick("crearNegocio")}>Crear Negocio</a>
+              </li>
+              <li>
+                <a href="#" className="dropdown-item" onClick={handleClick("actualizarNegocio")}>Actualizar</a>
+              </li>
+              <li>
+                <a href="#" className="dropdown-item" onClick={handleClick("eliminarNegocio")}>Eliminar</a>
+              </li>
+            </ul>
+          </button>
 
-    {/* BOTÓN SALIR al fondo */}
-    <li className="nav-item mt-auto">
-      <a href="#" className="nav-link">
-        <i className="fas fa-sign-out-alt fa-sm text-white-50"></i> Salir
-      </a>
-    </li>
-  </ul>
+          <button className="nav-link dropdown">
+            <i className="fas fa-fw fa-cog"></i>
+            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              Admin Usuarios
+            </span>
+            <ul className="dropdown-menu">
+              <li>
+                <a href="#" className="dropdown-item" onClick={handleClick("usuarios")}>Usuarios</a>
+              </li>
+              <li>
+                <a href="#" className="dropdown-item" onClick={handleClick("crearUsuarios")}>Crear Usuarios</a>
+              </li>
+              <li>
+                <a href="#" className="dropdown-item" onClick={handleClick("actualizarUsuario")}>Actualizar</a>
+              </li>
+              <li>
+                <a href="#" className="dropdown-item" onClick={handleClick("eliminarUsuario")}>Eliminar</a>
+              </li>
+            </ul>
+          </button>
 
-  {/* Estilos */}
-  <style>{`
-    .Aside {
-      flex-shrink: 0;
-      width: 250px;
-      background-color: rgba(0, 0, 0, 0.85);
-      color: white;
-      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-    }
+          <button className="nav-link dropdown">
+            <i className="fas fa-fw fa-cog"></i>
+            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              Admin Citas
+            </span>
+            <ul className="dropdown-menu">
+              <li>
+                <a href="#" className="dropdown-item" onClick={handleClick("citas")}>Citas</a>
+              </li>
+              <li>
+                <a href="#" className="dropdown-item" onClick={handleClick("crearCitas")}>Crear Citas</a>
+              </li>
+              <li>
+                <a href="#" className="dropdown-item" onClick={handleClick("actualizarCitas")}>Actualizar</a>
+              </li>
+              <li>
+                <a href="#" className="dropdown-item" onClick={handleClick("eliminarCitas")}>Eliminar</a>
+              </li>
+            </ul>
+          </button>
 
-    .Aside .nav-link {
-      color: rgba(255, 255, 255, 0.9);
-      transition: background-color 0.3s, color 0.3s;
-    }
+          <a href="#" className="nav-link collapsed" onClick={handleClick("reporte")}>
+            <i className="fas fa-download fa-sm text-white-50"></i> Generar Reporte
+          </a>
+        </li>
 
-    .Aside .nav-link:hover {
-      background-color: #1e1e2f;
-      color: #61dafb;
-    }
+        <hr className="sidebar-divider my-4" />
 
-    .sidebar-brand-icon img {
-      border-radius: 50%;
-      transition: transform 0.3s ease;
-    }
-
-    .sidebar-brand-icon img:hover {
-      transform: rotate(15deg) scale(1.1);
-    }
-
-    .sidebar-divider {
-      border-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .sidebar-heading {
-      color: rgba(255, 255, 255, 0.6);
-      text-transform: uppercase;
-      font-weight: 700;
-      font-size: 0.85rem;
-    }
-  `}</style>
-</div>
-
-
-
-
+        {/* BOTÓN SALIR al fondo */}
+        <li className="nav-item mt-auto">
+          <a href="#" className="nav-link" onClick={() => alert("Salir de la sesión")}>
+            <i className="fas fa-sign-out-alt fa-sm text-white-50"></i> Salir
+          </a>
+        </li>
+      </ul>
+    </div>
   );
 }
