@@ -276,7 +276,7 @@ export default function UserCalendar() {
   // Lista de citas (para vista móvil o complementaria)
   const renderAppointmentsList = () => {
     return (
-      <div className="appointments-list mt-4 ">
+      <div className="appointments-list mt-4">
         <h3>Mis Citas</h3>
         {filteredAppointments.length === 0 ? (
           <div className="alert alert-info">No hay citas para mostrar.</div>
@@ -306,7 +306,7 @@ export default function UserCalendar() {
 
   // Estilo para el contenedor del calendario
   const containerStyle = {
-    backgroundColor: 'rgba(43, 38, 107, 0.7)',
+    backgroundColor: 'rgba(18, 27, 70, 0.7)',
     color: 'white',
     padding: '20px',
     borderRadius: '8px',
@@ -352,32 +352,7 @@ export default function UserCalendar() {
         {renderCalendar()}
       </div>
       
-      {/* Lista de citas */}
-      <div className="appointments-list mt-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '5px', backdropFilter: 'blur(5px)'}}>
-        <h3 className="text-white" style={{textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)'}}>Mis Citas</h3>
-        {filteredAppointments.length === 0 ? (
-          <div className="alert alert-info">No hay citas para mostrar.</div>
-        ) : (
-          <div className="list-group">
-            {filteredAppointments.map((app, idx) => (
-              <div 
-                key={`list-app-${idx}`} 
-                className="list-group-item list-group-item-action"
-                onClick={() => showAppointmentDetails(app)}
-                style={{cursor: 'pointer', backgroundColor: 'rgba(0, 0, 0, 0.5)', color: 'white', border: '1px solid rgba(255, 255, 255, 0.2)'}}
-              >
-                <div className="d-flex w-100 justify-content-between">
-                  <h5 className="mb-1">{app.nombre_negocio}</h5>
-                  <small>{app.fecha} - {app.hora.substring(0, 5)}</small>
-                </div>
-                <span className={`badge ${getStatusColor(app.estado)}`}>
-                  {app.estado}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+
       
       {/* Modal de detalles */}
       {renderAppointmentModal()}

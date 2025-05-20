@@ -1,4 +1,5 @@
 import React from 'react';
+import AgendadeCitas from '../Pages/Calendar/AgendadeCitas';
 
 export default function TusCitas() {
   return (
@@ -7,11 +8,13 @@ export default function TusCitas() {
         {/* Left Column */}
         <div className="flex-grow-1">
           <div className="p-3 mb-4 rounded" style={{ background: "rgba(35, 35, 60, 0.8)" }}>
-            <h6 className="text-info">Today</h6>
-            <p className="mb-1 fw-bold">ESTAS SON TUS CITAS PENDIENTES</p>
-            <p className="mb-1">Description:</p>
-            <small>08:00 AM - 10:00 AM</small>
+            
+          
+
+             <AgendadeCitas />
           </div>
+
+
           <div className="p-3 mb-4 rounded" style={{ background: "rgba(40, 40, 90, 0.85)" }}>
             <h6 className="text-info">RECORDATORIO</h6>
             <p className="mb-1 fw-bold">LLEVA UN RECORDATORIO DE TUS CITAS</p>

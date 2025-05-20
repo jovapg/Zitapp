@@ -17,6 +17,7 @@ import HomePagenegocio from './Pages/HomePagenegocio'
 import Categories from './components/Categories'
 import BusinessMap from './components/BusinessMap'
 import Notfound from './components/notfound';
+import AgendaDeCitas from './Pages/Calendar/AgendadeCitas';
 function App() {
 
 
@@ -40,6 +41,8 @@ function App() {
         <Route path="/Categories" element={<Categories />} />
         <Route path="/BusinessMap" element={<BusinessMap />} />
          <Route path="*" element={<Notfound />} />
+         <Route path="calendar/AgendadeCitas" element={<AgendaDeCitas />} />
+
 
       </Routes>
 
