@@ -14,12 +14,7 @@ export default function NavNegocio({ onNavigate }) {
             </div>
             <ul className="nav nav-pills flex-column mb-auto">
                 <li className="nav-item mb-3">
-                    <button
-                        onClick={() => onNavigate('categorias')}
-                        className="nav-link dashboard-btn text-white btn btn-link text-start"
-                    >
-                        <i className="bi bi-circle me-2"></i> Categorías
-                    </button>
+
                 </li>
                 <li className="nav-item mb-3">
 
@@ -39,7 +34,9 @@ export default function NavNegocio({ onNavigate }) {
                 </li>
             </ul>
             <div className="mt-auto">
-                <a href="/settings" className="nav-link dashboard-btn">
+                <a  className="nav-link dashboard-btn"
+                 onClick={() => onNavigate('config')}
+                >
                     <i className="bi bi-gear me-2"></i>Settings
                 </a>
                 <a href="/logout" className="nav-link dashboard-btn mt-2">

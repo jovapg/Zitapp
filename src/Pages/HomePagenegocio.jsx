@@ -5,6 +5,8 @@ import TopbarNegocio from '../components/TopbarNegocio';
 import Categories from '../components/Categories';
 import CitasNegocio from '../components/CitasNegocio';
 import BusinessCalendar from './Calendar/BusinessCalendar';
+import ConfigNegocio from '../components/ConfigNegocio';
+
 
 export default function HomePagenegocio() {
     const [currentView, setCurrentView] = useState('tuscitas');
@@ -21,9 +23,9 @@ export default function HomePagenegocio() {
                 <div className="main-content">
                     <TopbarNegocio onNavigate={handleNavigate} />
 
-                    {currentView === 'tuscitas' && <CitasNegocio />}
-                    {currentView === 'categorias' && <Categories />}
+                    {currentView === 'tuscitas' && <CitasNegocio />}                  
                     {currentView === 'calendar' && <BusinessCalendar />}
+                    {currentView === 'config' && <ConfigNegocio />}
                 </div>
             </div>
 

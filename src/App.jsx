@@ -18,6 +18,7 @@ import Categories from './components/Categories'
 import BusinessMap from './components/BusinessMap'
 import Notfound from './components/notfound';
 import AgendaDeCitas from './Pages/Calendar/AgendadeCitas';
+import ConfigNegocio from './components/ConfigNegocio';
 function App() {
 
 
@@ -39,9 +40,10 @@ function App() {
         <Route path="/Nav" element={<Nav />} />
         <Route path="/Topbar" element={<Topbar />} />
         <Route path="/Categories" element={<Categories />} />
-        <Route path="/BusinessMap" element={<BusinessMap />} />
-         <Route path="*" element={<Notfound />} />
+        <Route path="/BusinessMap" element={<BusinessMap />} />        
          <Route path="calendar/AgendadeCitas" element={<AgendaDeCitas />} />
+        <Route path="/ConfigNegocio" element={<ConfigNegocio />} />
+         <Route path="*" element={<Notfound />} />
 
 
       </Routes>
