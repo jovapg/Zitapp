@@ -38,25 +38,12 @@ export default function Aside({ isVisible, onSelectView }) {
 
         {/* Nav Items */}
         <li className="nav-item">
-          <button className="nav-link dropdown">
+          <button className="nav-link " onClick={handleClick("negocios")}>
             <i className="fas fa-fw fa-cog"></i>
-            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <span  >
               Admin Negocios
             </span>
-            <ul className="dropdown-menu">
-              <li>
-                <a href="#" className="dropdown-item" onClick={handleClick("negocios")}>Negocios</a>
-              </li>
-              <li>
-                <a href="#" className="dropdown-item" onClick={handleClick("crearNegocio")}>Crear Negocio</a>
-              </li>
-              <li>
-                <a href="#" className="dropdown-item" onClick={handleClick("actualizarNegocio")}>Actualizar</a>
-              </li>
-              <li>
-                <a href="#" className="dropdown-item" onClick={handleClick("eliminarNegocio")}>Eliminar</a>
-              </li>
-            </ul>
+     
           </button>
 
           <button className="nav-link dropdown">

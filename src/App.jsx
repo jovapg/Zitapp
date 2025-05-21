@@ -12,7 +12,10 @@ import Dashboard from './admin/page/Dashboard'
 import Register from './Pages/Register'
 import HomePagenegocio from './Pages/HomePagenegocio'
 import Categories from './components/Categories'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 function App() {
+
 
 
   return (
