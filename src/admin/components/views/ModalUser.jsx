@@ -1,24 +1,23 @@
-// ModalNegocio.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-function ModalNegocio({ negocio, onClose, onSave }) {
+export default function ModalUser({ users, onClose, onSave }) {
   const [formData, setFormData] = useState({
-    categoria: "",
-    descripcion: "",
-    direccion: "",
-    imagenUrl: "",
     nombre: "",
+    email: "",
+    contrasena: "",
+    telefono: "",
+    tipo: "",
   });
 
   useEffect(() => {
     setFormData({
-      categoria: negocio?.categoria || "",
-      descripcion: negocio?.descripcion || "",
-      direccion: negocio?.direccion || "",
-      imagenUrl: negocio?.imagenUrl || "",
-      nombre: negocio?.nombre || "",
+      nombre: users?.nombre || "",
+      email: users?.email || "",
+      contrasena: users?.contrasena || "",
+      telefono: users?.telefono || "",
+      tipo: users?.tipo || "cliente", // valor por defecto si está vacío
     });
-  }, [negocio]);
+  }, [users]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,7 +25,7 @@ function ModalNegocio({ negocio, onClose, onSave }) {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+      e.preventDefault();
     onSave(formData);
   };
 
@@ -37,19 +36,19 @@ function ModalNegocio({ negocio, onClose, onSave }) {
       tabIndex="-1"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="modalNegocioLabel"
+      aria-labelledby="modaluserLabel"
       onClick={onClose} // cerrar modal si clic afuera
     >
       <div
         className="modal-dialog"
         role="document"
-        onClick={(e) => e.stopPropagation()} // evitar cerrar modal al clic dentro
+        onClick={(e) => e.stopPropagation()} // 🔧 CORREGIDO
       >
         <div className="modal-content">
           <form onSubmit={handleSubmit}>
             <div className="modal-header">
-              <h5 className="modal-title" id="modalNegocioLabel">
-                {negocio ? "Editar Negocio" : "Crear Negocio"}
+              <h5 className="modal-title" id="modaluserLabel">
+                {users ? "Editar usuario" : "Crear usuario"}
               </h5>
               <button
                 type="button"
@@ -73,60 +72,62 @@ function ModalNegocio({ negocio, onClose, onSave }) {
                 />
               </div>
               <div className="mb-3">
-                <label htmlFor="categoria" className="form-label">
-                  Categoría
+                <label htmlFor="email" className="form-label">
+                  Correo
                 </label>
                 <input
-                  id="categoria"
-                  name="categoria"
-                  value={formData.categoria}
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
                   onChange={handleChange}
                   className="form-control"
                   required
                 />
               </div>
               <div className="mb-3">
-                <label htmlFor="descripcion" className="form-label">
-                  Descripción
-                </label>
-                <textarea
-                  id="descripcion"
-                  name="descripcion"
-                  value={formData.descripcion}
-                  onChange={handleChange}
-                  className="form-control"
-                  rows={3}
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="direccion" className="form-label">
-                  Dirección
+                <label htmlFor="contrasena" className="form-label">
+                  Contraseña
                 </label>
                 <input
-                  id="direccion"
-                  name="direccion"
-                  value={formData.direccion}
+                  id="contrasena"
+                  name="contrasena"
+                  value={formData.contrasena}
                   onChange={handleChange}
                   className="form-control"
                   required
                 />
               </div>
               <div className="mb-3">
-                <label htmlFor="imagenUrl" className="form-label">
-                  URL Imagen
+                <label htmlFor="telefono" className="form-label">
+                  Teléfono
                 </label>
                 <input
-                  id="imagenUrl"
-                  name="imagenUrl"
-                  value={formData.imagenUrl}
+                  id="telefono"
+                  name="telefono"
+                  value={formData.telefono}
                   onChange={handleChange}
                   className="form-control"
-                  type="url"
                   required
                 />
               </div>
-              
+              <div className="mb-3">
+                <label htmlFor="tipo" className="form-label">
+                  Tipo
+                </label>
+                <select
+                  name="tipo"
+                  id="tipo"
+                  value={formData.tipo}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                >
+                  <option value="ADMIN">ADMIN</option>
+                  <option value="CLIENTE">CLIENTE</option>
+                  <option value="NEGOCIO">NEGOCIO</option>
+                </select>
+              </div>
             </div>
             <div className="modal-footer">
               <button
@@ -146,5 +147,3 @@ function ModalNegocio({ negocio, onClose, onSave }) {
     </div>
   );
 }
-
-export default ModalNegocio;

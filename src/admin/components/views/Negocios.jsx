@@ -1,5 +1,4 @@
-// Negocios.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import ModalNegocio from "./ModalNegocio";
 import "../css/data.css";
@@ -70,71 +69,76 @@ export default function Negocios() {
   return (
     <>
       <div className="table-container p-3">
-       <div className="encabezado-negocios mb-3">
-  <h2 className="titulo-negocios">Negocios</h2>
-  <button className="btn btn-primary" onClick={handleCrear}>
-    Crear Negocio
-  </button>
-</div>
+        <div className="encabezado-negocios mb-3">
+          <h2 className="titulo-negocios">Negocios</h2>
+          <button className="btn btn-primary" onClick={handleCrear}>
+            Crear Negocio
+          </button>
+        </div>
 
-        {loading && <div className="alert alert-info">Cargando negocios...</div>}
+        {loading && (
+          <div className="alert alert-info">Cargando negocios...</div>
+        )}
         {error && <div className="alert alert-danger">{error}</div>}
 
-       <table className="table table-custom">
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Categoría</th>
-      <th>Descripción</th>
-      <th>Dirección</th>
-      <th>Imagen</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {negocios.map((n) => (
-      <tr key={n.id}>
-        <td>{n.nombre}</td>
-        <td>{n.categoria}</td>
-        <td>{n.descripcion}</td>
-        <td>{n.direccion}</td>
-        <td>
-          {n.imagenUrl ? (
-            <img
-              src={n.imagenUrl}
-              alt={n.nombre}
-              style={{ width: "80px", height: "50px", objectFit: "cover" }}
-            />
-          ) : (
-            "No image"
-          )}
-        </td>
-        <td>
-          <button
-            className="btn btn-sm btn-warning me-1"
-            onClick={() => handleEditar(n)}
-          >
-            Editar
-          </button>
-          <button
-            className="btn btn-sm btn-danger"
-            onClick={() => handleEliminar(n.id)}
-          >
-            Eliminar
-          </button>
-        </td>
-      </tr>
-    ))}
-    {negocios.length === 0 && !loading && (
-      <tr>
-        <td colSpan={6} className="text-center">
-          No hay negocios para mostrar
-        </td>
-      </tr>
-    )}
-  </tbody>
-</table>
-
+        <table className="table table-custom">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Descripción</th>
+              <th>Dirección</th>
+              <th>Imagen</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {negocios.map((n) => (
+              <tr key={n.id}>
+                <td>{n.nombre}</td>
+                <td>{n.categoria}</td>
+                <td>{n.descripcion}</td>
+                <td>{n.direccion}</td>
+                <td>
+                  {n.imagenUrl ? (
+                    <img
+                      src={n.imagenUrl}
+                      alt={n.nombre}
+                      style={{
+                        width: "80px",
+                        height: "50px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    "No image"
+                  )}
+                </td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-warning me-1"
+                    onClick={() => handleEditar(n)}
+                  >
+                    Editar
+                  </button>
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => handleEliminar(n.id)}
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {negocios.length === 0 && !loading && (
+              <tr>
+                <td colSpan={6} className="text-center">
+                  No hay negocios para mostrar
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* Renderizamos el modal fuera del container */}

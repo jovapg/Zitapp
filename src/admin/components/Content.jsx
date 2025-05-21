@@ -4,6 +4,7 @@ import Card from "./card";
 import Grafica from "./grafica";
 import Info from "./Info";
 import Negocios from "./views/Negocios";
+import  User from "./views/User";
 import fondoAzul from "../../assets/img/fondo_azul_editado.png";
 
 export default function Content({ toggleSidebar, style, selectedView }) {
@@ -11,15 +12,8 @@ export default function Content({ toggleSidebar, style, selectedView }) {
     switch (selectedView) {
       case "negocios":
         return <div> <Negocios /></div>;
-      case "crearNegocio":
-        return <div>Formulario Crear Negocio</div>;
-      case "actualizarNegocio":
-        return <div>Actualizar Negocio</div>;
-      case "eliminarNegocio":
-        return <div>Eliminar Negocio</div>;
-
       case "usuarios":
-        return <div>Vista Usuarios</div>;
+        return <div><User/></div>;
       case "crearUsuarios":
         return <div>Crear Usuarios</div>;
       case "actualizarUsuario":
