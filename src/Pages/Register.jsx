@@ -2,12 +2,18 @@ import React, { useState } from 'react';
 import fondoAzuli from '../assets/img/fondo Azul.png';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
+import { useForm } from 'react-hook-form';
 
 export default function Register() {
-    const navigate = useNavigate();
-    const [servicios, setServicios] = useState(['']);
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [horarios, setHorarios] = useState({
+    let { register, handleSubit } = useForm();
+    let onSubmited = (data) => {
+        console.log(data)
+    }
+
+    let navigate = useNavigate();
+    let [servicios, setServicios] = useState(['']);
+    let [showSuccessModal, setShowSuccessModal] = useState(false);
+    let [horarios, setHorarios] = useState({
         lunes: { inicio: '', fin: '' },
         martes: { inicio: '', fin: '' },
         miercoles: { inicio: '', fin: '' },
@@ -17,17 +23,17 @@ export default function Register() {
         domingo: { inicio: '', fin: '' },
     });
 
-    const handleServicioChange = (index, value) => {
-        const nuevosServicios = [...servicios];
+    let handleServicioChange = (index, value) => {
+        let nuevosServicios = [...servicios];
         nuevosServicios[index] = value;
         setServicios(nuevosServicios);
     };
 
-    const agregarServicio = () => {
+    let agregarServicio = () => {
         setServicios([...servicios, '']);
     };
 
-    const handleHorarioChange = (dia, campo, valor) => {
+    let handleHorarioChange = (dia, campo, valor) => {
         setHorarios(prev => ({
             ...prev,
             [dia]: {
@@ -37,12 +43,12 @@ export default function Register() {
         }));
     };
 
-    const [userType, setUserType] = useState('');
-    const [step, setStep] = useState(0);
-    const [selectedCategory, setSelectedCategory] = useState([]);
-    const businessCategories = ['Estética', 'Restaurantes', 'Salud', 'Educación', 'Tecnología', 'Deportes', 'Mascotas', 'Fotografía', 'Bienes Raices'];
+    let [userType, setUserType] = useState('');
+    let [step, setStep] = useState(0);
+    let [selectedCategory, setSelectedCategory] = useState([]);
+    let businessCategories = ['Belleza', 'Restaurantes', 'Salud', 'Educación', 'Tecnología', 'Deportes', 'Mascotas', 'Fotografía', 'Bienes Raices', 'Bienestar', 'Automotriz', 'Fitness'];
 
-    const toggleCategory = (category) => {
+    let toggleCategory = (category) => {
         if (selectedCategory.includes(category)) {
             setSelectedCategory(selectedCategory.filter(c => c !== category));
         } else {
@@ -50,39 +56,45 @@ export default function Register() {
         }
     };
 
-    const handleBusinessRegister = () => {
-        const businessData = {
+    let handleBusinessRegister = () => {
+        let businessData = {
             servicios: servicios,
             horarios: horarios,
-            // Aquí puedes agregar otros campos que recolectes
         };
 
-        const existingBusinesses = JSON.parse(localStorage.getItem('businesses')) || [];
+        let existingBusinesses = JSON.parse(localStorage.getItem('businesses')) || [];
         existingBusinesses.push(businessData);
         localStorage.setItem('businesses', JSON.stringify(existingBusinesses));
 
         setShowSuccessModal(true);
     };
 
-    const handleCloseModal = () => {
+    let handleCloseModal = () => {
         setShowSuccessModal(false);
         navigate('/LoginPage');
     };
 
-    const businessQuestions = (
+    let businessQuestions = (
         <div className="text-white">
             <h2 className="text-center mb-4">Regístrate</h2>
             <div className="container">
                 <div className="row mb-3">
                     <div className="col-md-6">
                         <label>Nombre del negocio</label>
-                        <input className="form-control bg-dark text-white" placeholder="Nombre del negocio" required />
+                        <input
+                            className="form-control bg-dark text-white"
+                            type='text'
+                            {...register("nombre")}
+                            placeholder="Nombre del negocio"
+                            required />
                     </div>
                     <div className="col-md-6">
                         <label>Categoría del negocio</label>
                         <select className="form-select bg-dark text-white">
                             {businessCategories.map((cat, index) => (
-                                <option key={index}>{cat}</option>
+                                <option
+                                    key={index}>{cat}
+                                </option>
                             ))}
                         </select>
                     </div>
@@ -137,22 +149,22 @@ export default function Register() {
         </div>
     );
 
-    const businessCardExtra = (
+    let businessCardExtra = (
         <>
             <div className="row mb-4">
                 <div className="col-md-6">
                     <h5 className="text-white mb-2">¿Te gustaría subir el logo de tu negocio?</h5>
                     <input type="file" className="form-control bg-dark text-white" />
 
-                  <hr /><hr /><hr />
-                <div className="md-8">
-                    <h5 className="text-white mb-2">¿Quieres que tu negocio aparezca en recomendaciones?</h5>
-                    <select className="form-select bg-dark text-white">
-                        <option>SI</option>
-                        <option>No</option>
-                    </select>
-            
-                </div>
+                    <hr /><hr /><hr />
+                    <div className="md-8">
+                        <h5 className="text-white mb-2">¿Quieres que tu negocio aparezca en recomendaciones?</h5>
+                        <select className="form-select bg-dark text-white">
+                            <option>SI</option>
+                            <option>No</option>
+                        </select>
+
+                    </div>
 
                 </div>
                 <div className="col-md-6">
@@ -180,15 +192,17 @@ export default function Register() {
                     ))}
                 </div>
 
-                
-<div className="d-flex justify-content-between mt-4">
-    <button className="btn btn-secondary px-4 rounded-pill" onClick={() => setStep(1)}>Volver</button>
-    <button type="submit" className="btn btn-primary px-4 rounded-pill" onClick={handleBusinessRegister}>CREAR CUENTA</button>
-</div>
+
+                <div className="d-flex justify-content-between mt-4">
+                    <button className="btn btn-secondary px-4 rounded-pill" onClick={() => setStep(1)}>Volver</button>
+                    <button
+                        type="submit"
+                        className="btn btn-primary px-4 rounded-pill"
+                        onClick={handleBusinessRegister}
+                    >
+                        CREAR CUENTA</button>
+                </div>
             </div>
-
-
-
         </>
     );
 
@@ -233,11 +247,18 @@ export default function Register() {
                     <>
                         <form>
                             <div className="client-form mx-auto">
-                                <input type="text" className="form-control bg-dark text-white mb-3" placeholder="Full Name" required />
-                                <input type="date" className="form-control bg-dark text-white mb-3" placeholder="Date of Birth" required />
-                                <input type="email" className="form-control bg-dark text-white mb-3" placeholder="Email" required />
-                                <input type="tel" className="form-control bg-dark text-white mb-3" placeholder="Phone Number" required />
-                                <input type="password" className="form-control bg-dark text-white mb-3" placeholder="Password" required />
+
+                                <input type="text" className="form-control bg-dark text-white mb-3" placeholder="Full Name" />
+                                {/* required */}
+                                <input type="date" className="form-control bg-dark text-white mb-3" placeholder="Date of Birth" />
+                                {/* required */}
+                                <input type="email" className="form-control bg-dark text-white mb-3" placeholder="Email" />
+                                {/* required */}
+                                <input type="tel" className="form-control bg-dark text-white mb-3" placeholder="Phone Number" />
+                                {/* required */}
+                                <input type="password" className="form-control bg-dark text-white mb-3" placeholder="Password" />
+                                {/* required */}
+
                             </div>
 
                             <h5 className="text-white text-center mb-3">What kind of businesses would you like to know?</h5>
