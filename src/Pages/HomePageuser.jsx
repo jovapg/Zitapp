@@ -4,6 +4,7 @@ import Topbar from '../components/Topbar';
 import Categories from '../components/Categories';
 import TusCitas from '../components/Tuscitas';
 import UserCalendar from './Calendar/UserCalendar';
+import BusinessMap from '../components/BusinessMap';
 
 export default function HomePageuser() {
     const [currentView, setCurrentView] = useState('tuscitas');
@@ -27,6 +28,7 @@ export default function HomePageuser() {
                     {currentView === 'tuscitas' && <TusCitas />}
                     {currentView === 'categorias' && <Categories filtroBusqueda={filtroBusqueda} />}
                     {currentView === 'calendar' && <UserCalendar />}
+                    {currentView === 'mapa' && <BusinessMap/>}
                 </div>
             </div>
 

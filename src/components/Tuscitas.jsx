@@ -1,17 +1,24 @@
 import React from 'react';
+import AgendadeCitas from '../Pages/Calendar/AgendadeCitas';
+import Botonagendarcita from './Botonagendarcita';
+import { useState } from 'react';
 
 export default function TusCitas() {
+
+    const [showModal, setShowModal] = useState(false);
   return (
     <>
       <div className="d-flex content-section">
         {/* Left Column */}
         <div className="flex-grow-1">
           <div className="p-3 mb-4 rounded" style={{ background: "rgba(35, 35, 60, 0.8)" }}>
-            <h6 className="text-info">Today</h6>
-            <p className="mb-1 fw-bold">ESTAS SON TUS CITAS PENDIENTES</p>
-            <p className="mb-1">Description:</p>
-            <small>08:00 AM - 10:00 AM</small>
+            
+          
+
+             <AgendadeCitas />
           </div>
+
+
           <div className="p-3 mb-4 rounded" style={{ background: "rgba(40, 40, 90, 0.85)" }}>
             <h6 className="text-info">RECORDATORIO</h6>
             <p className="mb-1 fw-bold">LLEVA UN RECORDATORIO DE TUS CITAS</p>
@@ -33,7 +40,14 @@ export default function TusCitas() {
               <div className="card-body bg-dark text-white rounded-bottom">
                 <h5 className="card-title mb-1">Barber shop</h5>
                 <p className="card-text mb-2">La mejor barberia en la ciudad</p>
-                <button className="btn btn-sm btn-primary">Agendar cita</button>
+
+                            <button
+              className="btn btn-primary mt-2"
+              onClick={() => setShowModal(true)}
+            >
+              Agendar cita
+            </button>
+
               </div>
             </div>
           </div>
@@ -50,11 +64,18 @@ export default function TusCitas() {
               <div className="card-body bg-dark text-white rounded-bottom">
                 <h5 className="card-title mb-1">Belleza Total</h5>
                 <p className="card-text mb-2">Peinados y manicure profesional</p>
-                <button className="btn btn-sm btn-primary">Agendar cita</button>
+                                            <button
+              className="btn btn-primary mt-2"
+              onClick={() => setShowModal(true)}
+            >
+              Agendar cita
+            </button>
               </div>
             </div>
           </div>
         </div>
+              {/* Modal para agendar */}
+              {showModal && <Botonagendarcita show={showModal} setShow={setShowModal} />}
       </div>
 
       <style>{`

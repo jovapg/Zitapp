@@ -52,7 +52,8 @@ export default function LoginPage() {
                                     className="form-control custom-input"
                                 />
                             </div>
-                            <button type="submit" className="btn btn-primary w-100 mb-3">
+                            <button type="submit" className="btn btn-primary w-100 mb-3"
+                            onClick={() => navigate('/HomePageuser')}>
                                 Sign In
                             </button>
                         </form>

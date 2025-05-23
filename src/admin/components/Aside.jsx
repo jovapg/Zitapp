@@ -4,14 +4,13 @@ import "./css/Aside.css";
 export default function Aside({ isVisible, onSelectView }) {
   if (!isVisible) return null;
 
-  // Función para manejar el click y avisar al Dashboard qué vista mostrar
   const handleClick = (view) => (e) => {
-    e.preventDefault(); // prevenir que el enlace recargue la página
+    e.preventDefault();
     onSelectView(view);
   };
 
   return (
-    <div className={`Aside ${isVisible ? "show" : "collapsed"}`}>
+    <div className="d-flex flex-column Aside" style={{ height: "100vh" }}>
       <ul
         className="navbar-nav sidebar sidebar-dark accordion d-flex flex-column"
         id="accordionSidebar"
@@ -29,6 +28,7 @@ export default function Aside({ isVisible, onSelectView }) {
               style={{ width: "70px", height: "70px" }}
             />
           </div>
+          <h2 className="text-white fw-bold">ZITAPP</h2>
         </a>
 
         <hr className="sidebar-divider" />
@@ -38,28 +38,26 @@ export default function Aside({ isVisible, onSelectView }) {
 
         {/* Nav Items */}
         <li className="nav-item">
-          <button className="nav-link " onClick={handleClick("negocios")}>
+          <button className="nav-link" onClick={handleClick("negocios")}>
             <i className="fas fa-fw fa-cog"></i>
             <span>Admin Negocios</span>
           </button>
-
-          <button className="nav-link " onClick={handleClick("usuarios")}>
+        </li>
+        <li className="nav-item">
+          <button className="nav-link" onClick={handleClick("usuarios")}>
             <i className="fas fa-fw fa-cog"></i>
             <span>Admin User</span>
           </button>
-
-          <button className="nav-link " onClick={handleClick("citas")}>
+        </li>
+        <li className="nav-item">
+          <button className="nav-link" onClick={handleClick("citas")}>
             <i className="fas fa-fw fa-cog"></i>
             <span>Admin Citas</span>
           </button>
-
-          <a
-            href="#"
-            className="nav-link collapsed"
-            onClick={handleClick("reporte")}
-          >
-            <i className="fas fa-download fa-sm text-white-50"></i> Generar
-            Reporte
+        </li>
+        <li className="nav-item">
+          <a href="#" className="nav-link collapsed" onClick={handleClick("reporte")}>
+            <i className="fas fa-download fa-sm text-white-50"></i> Generar Reporte
           </a>
         </li>
 
