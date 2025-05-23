@@ -1,14 +1,14 @@
 
 
-export default function Header() {
+export default function Header({toggleSidebar}) {
     return (
       <div>
     {/* //    <!-- Topbar --> */}
                 <nav className=" nav navbar navbar-expand navbar-light  topbar mb-4 static-top shadow">
 
                     {/* <!-- Sidebar Toggle (Topbar) --> */}
-                    <button id="sidebarToggleTop" className="btn btn-link d-md-none rounded-circle mr-3">
-                        <i className="fa fa-bars"></i>
+                    <button id="sidebarToggleTop" className="btn btn-link d-md-none rounded-circle mr-3" onClick={toggleSidebar} >
+                        <i className="fa fa-bars"></i> 
                     </button>
 
                     {/* <!-- Topbar Search --> */}
