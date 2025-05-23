@@ -146,7 +146,7 @@ export default function Botonagendarcita({ show, setShow }) {
         }
         .servicio-info {
           background-color: rgba(255, 255, 255, 0.05);
-          color: #ccc;
+          color: #ccc;npm run dev
           border: 1px solid rgba(255,255,255,0.1);
         }
       `}</style>
