@@ -1,0 +1,52 @@
+.Aside {
+  width: 250px;
+  transition: width 0.3s ease;
+  background-color: #4e73df;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.Aside.collapsed {
+  width: 70px;
+}
+
+/* Ocultar solo los textos al colapsar */
+.Aside.collapsed span {
+  display: none;
+}
+
+.Aside.collapsed .sidebar-brand span {
+  display: none;
+}
+
+/* Centrar íconos cuando el texto desaparece */
+.Aside.collapsed .nav-link {
+  justify-content: center;
+}
+
+/* Para que el logo quede centrado cuando está colapsado */
+.Aside.collapsed .sidebar-brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Ajuste para el ícono de la marca rotado */
+.sidebar-brand-icon.rotate-n-15 {
+  transform: rotate(-15deg);
+}
+
+/* Otros estilos para que se vea bien */
+.navbar-nav.sidebar-dark .nav-link {
+  color: white;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-nav.sidebar-dark .nav-link i {
+  margin-right: 1rem;
+}
