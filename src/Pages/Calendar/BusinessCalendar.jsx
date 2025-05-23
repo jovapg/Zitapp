@@ -301,7 +301,7 @@ export default function BusinessCalendar() {
 
   // Estilo para el contenedor del calendario
   const containerStyle = {
-    backgroundColor: 'rgba(103, 103, 103, 0.7)',
+    backgroundColor: 'rgba(18, 27, 70, 0.7)',
     color: 'white',
     padding: '20px',
     borderRadius: '8px',
@@ -347,7 +347,7 @@ export default function BusinessCalendar() {
         {renderCalendar()}
       </div>
       
-      {/* Lista de citas */}
+      {/* Lista de citas
       <div className="appointments-list mt-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '5px', backdropFilter: 'blur(5px)'}}>
         <h3 className="text-white" style={{textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)'}}>Mis Citas</h3>
         {filteredAppointments.length === 0 ? (
@@ -373,7 +373,7 @@ export default function BusinessCalendar() {
           </div>
         )}
       </div>
-      
+       */}
       {/* Modal de detalles */}
       {renderAppointmentModal()}
       

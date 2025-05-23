@@ -1,7 +1,11 @@
 import React from 'react';
 import AgendadeCitas from '../Pages/Calendar/AgendadeCitas';
+import Botonagendarcita from './Botonagendarcita';
+import { useState } from 'react';
 
 export default function TusCitas() {
+
+    const [showModal, setShowModal] = useState(false);
   return (
     <>
       <div className="d-flex content-section">
@@ -36,7 +40,14 @@ export default function TusCitas() {
               <div className="card-body bg-dark text-white rounded-bottom">
                 <h5 className="card-title mb-1">Barber shop</h5>
                 <p className="card-text mb-2">La mejor barberia en la ciudad</p>
-                <button className="btn btn-sm btn-primary">Agendar cita</button>
+
+                            <button
+              className="btn btn-primary mt-2"
+              onClick={() => setShowModal(true)}
+            >
+              Agendar cita
+            </button>
+
               </div>
             </div>
           </div>
@@ -53,11 +64,18 @@ export default function TusCitas() {
               <div className="card-body bg-dark text-white rounded-bottom">
                 <h5 className="card-title mb-1">Belleza Total</h5>
                 <p className="card-text mb-2">Peinados y manicure profesional</p>
-                <button className="btn btn-sm btn-primary">Agendar cita</button>
+                                            <button
+              className="btn btn-primary mt-2"
+              onClick={() => setShowModal(true)}
+            >
+              Agendar cita
+            </button>
               </div>
             </div>
           </div>
         </div>
+              {/* Modal para agendar */}
+              {showModal && <Botonagendarcita show={showModal} setShow={setShowModal} />}
       </div>
 
       <style>{`

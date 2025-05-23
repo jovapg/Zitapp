@@ -14,7 +14,8 @@ export default function ConfigNegocio() {
     categoria: '',
     coordenadas: '',
     descripcion: '',
-    imagen: ''
+    imagen: '',
+    horariodetencion: '',
   });
   const [datosOriginales, setDatosOriginales] = useState({});
 
@@ -106,6 +107,7 @@ export default function ConfigNegocio() {
           <Form.Control className="mb-2" placeholder="Categoría" name="categoria" value={datosNegocio.categoria} onChange={handleNegocioChange} />
           <Form.Control className="mb-2" placeholder="Coordenadas" name="coordenadas" value={datosNegocio.coordenadas} onChange={handleNegocioChange} />
           <Form.Control className="mb-2" placeholder="Descripción" name="descripcion" value={datosNegocio.descripcion} onChange={handleNegocioChange} />
+         <Form.Control className="mb-2" placeholder="horario de atencion" name="horario de atencion" value={datosNegocio.horariodetencion} onChange={handleNegocioChange} />
           <Form.Control className="mb-2" placeholder="URL de la imagen del negocio" name="imagen" value={datosNegocio.imagen} onChange={handleNegocioChange} />
           <Button variant="primary" disabled={!hasChanged} onClick={handleSaveDatos}>Guardar Datos</Button>
         </div>
