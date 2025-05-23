@@ -6,6 +6,7 @@ import fondoAzuli from '../assets/img/fondo_azul_editado.png'
 //hooks
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 
 export default function LoginPage() {
@@ -16,34 +17,32 @@ export default function LoginPage() {
     let [error, setError] = useState('')
 
     let handleLogin = async (e) => {
-        e.preventDefault(); //Evita que el formulario regargue la pg al enviarlo
-        setError(''); // Limpiar error previo
+        e.preventDefault() //Evita que el formulario regargue la pg al enviarlo
+        setError('')// Limpiar error previo
 
         try {
-            let response = await fetch('http://localhost:8081/api/users/login', {  //Envia los datos a la API
-                method: 'POST',
-                
-                body: JSON.stringify({ email, contrasena }),
-                
+            let response = await axios.post('http://localhost:8081/api/users/login', { //Envia los datos a la API
+                email: email,
+                contrasena: contrasena
             });
 
+            let data = response.data;
             
+            console.log(response)
 
-            let data = await response.json();
-
-            if (data.success) {
-
-                // Redirigir según el tipo de usuario
-                if (data.tipo === 'cliente') {
+            if (response.status === 200) {
+                if (data.tipo === 'CLIENTE') {
                     navigate('/HomePageuser');
-                } else if (data.tipo === 'negocio') {
+                } else if (data.tipo === 'NEGOCIO') {
                     navigate('/HomePageNegocio');
                 }
             } else {
                 setError('Correo o contraseña incorrectos');
             }
+
         } catch (err) {
             setError('Error de conexión con el servidor');
+            console.error(err);
         }
     };
 
