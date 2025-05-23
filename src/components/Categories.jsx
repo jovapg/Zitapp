@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Botonagendarcita from "./Botonagendarcita";
 
 const data = {
   todas: [
@@ -31,6 +32,7 @@ const data = {
 
 const Categories = () => {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("todas");
+  const [showModal, setShowModal] = useState(false);
 
   const negociosFiltrados = data.todas.filter(
     (negocio) =>
@@ -109,7 +111,12 @@ const Categories = () => {
                 <li key={i}>{s}</li>
               ))}
             </ul>
-            <button className="btn btn-primary mt-2">Agendar cita</button>
+            <button
+              className="btn btn-primary mt-2"
+              onClick={() => setShowModal(true)}
+            >
+              Agendar cita
+            </button>
           </div>
         </div>
       )}
@@ -143,13 +150,19 @@ const Categories = () => {
                   <li key={i}>{s}</li>
                 ))}
               </ul>
-              <button className="btn btn-sm btn-outline-light mt-2 w-100">
+              <button
+                className="btn btn-sm btn-outline-light mt-2 w-100"
+                onClick={() => setShowModal(true)}
+              >
                 Agendar cita
               </button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Modal para agendar */}
+      {showModal && <Botonagendarcita show={showModal} setShow={setShowModal} />}
     </div>
   );
 };

@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
-
 import { Routes, Route, Navigate } from 'react-router-dom'
 import 'leaflet/dist/leaflet.css';
-
 import FirsPage from './Pages/FirsPage'
 import LoginPage from './Pages/LoginPage'
 import HomePageuser from './Pages/HomePageuser'
@@ -18,7 +16,11 @@ import Categories from './components/Categories'
 import BusinessMap from './components/BusinessMap'
 import Notfound from './components/notfound';
 import AgendaDeCitas from './Pages/Calendar/AgendadeCitas';
+import AgendadeCitasNegocio from './Pages/Calendar/AgendadeCitasNegocio';
 import ConfigNegocio from './components/ConfigNegocio';
+import Botonagendarcita from './components/Botonagendarcita';
+
+
 function App() {
 
 
@@ -42,7 +44,10 @@ function App() {
         <Route path="/Categories" element={<Categories />} />
         <Route path="/BusinessMap" element={<BusinessMap />} />        
          <Route path="calendar/AgendadeCitas" element={<AgendaDeCitas />} />
+          <Route path="calendar/AgendadeCitasNegocio" element={<AgendadeCitasNegocio />} />
         <Route path="/ConfigNegocio" element={<ConfigNegocio />} />
+        <Route path="/Botonagendarcita" element={<Botonagendarcita />} />
+       
          <Route path="*" element={<Notfound />} />
 
 

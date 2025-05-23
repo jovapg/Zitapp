@@ -1,5 +1,7 @@
 import React from 'react';
 import { FaGoogle, FaApple } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; 
+
 import fondologin from '../assets/img/LOGO Zitapp.png';
 import fondoAzuli from '../assets/img/fondo_azul_editado.png'
 
