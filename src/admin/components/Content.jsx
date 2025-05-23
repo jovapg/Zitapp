@@ -1,15 +1,66 @@
 import Header from "./header";
 import Footer from "./footer";
-import Card from "./card";
+import Card from "./Card";
 import Grafica from "./grafica";
 import Info from "./Info";
+import Negocios from "./views/Negocios";
+import User from "./views/User";
+import  Citas from "./views/Citas";
 import fondoAzul from "../../assets/img/fondo_azul_editado.png";
 
-export default function Content() {
+export default function Content({ toggleSidebar, style, selectedView }) {
+  const renderView = () => {
+    switch (selectedView) {
+      case "negocios":
+        return <div> <Negocios /></div>;
+      case "usuarios":
+        return <div><User/></div>;
+      case "citas":
+        return <div><Citas/></div>; 
+      case "reporte":
+        return <div>Generar Reporte</div>;
+
+      case "home":
+      default:
+        return (
+          <>
+            <div className="row">
+           <Card
+        title="Usuarios Negocios"
+        icon="fa-store"
+        apiEndpoint="http://localhost:8081/api/business"
+      />
+      <Card
+        title="Usuarios Totales"
+        icon="fa-users"
+        apiEndpoint="http://localhost:8081/api/users"
+      />
+      <Card
+        title="Citas Registradas"
+        icon="fa-calendar-check"
+        apiEndpoint="http://localhost:8081/api/Appointments/todas"
+      />
+
+            </div>
+            <div className="row">
+              <Grafica />
+            </div>
+            <div className="row">
+              <Info />
+            </div>
+          </>
+        );
+    }
+  };
+
   return (
     <>
-      <div id="content-wrapper" className="d-flex flex-column">
-             <div
+      <div
+        id="content-wrapper"
+        className="d-flex flex-column"
+        style={{ flexGrow: 1, ...style }}
+      >
+        <div
           id="content"
           style={{
             backgroundImage: `url(${fondoAzul})`,
@@ -24,28 +75,15 @@ export default function Content() {
             flexDirection: "column",
           }}
         >
-          <Header />
+          <Header toggleSidebar={toggleSidebar} />
           <div className="container-fluid">
-            <div className="d-sm-flex align-items-center justify-content-between mb-4">
-
-
-            </div>
-          </div>
-          <div className="row">
-
-            <Card />
-            <Card />
-          </div>
-          <div className="row">
-            <Grafica />
-          </div>
-          <div className="row">
-            <Info />
+            <div className="d-sm-flex align-items-center justify-content-between mb-4"></div>
+            {renderView()}
           </div>
           <Footer />
         </div>
       </div>
-   <style>{`
+      <style>{`
         html, body, #root {
           height: 100%;
           margin: 0;
@@ -59,9 +97,8 @@ export default function Content() {
         }
 
         .row {
-  margin: 20px; /* Espacio alrededor de las Cards */
-}
-
+          margin: 20px;
+        }
       `}</style>
     </>
   );

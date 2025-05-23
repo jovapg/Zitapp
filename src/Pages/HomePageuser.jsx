@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import Nav from '../components/Nav';
 import Topbar from '../components/Topbar';
 import Categories from '../components/Categories';
@@ -9,6 +9,7 @@ import ConfigUser from '../components/ConfigUser';
 
 export default function HomePageuser() {
     const [currentView, setCurrentView] = useState('tuscitas');
+    const [filtroBusqueda, setFiltroBusqueda] = useState("");
 
     const handleNavigate = (view) => {
         console.log(`Navigating to: ${view}`);
@@ -20,10 +21,13 @@ export default function HomePageuser() {
             <div className="dashboard-layout">
                 <Nav onNavigate={handleNavigate} />
                 <div className="main-content">
-                    <Topbar onNavigate={handleNavigate} />
+                    <Topbar 
+                        onNavigate={(section) => console.log("Navegar a:", section)}
+                        onSearch={(text) => setFiltroBusqueda(text)}
+                    />
 
                     {currentView === 'tuscitas' && <TusCitas />}
-                    {currentView === 'categorias' && <Categories />}
+                    {currentView === 'categorias' && <Categories filtroBusqueda={filtroBusqueda} />}
                     {currentView === 'calendar' && <UserCalendar />}
                     {currentView === 'mapa' && <BusinessMap/>}
                     {currentView === 'configuser' && <ConfigUser/>}

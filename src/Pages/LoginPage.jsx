@@ -1,11 +1,51 @@
 import React from 'react';
 import { FaGoogle, FaApple } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom'; 
 import fondologin from '../assets/img/LOGO Zitapp.png';
 import fondoAzuli from '../assets/img/fondo_azul_editado.png'
 
+//hooks
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+
 export default function LoginPage() {
-     const navigate = useNavigate(); 
+
+    let navigate = useNavigate();
+    let [email, setEmail] = useState('')
+    let [contrasena, setPassword] = useState('')
+    let [error, setError] = useState('')
+
+    let handleLogin = async (e) => {
+        e.preventDefault() //Evita que el formulario regargue la pg al enviarlo
+        setError('')// Limpiar error previo
+
+        try {
+            let response = await axios.post('http://localhost:8081/api/users/login', { //Envia los datos a la API
+                email: email,
+                contrasena: contrasena
+            });
+
+            let data = response.data;
+            
+            console.log(response)
+
+            if (response.status === 200) {
+                if (data.tipo === 'CLIENTE') {
+                    navigate('/HomePageuser');
+                } else if (data.tipo === 'NEGOCIO') {
+                    navigate('/HomePageNegocio');
+                }
+            } else {
+                setError('Correo o contraseña incorrectos');
+            }
+
+        } catch (err) {
+            setError('Error de conexión con el servidor');
+            console.error(err);
+        }
+    };
+
     return (
         <>
             <div
@@ -36,12 +76,15 @@ export default function LoginPage() {
                     {/* Right panel */}
                     <div className="col-md-6 text-white p-5 glass-panel">
                         <h3 className="mb-4 fw-semibold">Welcome Back</h3>
-                        <form>
+                        <form onSubmit={handleLogin}>
                             <div className="mb-3">
                                 <input
                                     type="email"
                                     placeholder="Enter Email"
                                     className="form-control custom-input"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+
                                 />
                             </div>
                             <div className="mb-3">
@@ -49,12 +92,18 @@ export default function LoginPage() {
                                     type="password"
                                     placeholder="Password"
                                     className="form-control custom-input"
+                                    value={contrasena}
+                                    onChange={(e) => setPassword(e.target.value)}
+
                                 />
                             </div>
                             <button type="submit" className="btn btn-primary w-100 mb-3"
-                            onClick={() => navigate('/HomePageuser')}>
+                            // onClick={() => navigate('/HomePageuser')}
+                            >
                                 Sign In
                             </button>
+                            {error && <p style={{ color: 'red' }}>{error}</p>}
+
                         </form>
 
                         <div className="text-center text-light my-3">or</div>
@@ -73,8 +122,8 @@ export default function LoginPage() {
 
                         <p className="mt-4 text-center text-light">
                             Don’t have an account?{' '}
-                            <a  className="text-decoration-none text-info"
-                            onClick={() => navigate('/Register')}
+                            <a className="text-decoration-none text-info"
+                                onClick={() => navigate('/Register')}
                             >Create Account</a>
                         </p>
                     </div>
@@ -82,7 +131,7 @@ export default function LoginPage() {
             </div>
 
             {/* Estilos personalizados */}
-            <style jsx>{`
+            <style>{`
         .login-container {
           width: 900px;
         }

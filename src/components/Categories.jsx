@@ -1,43 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import Botonagendarcita from "./Botonagendarcita";
 
-const data = {
-  todas: [
-    {
-      categoria: "Belleza",
-      nombre: "Estética Glam",
-      descripcion: "Expertos en tratamientos faciales y cuidado de la piel.",
-      servicios: ["Faciales", "Depilación", "Manicure"],
-      imagen:
-        "https://www.shortcuts.es/wp-content/uploads/2015/11/beauty1-1030x686.jpg",
-    },
-    {
-      categoria: "Barberías",
-      nombre: "Barbería El Corte",
-      descripcion: "Cortes modernos y clásicos para caballeros.",
-      servicios: ["Fade", "Barba", "Diseño de cejas"],
-      imagen:
-        "https://thebarbeer.co/wp-content/uploads/2018/05/barberia_06.jpg",
-    },
-    {
-      categoria: "Talleres",
-      nombre: "AutoFix Express",
-      descripcion: "Tu taller de confianza para mantenimiento y reparaciones.",
-      servicios: ["Cambio de aceite", "Revisión general", "Frenos"],
-      imagen:
-        "https://i.pinimg.com/736x/9d/6a/6e/9d6a6e7293719015efeb0e53e631b8f5.jpg",
-    },
-  ],
-};
-
-const Categories = () => {
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("todas");
+const Categories = ({ filtroBusqueda }) => {
+  const [negocios, setNegocios] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
-  const negociosFiltrados = data.todas.filter(
-    (negocio) =>
-      categoriaSeleccionada === "todas" ||
-      negocio.categoria.toLowerCase() === categoriaSeleccionada
+  useEffect(() => {
+    const obtenerNegocios = async () => {
+      try {
+        const respuesta = await axios.get("http://localhost:8081/api/business");
+        setNegocios(respuesta.data);
+      } catch (error) {
+        console.error("Error al obtener negocios", error);
+      }
+    };
+    obtenerNegocios();
+  }, []);
+
+  const negociosFiltrados = negocios.filter((negocio) =>
+    negocio.nombre.toLowerCase().includes(filtroBusqueda.toLowerCase()) ||
+    negocio.categoria.toLowerCase().includes(filtroBusqueda.toLowerCase())
   );
 
   const negocioDestacado = negociosFiltrados[0];
@@ -49,35 +32,14 @@ const Categories = () => {
         color: "white",
         padding: "20px",
         borderRadius: "16px",
+        margin: "30px",
       }}
     >
-      {/* Categorías */}
-      <div className="d-flex justify-content-around mb-4">
-        {["todas", "belleza", "barberías", "talleres"].map((cat) => (
-          <button
-            key={cat}
-            className={`btn btn-sm ${
-              categoriaSeleccionada === cat ? "btn-primary" : "btn-outline-light"
-            }`}
-            onClick={() => setCategoriaSeleccionada(cat)}
-          >
-            {cat.charAt(0).toUpperCase() + cat.slice(1)}
-          </button>
-        ))}
-      </div>
-
       {/* Tarjeta destacada */}
       {negocioDestacado && (
-        <div
-          className="mb-4 position-relative rounded overflow-hidden"
-          style={{
-            height: "320px",
-            borderRadius: "16px",
-          }}
-        >
-          {/* Imagen */}
+        <div className="mb-4 position-relative rounded overflow-hidden" style={{ height: "320px" }}>
           <img
-            src={negocioDestacado.imagen}
+            src={negocioDestacado.imagenUrl || "https://via.placeholder.com/600x400"}
             alt={negocioDestacado.nombre}
             style={{
               position: "absolute",
@@ -87,7 +49,6 @@ const Categories = () => {
               zIndex: 0,
             }}
           />
-          {/* Capa oscura */}
           <div
             style={{
               position: "absolute",
@@ -99,22 +60,15 @@ const Categories = () => {
               zIndex: 1,
             }}
           ></div>
-          {/* Contenido */}
-          <div
-            className="position-relative p-4"
-            style={{ zIndex: 2, maxWidth: "60%" }}
-          >
+          <div className="position-relative p-4" style={{ zIndex: 2, maxWidth: "60%" }}>
             <h4>{negocioDestacado.nombre}</h4>
             <p>{negocioDestacado.descripcion}</p>
             <ul style={{ paddingLeft: "18px" }}>
-              {negocioDestacado.servicios.map((s, i) => (
+              {negocioDestacado.servicios?.map((s, i) => (
                 <li key={i}>{s}</li>
               ))}
             </ul>
-            <button
-              className="btn btn-primary mt-2"
-              onClick={() => setShowModal(true)}
-            >
+            <button className="btn btn-primary mt-2" onClick={() => setShowModal(true)}>
               Agendar cita
             </button>
           </div>
@@ -135,7 +89,7 @@ const Categories = () => {
             }}
           >
             <img
-              src={negocio.imagen}
+              src={negocio.imagenUrl || "https://via.placeholder.com/300x200"}
               alt={negocio.nombre}
               className="card-img-top rounded-top"
               style={{ height: "140px", objectFit: "cover" }}
@@ -146,7 +100,7 @@ const Categories = () => {
                 {negocio.descripcion}
               </p>
               <ul className="pl-3" style={{ fontSize: "0.8rem" }}>
-                {negocio.servicios.map((s, i) => (
+                {negocio.servicios?.map((s, i) => (
                   <li key={i}>{s}</li>
                 ))}
               </ul>
@@ -161,7 +115,7 @@ const Categories = () => {
         ))}
       </div>
 
-      {/* Modal para agendar */}
+      {/* Modal de agendamiento */}
       {showModal && <Botonagendarcita show={showModal} setShow={setShowModal} />}
     </div>
   );
