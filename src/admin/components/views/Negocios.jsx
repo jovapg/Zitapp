@@ -69,10 +69,11 @@ export default function Negocios() {
   return (
     <>
       <div className="table-container p-3">
-        <div className="encabezado-negocios mb-3">
-          <h2 className="titulo-negocios">Negocios</h2>
+        <div className="encabezado mb-3">
+          <h2 className="titulo">Negocios</h2>
           <button className="btn btn-primary" onClick={handleCrear}>
-            Crear Negocio
+
+            <i class="bi bi-plus-circle"> Crear Negocio</i>
           </button>
         </div>
 
@@ -114,18 +115,18 @@ export default function Negocios() {
                     "No image"
                   )}
                 </td>
-                <td>
+                <td  className="d-flex"> 
                   <button
                     className="btn btn-sm btn-warning me-1"
                     onClick={() => handleEditar(n)}
                   >
-                    Editar
+                    <i className="bi bi-pencil-square"></i>
                   </button>
                   <button
                     className="btn btn-sm btn-danger"
                     onClick={() => handleEliminar(n.id)}
                   >
-                    Eliminar
+                   <i className="bi bi-trash"></i>
                   </button>
                 </td>
               </tr>

@@ -40,43 +40,26 @@ export default function Aside({ isVisible, onSelectView }) {
         <li className="nav-item">
           <button className="nav-link " onClick={handleClick("negocios")}>
             <i className="fas fa-fw fa-cog"></i>
-            <span  >
-              Admin Negocios
-            </span>
-     
+            <span>Admin Negocios</span>
           </button>
 
-               <button className="nav-link " onClick={handleClick("usuarios")}>
+          <button className="nav-link " onClick={handleClick("usuarios")}>
             <i className="fas fa-fw fa-cog"></i>
-            <span  >
-              Admin User
-            </span>
-     
+            <span>Admin User</span>
           </button>
 
-          <button className="nav-link dropdown">
+          <button className="nav-link " onClick={handleClick("citas")}>
             <i className="fas fa-fw fa-cog"></i>
-            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              Admin Citas
-            </span>
-            <ul className="dropdown-menu">
-              <li>
-                <a href="#" className="dropdown-item" onClick={handleClick("citas")}>Citas</a>
-              </li>
-              <li>
-                <a href="#" className="dropdown-item" onClick={handleClick("crearCitas")}>Crear Citas</a>
-              </li>
-              <li>
-                <a href="#" className="dropdown-item" onClick={handleClick("actualizarCitas")}>Actualizar</a>
-              </li>
-              <li>
-                <a href="#" className="dropdown-item" onClick={handleClick("eliminarCitas")}>Eliminar</a>
-              </li>
-            </ul>
+            <span>Admin Citas</span>
           </button>
 
-          <a href="#" className="nav-link collapsed" onClick={handleClick("reporte")}>
-            <i className="fas fa-download fa-sm text-white-50"></i> Generar Reporte
+          <a
+            href="#"
+            className="nav-link collapsed"
+            onClick={handleClick("reporte")}
+          >
+            <i className="fas fa-download fa-sm text-white-50"></i> Generar
+            Reporte
           </a>
         </li>
 
@@ -84,7 +67,11 @@ export default function Aside({ isVisible, onSelectView }) {
 
         {/* BOTÓN SALIR al fondo */}
         <li className="nav-item mt-auto">
-          <a href="#" className="nav-link" onClick={() => alert("Salir de la sesión")}>
+          <a
+            href="/FirsPage"
+            className="nav-link"
+            onClick={() => alert("Salir de la sesión")}
+          >
             <i className="fas fa-sign-out-alt fa-sm text-white-50"></i> Salir
           </a>
         </li>

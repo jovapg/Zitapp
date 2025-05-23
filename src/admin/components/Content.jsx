@@ -1,10 +1,11 @@
 import Header from "./header";
 import Footer from "./footer";
-import Card from "./card";
+import Card from "./Card";
 import Grafica from "./grafica";
 import Info from "./Info";
 import Negocios from "./views/Negocios";
-import  User from "./views/User";
+import User from "./views/User";
+import  Citas from "./views/Citas";
 import fondoAzul from "../../assets/img/fondo_azul_editado.png";
 
 export default function Content({ toggleSidebar, style, selectedView }) {
@@ -14,22 +15,8 @@ export default function Content({ toggleSidebar, style, selectedView }) {
         return <div> <Negocios /></div>;
       case "usuarios":
         return <div><User/></div>;
-      case "crearUsuarios":
-        return <div>Crear Usuarios</div>;
-      case "actualizarUsuario":
-        return <div>Actualizar Usuario</div>;
-      case "eliminarUsuario":
-        return <div>Eliminar Usuario</div>;
-
       case "citas":
-        return <div>Vista Citas</div>;
-      case "crearCitas":
-        return <div>Crear Citas</div>;
-      case "actualizarCitas":
-        return <div>Actualizar Citas</div>;
-      case "eliminarCitas":
-        return <div>Eliminar Citas</div>;
-
+        return <div><Citas/></div>; 
       case "reporte":
         return <div>Generar Reporte</div>;
 
@@ -38,8 +25,22 @@ export default function Content({ toggleSidebar, style, selectedView }) {
         return (
           <>
             <div className="row">
-              <Card />
-              <Card />
+           <Card
+        title="Usuarios Negocios"
+        icon="fa-store"
+        apiEndpoint="http://localhost:8081/api/business"
+      />
+      <Card
+        title="Usuarios Totales"
+        icon="fa-users"
+        apiEndpoint="http://localhost:8081/api/users"
+      />
+      <Card
+        title="Citas Registradas"
+        icon="fa-calendar-check"
+        apiEndpoint="http://localhost:8081/api/Appointments/todas"
+      />
+
             </div>
             <div className="row">
               <Grafica />

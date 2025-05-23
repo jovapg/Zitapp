@@ -4,14 +4,14 @@
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
-.encabezado-negocios {
+.encabezado {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
 }
 
-.titulo-negocios {
+.titulo {
   color: #3498db; /* Azul intermedio */
   margin: 0;
 }
@@ -51,3 +51,68 @@
   border-radius: 6px;
   border: 1px solid #ccc;
 }
+/* ====== Tabla Profesional ====== */
+.table-custom {
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Encabezado */
+.table-custom thead {
+  background: linear-gradient(90deg, #0d6efd 0%, #0b5ed7 100%);
+  color: #fff;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+}
+
+/* Celdas */
+.table-custom td, .table-custom th {
+  text-align: center;
+  padding: 12px 16px;
+  vertical-align: middle;
+}
+
+/* Zebra */
+.table-custom tbody tr:nth-child(even) {
+  background-color: #f1f3f5;
+}
+
+/* Transición suave */
+.table-custom tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table-custom tbody tr:hover {
+  background-color: #e9ecef;
+}
+
+
+.btn-group-citas {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap; /* evita que se partan en varias filas */
+}
+
+.btn-group-citas .btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 6px;
+  border: none;
+  color: white;
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+/* Colores y hover para cada botón */
+
+
