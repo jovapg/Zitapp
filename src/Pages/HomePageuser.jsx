@@ -5,6 +5,7 @@ import Categories from '../components/Categories';
 import TusCitas from '../components/Tuscitas';
 import UserCalendar from './Calendar/UserCalendar';
 import BusinessMap from '../components/BusinessMap';
+import ConfigUser from '../components/ConfigUser';
 
 export default function HomePageuser() {
     const [currentView, setCurrentView] = useState('tuscitas');
@@ -25,6 +26,8 @@ export default function HomePageuser() {
                     {currentView === 'categorias' && <Categories />}
                     {currentView === 'calendar' && <UserCalendar />}
                     {currentView === 'mapa' && <BusinessMap/>}
+                    {currentView === 'configuser' && <ConfigUser/>}
+
                 </div>
             </div>
 

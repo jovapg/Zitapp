@@ -1,6 +1,9 @@
 import fondologin from '../assets/img/LOGO Zitapp.png';
+import { useNavigate } from "react-router-dom";
+
 
 export default function NavNegocio({ onNavigate }) {
+    const Navigate = useNavigate();
     return (
         <div className="sidebar">
             <div className="mb-4 text-center">
@@ -39,8 +42,10 @@ export default function NavNegocio({ onNavigate }) {
                 >
                     <i className="bi bi-gear me-2"></i>Settings
                 </a>
-                <a href="/logout" className="nav-link dashboard-btn mt-2">
-                    <i className="bi bi-box-arrow-right me-2"></i>Logout
+                <a  className="nav-link dashboard-btn mt-2"
+                onClick={() => Navigate('/Firspage')}>
+                    <i className="bi bi-box-arrow-right me-2"
+                       ></i>Logout
                 </a>
             </div>
 

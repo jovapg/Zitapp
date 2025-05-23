@@ -18,7 +18,9 @@ import Notfound from './components/notfound';
 import AgendaDeCitas from './Pages/Calendar/AgendadeCitas';
 import AgendadeCitasNegocio from './Pages/Calendar/AgendadeCitasNegocio';
 import ConfigNegocio from './components/ConfigNegocio';
+import ConfigUser from './components/ConfigUser';
 import Botonagendarcita from './components/Botonagendarcita';
+
 
 
 function App() {
@@ -46,6 +48,7 @@ function App() {
          <Route path="calendar/AgendadeCitas" element={<AgendaDeCitas />} />
           <Route path="calendar/AgendadeCitasNegocio" element={<AgendadeCitasNegocio />} />
         <Route path="/ConfigNegocio" element={<ConfigNegocio />} />
+        <Route path="/ConfigUser" element={<ConfigUser />} />
         <Route path="/Botonagendarcita" element={<Botonagendarcita />} />
        
          <Route path="*" element={<Notfound />} />
