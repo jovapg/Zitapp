@@ -1,4 +1,3 @@
-// ModalNegocio.jsx
 import React, { useState, useEffect } from "react";
 
 function ModalNegocio({ negocio, onClose, onSave }) {
@@ -38,12 +37,12 @@ function ModalNegocio({ negocio, onClose, onSave }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="modalNegocioLabel"
-      onClick={onClose} // cerrar modal si clic afuera
+      onClick={onClose}
     >
       <div
         className="modal-dialog"
         role="document"
-        onClick={(e) => e.stopPropagation()} // evitar cerrar modal al clic dentro
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-content">
           <form onSubmit={handleSubmit}>
@@ -126,7 +125,6 @@ function ModalNegocio({ negocio, onClose, onSave }) {
                   required
                 />
               </div>
-              
             </div>
             <div className="modal-footer">
               <button
