@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Topbar({ onNavigate, onSearch }) {
   const [busqueda, setBusqueda] = useState('');
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const manejarBusqueda = () => {
     if (busqueda.trim() !== '') {
@@ -61,7 +62,7 @@ export default function Topbar({ onNavigate, onSearch }) {
 
         {/* Sección derecha: usuario */}
         <div className="d-flex align-items-center gap-3">
-          <h3 className="btn btn-sm btn-outline-light topbar-btn">Nombre del Usuario</h3>
+          <h3 className="btn btn-sm btn-outline-light topbar-btn">{user.nombre}</h3>
           <img
             src="https://randomuser.me/api/portraits/men/75.jpg"
             alt="User"
