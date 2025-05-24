@@ -25,8 +25,8 @@ export default function HomePageuser() {
                 <div className="main-content">
                     <Topbar 
                         onNavigate={handleNavigate}
-                        onSearch={(text) => {
-                            setFiltroBusqueda(text);
+                        onSearch={(textBusqueda) => {
+                            setFiltroBusqueda(textBusqueda);
                             handleNavigate('categorias');
                         }}
                     />

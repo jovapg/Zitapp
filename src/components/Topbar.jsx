@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Topbar({ onNavigate }) {
+export default function Topbar({ onNavigate, onSearch }) {
   const [busqueda, setBusqueda] = useState('');
   const navigate = useNavigate();
 
   const manejarBusqueda = () => {
     if (busqueda.trim() !== '') {
-      navigate(`/Categories?search=${busqueda.toLowerCase()}`);
+      onSearch(busqueda.toLowerCase());
     }
   };
 
