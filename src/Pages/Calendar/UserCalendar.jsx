@@ -67,7 +67,7 @@ export default function UserCalendar() {
         id_cita: appointment.id,
         fecha: fecha,
         hora: hora,
-        estado: appointment.estado.toLowerCase(), // Convertir a minúsculas para mantener consistencia
+        estado: appointment.estado.toLowerCase(), // Convertir a minúsculas para mantener consistencia.
         nombre_negocio: appointment.business.nombre,
         cliente_nombre: appointment.client.nombre,
         cliente_email: appointment.client.email,
