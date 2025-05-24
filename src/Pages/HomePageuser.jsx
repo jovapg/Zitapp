@@ -19,19 +19,23 @@ export default function HomePageuser() {
     return (
         <>
             <div className="dashboard-layout">
+                <br />
+                <br />
                 <Nav onNavigate={handleNavigate} />
                 <div className="main-content">
                     <Topbar 
-                        onNavigate={(section) => console.log("Navegar a:", section)}
-                        onSearch={(text) => setFiltroBusqueda(text)}
+                        onNavigate={handleNavigate}
+                        onSearch={(text) => {
+                            setFiltroBusqueda(text);
+                            handleNavigate('categorias');
+                        }}
                     />
 
                     {currentView === 'tuscitas' && <TusCitas />}
                     {currentView === 'categorias' && <Categories filtroBusqueda={filtroBusqueda} />}
                     {currentView === 'calendar' && <UserCalendar />}
-                    {currentView === 'mapa' && <BusinessMap/>}
-                    {currentView === 'configuser' && <ConfigUser/>}
-
+                    {currentView === 'mapa' && <BusinessMap />}
+                    {currentView === 'configuser' && <ConfigUser />}
                 </div>
             </div>
 
