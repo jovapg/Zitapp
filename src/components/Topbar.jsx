@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Topbar({ onSearch, onNavigate }) {
+export default function Topbar() {
   const [busqueda, setBusqueda] = useState('');
   const navigate = useNavigate();
 
   const manejarBusqueda = () => {
-    if (onSearch) {
-      onSearch(busqueda.toLowerCase());
+    if (busqueda.trim() !== '') {
+      navigate(`/Categories?search=${busqueda.toLowerCase()}`);
     }
   };
 
@@ -23,45 +23,38 @@ export default function Topbar({ onSearch, onNavigate }) {
           <div className="d-flex gap-2 align-items-center flex-wrap mb-2">
             <span
               className="badge rounded-pill bg-primary px-3 py-2 topbar-btn"
-              onClick={() => onNavigate?.('categorias')}
+              onClick={() => navigate('/Categories')}
               style={{ cursor: 'pointer' }}
             >
               CATEGORIAS
             </span>
             <span
               className="badge rounded-pill bg-primary px-3 py-2 topbar-btn"
-              onClick={() => onNavigate?.('cerca')}
+              onClick={() => navigate('/BusinessMap')}
               style={{ cursor: 'pointer' }}
             >
               CERCA DE TI
             </span>
-            <span
-              className="badge rounded-pill bg-primary px-3 py-2 topbar-btn"
-              onClick={() => onNavigate?.('mapa')}
-              style={{ cursor: 'pointer' }}
-            >
-              MAPA
-            </span>
-          </div>
 
-          {/* Barra de búsqueda */}
-          <div className="d-flex align-items-center search-bar px-2 py-1 rounded text-black">
-            <input
-              type="text"
-              className="form-control form-control-sm text-white bg-transparent border-1 border-light me-2"
-              placeholder="Buscar..."
-              style={{ minWidth: "270px", borderRadius: "50px" }}
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && manejarBusqueda()}
-            />
-            <button
-              className="btn btn-sm btn-outline-light"
-              style={{ borderRadius: "8px" }}
-              onClick={manejarBusqueda}
-            >
-              🔍
-            </button>
+            {/* Barra de búsqueda */}
+            <div className="d-flex align-items-center search-bar px-2 py-1 rounded text-black">
+              <input
+                type="text"
+                className="form-control form-control-sm text-white bg-transparent border-1 border-light me-2"
+                placeholder="Buscar..."
+                style={{ minWidth: "270px", borderRadius: "50px" }}
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && manejarBusqueda()}
+              />
+              <button
+                className="btn btn-sm btn-outline-light"
+                style={{ borderRadius: "8px" }}
+                onClick={manejarBusqueda}
+              >
+                🔍
+              </button>
+            </div>
           </div>
         </div>
 
