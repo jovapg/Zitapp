@@ -6,6 +6,13 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 
 export default function ClienteRegister() {
+    let navigate = useNavigate();
+    let [nombre, setNombre] = useState('')
+    let [email, setEmail] = useState('')
+    let [telefono, setTelefono] = useState('')
+    let [contrasena, setContrasena] = useState('')
+    let [tipo, setTipo] = useState('')
+
     let [form, setForm] = useState({
         nombre: '',
         fechaNacimiento: '',
@@ -18,18 +25,21 @@ export default function ClienteRegister() {
     let handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:8081/api/users',);
+            let response = await axios.post('http://localhost:8081/api/users',{ //Envia los datos a la API
+                nombre: nombre,
+                email: email,
+                telefono: telefono,
+                contrasena: contrasena,
+                tipo: tipo
+            });
             alert('Usuario registrado correctamente');
+            console.log(response.data);
+            navigate('/LoginPage');
         } catch (err) {
             alert('Error al registrar el usuario');
             console.error(err);
         }
     };
-
-    let categorias = [
-        'Belleza', 'Restaurantes', 'Salud', 'Educación', 'Tecnología',
-        'Deportes', 'Mascotas', 'Fotografía', 'Bienestar', 'Automotriz', 'Fitness'
-    ];
 
     return (
         <>
@@ -52,33 +62,38 @@ export default function ClienteRegister() {
 
                     <h2 className="text-center text-white mb-2">Create an Account</h2>
                     <p className="text-center text-light mb-4" style={{ fontSize: '14px' }}>Start your journey with Zitapp</p>
-                    <form>
+
+                    <form onSubmit={handleSubmit}>
                         <div className="d-flex justify-content-around text-white mb-3">
                             <div className="form-check">
-                                <input className="form-check-input" type="radio" name="userType" value="client"
+                                <input
+                                    className="form-check-input"
+                                    type="radio"
+                                    name="tipo"
+                                    value="CLIENTE"
+                                    checked={tipo === 'CLIENTE'}
+                                    onChange={(e) => setTipo(e.target.value)}
                                 />
                                 <label className="form-check-label">Client</label>
                             </div>
                             <div className="form-check">
-                                <input className="form-check-input" type="radio" name="userType" value="business"
+                                <input
+                                    className="form-check-input"
+                                    type="radio" 
+                                    name="tipo"
+                                    value="NEGOCIO"
+                                    checked={tipo === 'NEGOCIO'}
+                                    onChange={(e) => setTipo(e.target.value)}
                                 />
                                 <label className="form-check-label">Business</label>
                             </div>
                         </div>
 
                         <div className="client-form mx-auto">
-
-                            <input type="text" className="form-control bg-dark text-white mb-3" placeholder="Full Name" />
-                            {/* required */}
-                            <input type="date" className="form-control bg-dark text-white mb-3" placeholder="Date of Birth" />
-                            {/* required */}
-                            <input type="email" className="form-control bg-dark text-white mb-3" placeholder="Email" />
-                            {/* required */}
-                            <input type="tel" className="form-control bg-dark text-white mb-3" placeholder="Phone Number" />
-                            {/* required */}
-                            <input type="password" className="form-control bg-dark text-white mb-3" placeholder="Password" />
-                            {/* required */}
-
+                            <input type="text" name="nombre" className="form-control bg-dark text-white mb-3" placeholder="Full Name" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+                            <input type="email" name="email" className="form-control bg-dark text-white mb-3" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                            <input type="tel" name="telefono" className="form-control bg-dark text-white mb-3" placeholder="Phone Number" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
+                            <input type="password" name="contrasena" className="form-control bg-dark text-white mb-3" placeholder="Password" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
                         </div>
 
                         <div className="d-flex justify-content-center">
@@ -90,9 +105,9 @@ export default function ClienteRegister() {
                     </form>
                 </div>
 
-                <style jsx>{`
+                <style >{`
                 .form-control::placeholder {
-                    color: rgba(255, 255, 255, 0.7) !important;
+                    color: rgba(33, 22, 22, 0.7) !important;
                     font-weight: 300;
                 }
                 input.form-control {
