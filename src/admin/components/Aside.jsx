@@ -28,7 +28,7 @@ export default function Aside({ isVisible, onSelectView }) {
               style={{ width: "70px", height: "70px" }}
             />
           </div>
-          <h2 className="text-white fw-bold">ZITAPP</h2>
+     
         </a>
 
         <hr className="sidebar-divider" />
