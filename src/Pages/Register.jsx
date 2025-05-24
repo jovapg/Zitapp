@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import fondoAzuli from '../assets/img/fondo Azul.png';
+import fondoAzuli from '../assets/img/fondo_azul_editado.png';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';

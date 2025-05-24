@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import fondologin from "../assets/img/logo.png";
-import fondoAzuli from "../assets/img/fondo Azul.png";
+import fondoAzuli from "../assets/img/fondo_azul_editado.png";
 import axios from "axios";
 
 export default function LoginAdmin() {
