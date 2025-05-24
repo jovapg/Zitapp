@@ -67,7 +67,7 @@ export default function UserCalendar() {
         id_cita: appointment.id,
         fecha: fecha,
         hora: hora,
-        estado: appointment.estado.toLowerCase(), // Convertir a minúsculas para mantener consistencia
+        estado: appointment.estado.toLowerCase(), // Convertir a minúsculas para mantener consistencia.
         nombre_negocio: appointment.business.nombre,
         cliente_nombre: appointment.client.nombre,
         cliente_email: appointment.client.email,
@@ -83,7 +83,8 @@ export default function UserCalendar() {
         setLoading(true);
         setError(null);
         
-        const response = await axios.get('http://localhost:8081/api/Appointments/user/2');
+        const user = JSON.parse(localStorage.getItem("user"));
+        const response = await axios.get(`http://localhost:8081/api/Appointments/user/${user.id}`);
         const transformedData = transformAppointmentData(response.data);
         setAppointments(transformedData);
         

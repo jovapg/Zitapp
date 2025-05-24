@@ -32,8 +32,10 @@ export default function LoginPage() {
 
             if (response.status === 200) {
                 if (data.tipo === 'CLIENTE') {
+                    localStorage.setItem("user", JSON.stringify(data));
                     navigate('/HomePageuser');
                 } else if (data.tipo === 'NEGOCIO') {
+                    localStorage.setItem("user", JSON.stringify(data));
                     navigate('/HomePageNegocio');
                 }
             } else {
