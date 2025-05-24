@@ -18,8 +18,10 @@ const Categories = ({ filtroBusqueda }) => {
     };
     obtenerNegocios();
   }, []);
+const categoriasUnicas = [...new Set(
+  negocios.map(n => n.categoria?.toLowerCase()).filter(Boolean)
+)];
 
-  const categoriasUnicas = [...new Set(negocios.map(n => n.categoria.toLowerCase()))];
 
   // Nuevo filtro combinado por búsqueda y categoría seleccionada
   const negociosFiltrados = negocios.filter((negocio) => {

@@ -8,6 +8,8 @@ export default function Topbar({ onNavigate, onSearch }) {
   const manejarBusqueda = () => {
     if (busqueda.trim() !== '') {
       onSearch(busqueda.toLowerCase());
+    }else {
+      onSearch('');  // Aviso para filtro vacío
     }
   };
 
@@ -40,7 +42,10 @@ export default function Topbar({ onNavigate, onSearch }) {
                 placeholder="Buscar..."
                 style={{ minWidth: "270px", borderRadius: "50px" }}
                 value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
+                onChange={(e) => {
+        setBusqueda(e.target.value);
+        onSearch(e.target.value);  // Actualiza filtro en tiempo real
+      }}
                 onKeyDown={(e) => e.key === 'Enter' && manejarBusqueda()}
               />
               <button
