@@ -83,7 +83,8 @@ export default function UserCalendar() {
         setLoading(true);
         setError(null);
         
-        const response = await axios.get('http://localhost:8081/api/Appointments/user/2');
+        const user = JSON.parse(localStorage.getItem("user"));
+        const response = await axios.get(`http://localhost:8081/api/Appointments/user/${user.id}`);
         const transformedData = transformAppointmentData(response.data);
         setAppointments(transformedData);
         

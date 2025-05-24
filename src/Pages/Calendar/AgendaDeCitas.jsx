@@ -56,7 +56,8 @@ export default function AgendadeCitas() {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await axios.get('http://localhost:8081/api/Appointments/user/7');
+        const user = JSON.parse(localStorage.getItem("user"));
+        const response = await axios.get(`http://localhost:8081/api/Appointments/user/${user.id}`);
         const transformedData = transformAppointmentData(response.data);
         setAppointments(transformedData);
       } catch (err) {
