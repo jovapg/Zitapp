@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import fondoAzuli from '../../assets/img/fondo_azul_editado.png'
 
 // Componente principal del calendario de usuario
@@ -44,53 +45,57 @@ export default function UserCalendar() {
   const [showModal, setShowModal] = useState(false);
   // Estado para la cita seleccionada
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  // Estado para loading
+  const [loading, setLoading] = useState(true);
+  // Estado para errores
+  const [error, setError] = useState(null);
 
-  // Datos de ejemplo
+  // Función para transformar los datos de la API al formato esperado por el componente
+  const transformAppointmentData = (apiData) => {
+    return apiData.map(appointment => {
+      // Convertir el array de fecha [año, mes, día] a string formato YYYY-MM-DD
+      const [year, month, day] = appointment.fecha;
+      const fecha = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      
+      // Convertir el array de hora [horas, minutos] a string formato HH:MM:SS
+      const [hours, minutes] = appointment.hora;
+      const hora = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+      
+      return {
+        id_cliente: appointment.client.id,
+        id_negocio: appointment.business.id,
+        id_cita: appointment.id,
+        fecha: fecha,
+        hora: hora,
+        estado: appointment.estado.toLowerCase(), // Convertir a minúsculas para mantener consistencia
+        nombre_negocio: appointment.business.nombre,
+        cliente_nombre: appointment.client.nombre,
+        cliente_email: appointment.client.email,
+        servicios: appointment.business.services || []
+      };
+    });
+  };
+
+  // Cargar citas desde la API
   useEffect(() => {
-    // Simulamos una llamada a API que trae las citas
-    const sampleData = [
-      {
-        id_cliente: 1,
-        id_negocio: 10,
-        fecha: "2025-05-10",
-        hora: "10:30:00",
-        estado: "confirmado",
-        nombre_negocio: "BBC Salon"
-      },
-      {
-        id_cliente: 1,
-        id_negocio: 12,
-        fecha: "2025-05-12",
-        hora: "14:00:00",
-        estado: "pendiente",
-        nombre_negocio: "MediClinic"
-      },
-      {
-        id_cliente: 1,
-        id_negocio: 15,
-        fecha: "2025-05-14",
-        hora: "09:15:00",
-        estado: "cancelado",
-        nombre_negocio: "Fitness Center"
-      },
-      {
-        id_cliente: 1,
-        id_negocio: 18,
-        fecha: "2025-05-15",
-        hora: "16:45:00",
-        estado: "confirmado",
-        nombre_negocio: "Dental Care"
-      },
-      {
-        id_cliente: 1,
-        id_negocio: 20,
-        fecha: "2025-05-20",
-        hora: "11:00:00",
-        estado: "pendiente",
-        nombre_negocio: "SPA Center"
+    const fetchAppointments = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await axios.get('http://localhost:8081/api/Appointments/user/2');
+        const transformedData = transformAppointmentData(response.data);
+        setAppointments(transformedData);
+        
+      } catch (err) {
+        console.error('Error fetching appointments:', err);
+        setError('Error al cargar las citas. Por favor, inténtalo de nuevo.');
+      } finally {
+        setLoading(false);
       }
-    ];
-    setAppointments(sampleData);
+    };
+
+    fetchAppointments();
   }, []);
 
   // Función para obtener el nombre del mes
@@ -170,11 +175,27 @@ export default function UserCalendar() {
 
   // Función para obtener el color según el estado de la cita
   const getStatusColor = (status) => {
-    switch(status) {
-      case 'confirmado': return 'bg-success';
-      case 'pendiente': return 'bg-warning text-dark';
-      case 'cancelado': return 'bg-danger';
-      default: return 'bg-secondary';
+    switch(status.toLowerCase()) {
+      case 'confirmada':
+      case 'confirmado': 
+        return 'bg-success';
+      case 'pendiente': 
+        return 'bg-warning text-dark';
+      case 'cancelada':
+      case 'cancelado': 
+        return 'bg-danger';
+      default: 
+        return 'bg-secondary';
+    }
+  };
+
+  // Función para traducir el estado
+  const translateStatus = (status) => {
+    switch(status.toLowerCase()) {
+      case 'confirmada': return 'Confirmada';
+      case 'pendiente': return 'Pendiente';
+      case 'cancelada': return 'Cancelada';
+      default: return status;
     }
   };
 
@@ -232,6 +253,7 @@ export default function UserCalendar() {
     </>
     );
   };
+
   // Modal para mostrar detalles de la cita
   const renderAppointmentModal = () => {
     if (!selectedAppointment) return null;
@@ -249,6 +271,12 @@ export default function UserCalendar() {
                 <strong>Negocio:</strong> {selectedAppointment.nombre_negocio}
               </div>
               <div className="mb-2">
+                <strong>Cliente:</strong> {selectedAppointment.cliente_nombre}
+              </div>
+              <div className="mb-2">
+                <strong>Email:</strong> {selectedAppointment.cliente_email}
+              </div>
+              <div className="mb-2">
                 <strong>Fecha:</strong> {selectedAppointment.fecha}
               </div>
               <div className="mb-2">
@@ -257,13 +285,26 @@ export default function UserCalendar() {
               <div className="mb-2">
                 <strong>Estado:</strong> 
                 <span className={`badge ms-2 ${getStatusColor(selectedAppointment.estado)}`}>
-                  {selectedAppointment.estado}
+                  {translateStatus(selectedAppointment.estado)}
                 </span>
               </div>
+              {selectedAppointment.servicios && selectedAppointment.servicios.length > 0 && (
+                <div className="mb-2">
+                  <strong>Servicios:</strong>
+                  <ul className="list-unstyled ms-3">
+                    {selectedAppointment.servicios.map((service, idx) => (
+                      <li key={idx}>
+                        {service.nombre} - ${service.precio}
+                        {service.descripcion && <small className="text-muted d-block">{service.descripcion}</small>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
             <div className="modal-footer" style={{borderTop: '1px solid rgba(255, 255, 255, 0.2)'}}>
               <button type="button" className="btn btn-outline-light" onClick={() => setShowModal(false)}>Cerrar</button>
-              {selectedAppointment.estado !== 'cancelado' && (
+              {selectedAppointment.estado.toLowerCase() !== 'cancelada' && selectedAppointment.estado.toLowerCase() !== 'cancelado' && (
                 <button type="button" className="btn btn-danger">Cancelar Cita</button>
               )}
             </div>
@@ -294,7 +335,7 @@ export default function UserCalendar() {
                   <small>{app.fecha} - {app.hora.substring(0, 5)}</small>
                 </div>
                 <span className={`badge ${getStatusColor(app.estado)}`}>
-                  {app.estado}
+                  {translateStatus(app.estado)}
                 </span>
               </div>
             ))}
@@ -314,6 +355,38 @@ export default function UserCalendar() {
     marginTop: '2rem',
     marginBottom: '2rem'
   };
+
+  // Mostrar loading mientras se cargan los datos
+  if (loading) {
+    return (
+      <div className="container" style={containerStyle}>
+        <div className="text-center">
+          <div className="spinner-border text-light" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          <p className="mt-3 text-white">Cargando citas...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Mostrar error si ocurre algún problema
+  if (error) {
+    return (
+      <div className="container" style={containerStyle}>
+        <div className="alert alert-danger" role="alert">
+          <h4 className="alert-heading">Error</h4>
+          <p>{error}</p>
+          <button 
+            className="btn btn-outline-danger" 
+            onClick={() => window.location.reload()}
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container" style={containerStyle}>
@@ -340,9 +413,9 @@ export default function UserCalendar() {
             style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
           >
             <option value="all" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Todos los estados</option>
-            <option value="confirmado" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Confirmados</option>
+            <option value="confirmada" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Confirmadas</option>
             <option value="pendiente" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Pendientes</option>
-            <option value="cancelado" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Cancelados</option>
+            <option value="cancelada" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Canceladas</option>
           </select>
         </div>
       </div>
@@ -351,8 +424,6 @@ export default function UserCalendar() {
       <div className="calendar-container mb-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '5px', backdropFilter: 'blur(5px)'}}>
         {renderCalendar()}
       </div>
-      
-
       
       {/* Modal de detalles */}
       {renderAppointmentModal()}

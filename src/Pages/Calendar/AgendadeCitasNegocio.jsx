@@ -11,55 +11,75 @@ export default function AgendadeCitasNegocio() {
   const [showModal, setShowModal] = useState(false);
   // Estado para la cita seleccionada
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  // Estado para loading
+  const [isLoading, setIsLoading] = useState(true);
+  // Estado para errores
+  const [error, setError] = useState(null);
 
-  // Datos de ejemplo
+  // Función para formatear la fecha del array a string
+  const formatDateFromArray = (dateArray) => {
+    if (!Array.isArray(dateArray) || dateArray.length < 3) return '';
+    const [year, month, day] = dateArray;
+    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+  };
+
+  // Función para formatear la hora del array a string
+  const formatTimeFromArray = (timeArray) => {
+    if (!Array.isArray(timeArray) || timeArray.length < 2) return '';
+    const [hour, minute] = timeArray;
+    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
+  };
+
+  // Función para transformar los datos de la API al formato esperado por el componente
+  const transformAppointmentData = (apiData) => {
+    return apiData.map(appointment => ({
+      id_cliente: appointment.client.id,
+      id_negocio: appointment.business.id,
+      fecha: formatDateFromArray(appointment.fecha),
+      hora: formatTimeFromArray(appointment.hora),
+      estado: appointment.estado.toLowerCase(),
+      nombre_negocio: appointment.business.nombre,
+      // Datos adicionales del cliente
+      client_name: appointment.client.nombre,
+      client_email: appointment.client.email,
+      client_phone: appointment.client.telefono,
+      // Datos adicionales del negocio
+      business_description: appointment.business.descripcion,
+      business_address: appointment.business.direccion,
+      business_image: appointment.business.imagenUrl,
+      business_services: appointment.business.services || [],
+      appointment_id: appointment.id
+    }));
+  };
+
+  // Cargar citas desde la API
   useEffect(() => {
-    const sampleData = [
-      {
-        id_cliente: 1,
-        id_negocio: 10,
-        fecha: "2025-05-10",
-        hora: "10:30:00",
-        estado: "confirmado",
-        nombre_negocio: "BBC Salon"
-      },
-      {
-        id_cliente: 1,
-        id_negocio: 12,
-        fecha: "2025-05-12",
-        hora: "14:00:00",
-        estado: "pendiente",
-        nombre_negocio: "MediClinic"
-      },
-      {
-        id_cliente: 1,
-        id_negocio: 15,
-        fecha: "2025-05-14",
-        hora: "09:15:00",
-        estado: "cancelado",
-        nombre_negocio: "Fitness Center"
-      },
-      {
-        id_cliente: 1,
-        id_negocio: 18,
-        fecha: "2025-05-15",
-        hora: "16:45:00",
-        estado: "confirmado",
-        nombre_negocio: "Dental Care"
-      },
-      {
-        id_cliente: 1,
-        id_negocio: 20,
-        fecha: "2025-05-20",
-        hora: "11:00:00",
-        estado: "pendiente",
-        nombre_negocio: "SPA Center"
+    const fetchAppointments = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        const response = await fetch('http://localhost:8081/api/Appointments/busness/1');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const transformedData = transformAppointmentData(data);
+        setAppointments(transformedData);
+      } catch (err) {
+        console.error('Error fetching appointments:', err);
+        setError('Error al cargar las citas. Por favor, intenta de nuevo.');
+      } finally {
+        setIsLoading(false);
       }
-    ];
-    setAppointments(sampleData);
+    };
+
+    fetchAppointments();
   }, []);
 
-  // Funciones para cambiar el mes (simplificadas por ahora)
+  // Funciones para cambiar el mes
   const prevMonth = () => {
     const prev = new Date(currentDate);
     prev.setMonth(prev.getMonth() - 1);
@@ -98,10 +118,38 @@ export default function AgendadeCitasNegocio() {
   // Función para obtener el color según el estado de la cita
   const getStatusColor = (status) => {
     switch (status) {
-      case 'confirmado': return 'bg-success';
+      case 'confirmada': return 'bg-success';
       case 'pendiente': return 'bg-warning text-dark';
-      case 'cancelado': return 'bg-danger';
+      case 'cancelada': return 'bg-danger';
       default: return 'bg-secondary';
+    }
+  };
+
+  // Función para obtener el texto del estado en español
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'confirmada': return 'Confirmada';
+      case 'pendiente': return 'Pendiente';
+      case 'cancelada': return 'Cancelada';
+      default: return status;
+    }
+  };
+
+  // Función para cambiar el estado de una cita
+  const updateAppointmentStatus = async (appointmentId, newStatus) => {
+    try {
+      // Aquí irían las llamadas a la API para actualizar el estado
+      // Por ahora solo actualizamos el estado local
+      setAppointments(prevAppointments =>
+        prevAppointments.map(app =>
+          app.appointment_id === appointmentId
+            ? { ...app, estado: newStatus }
+            : app
+        )
+      );
+      setShowModal(false);
+    } catch (err) {
+      console.error('Error updating appointment status:', err);
     }
   };
 
@@ -118,26 +166,69 @@ export default function AgendadeCitasNegocio() {
               <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
             </div>
             <div className="modal-body">
-              <div className="mb-2">
-                <strong>Negocio:</strong> {selectedAppointment.nombre_negocio}
+              <div className="mb-3">
+                <h6 className="text-info">Información del Cliente</h6>
+                <div className="mb-2">
+                  <strong>Nombre:</strong> {selectedAppointment.client_name}
+                </div>
+                <div className="mb-2">
+                  <strong>Email:</strong> {selectedAppointment.client_email}
+                </div>
+                {selectedAppointment.client_phone && (
+                  <div className="mb-2">
+                    <strong>Teléfono:</strong> {selectedAppointment.client_phone}
+                  </div>
+                )}
               </div>
-              <div className="mb-2">
-                <strong>Fecha:</strong> {selectedAppointment.fecha}
+              
+              <div className="mb-3">
+                <h6 className="text-info">Información de la Cita</h6>
+                <div className="mb-2">
+                  <strong>Fecha:</strong> {selectedAppointment.fecha}
+                </div>
+                <div className="mb-2">
+                  <strong>Hora:</strong> {selectedAppointment.hora.substring(0, 5)}
+                </div>
+                <div className="mb-2">
+                  <strong>Estado:</strong>
+                  <span className={`badge ms-2 ${getStatusColor(selectedAppointment.estado)}`}>
+                    {getStatusText(selectedAppointment.estado)}
+                  </span>
+                </div>
               </div>
-              <div className="mb-2">
-                <strong>Hora:</strong> {selectedAppointment.hora}
-              </div>
-              <div className="mb-2">
-                <strong>Estado:</strong>
-                <span className={`badge ms-2 ${getStatusColor(selectedAppointment.estado)}`}>
-                  {selectedAppointment.estado}
-                </span>
-              </div>
+
+              {selectedAppointment.business_services.length > 0 && (
+                <div className="mb-3">
+                  <h6 className="text-info">Servicios Disponibles</h6>
+                  {selectedAppointment.business_services.map((service, idx) => (
+                    <div key={idx} className="mb-2 p-2 border rounded" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
+                      <div><strong>{service.nombre}</strong></div>
+                      <div className="small text-muted">{service.descripcion}</div>
+                      <div className="text-success">${service.precio}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="modal-footer" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.2)' }}>
               <button type="button" className="btn btn-outline-light" onClick={() => setShowModal(false)}>Cerrar</button>
-              {selectedAppointment.estado !== 'cancelado' && (
-                <button type="button" className="btn btn-danger">Cancelar Cita</button>
+              {selectedAppointment.estado === 'pendiente' && (
+                <button 
+                  type="button" 
+                  className="btn btn-success"
+                  onClick={() => updateAppointmentStatus(selectedAppointment.appointment_id, 'confirmada')}
+                >
+                  Confirmar Cita
+                </button>
+              )}
+              {selectedAppointment.estado !== 'cancelada' && (
+                <button 
+                  type="button" 
+                  className="btn btn-danger"
+                  onClick={() => updateAppointmentStatus(selectedAppointment.appointment_id, 'cancelada')}
+                >
+                  Cancelar Cita
+                </button>
               )}
             </div>
           </div>
@@ -168,23 +259,45 @@ export default function AgendadeCitasNegocio() {
             style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
           >
             <option value="all" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Todos los estados</option>
-            <option value="confirmado" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Confirmados</option>
+            <option value="confirmada" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Confirmadas</option>
             <option value="pendiente" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Pendientes</option>
-            <option value="cancelado" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Cancelados</option>
+            <option value="cancelada" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Canceladas</option>
           </select>
         </div>
       </div>
 
       {/* Lista de citas */}
       <div className="appointments-list mt-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '5px', backdropFilter: 'blur(5px)' }}>
-        <h3 className="text-white" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' }}>Mis Citas</h3>
-        {filteredAppointments.length === 0 ? (
+        <h3 className="text-white" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' }}>Citas del Negocio</h3>
+        
+        {/* Loading state */}
+        {isLoading && (
+          <div className="text-center text-white">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Cargando...</span>
+            </div>
+            <p className="mt-2">Cargando citas...</p>
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        )}
+
+        {/* No appointments */}
+        {!isLoading && !error && filteredAppointments.length === 0 && (
           <div className="alert alert-info">No hay citas para mostrar.</div>
-        ) : (
+        )}
+
+        {/* Appointments list */}
+        {!isLoading && !error && filteredAppointments.length > 0 && (
           <div className="list-group">
             {filteredAppointments.map((app, idx) => (
               <div
-                key={`list-app-${idx}`}
+                key={`list-app-${app.appointment_id || idx}`}
                 className="list-group-item list-group-item-action"
                 onClick={() => showAppointmentDetails(app)}
                 style={{
@@ -195,12 +308,20 @@ export default function AgendadeCitasNegocio() {
                 }}
               >
                 <div className="d-flex w-100 justify-content-between">
-                  <h5 className="mb-1">{app.nombre_negocio}</h5>
+                  <h5 className="mb-1">{app.client_name}</h5>
                   <small>{app.fecha} - {app.hora.substring(0, 5)}</small>
                 </div>
-                <span className={`badge ${getStatusColor(app.estado)}`}>
-                  {app.estado}
-                </span>
+                <p className="mb-1 small">Email: {app.client_email}</p>
+                <div className="d-flex justify-content-between align-items-center">
+                  <span className={`badge ${getStatusColor(app.estado)}`}>
+                    {getStatusText(app.estado)}
+                  </span>
+                  {app.business_services.length > 0 && (
+                    <small className="text-muted">
+                      {app.business_services.length} servicio{app.business_services.length > 1 ? 's' : ''} disponible{app.business_services.length > 1 ? 's' : ''}
+                    </small>
+                  )}
+                </div>
               </div>
             ))}
           </div>
