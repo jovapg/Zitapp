@@ -7,12 +7,12 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import FirsPage from './Pages/FirsPage';
 import LoginPage from './Pages/LoginPage';
 import Register from './Pages/Register';
-import Notfound from './components/notfound';
+import Notfound from './components/Notfound';
 
 // Usuario
 import HomePageuser from './Pages/HomePageuser';
 import UserCalendar from './Pages/Calendar/UserCalendar';
-import AgendaDeCitas from './Pages/Calendar/AgendadeCitas';
+import AgendaDeCitas from './Pages/Calendar/AgendaDeCitas';
 
 // Negocio
 import HomePagenegocio from './Pages/HomePagenegocio';
