@@ -70,10 +70,10 @@ let handleGUardar = async (data) => {
   return (
     <>
       <div className="table-container p-3">
-        <div className="encabezado-user mb-3">
-          <h2 className="titulo-user">Usuarios</h2>
+        <div className="encabezado mb-3">
+          <h2 className="titulo">Usuarios</h2>
           <button className="btn btn-primary" onClick={handleCrear}>
-            Crear Usuario
+            <i className="bi bi-plus-circle"></i> Crear Usuario
           </button>
         </div>
 
