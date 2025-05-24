@@ -1,7 +1,7 @@
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { useState } from "react";
 
-export default function Botonagendarcita({ show, setShow }) {
+export default function Botonagendarcita({ show, setShow, onCitaAgendada }) {
   const servicios = [
     {
       nombre: "Corte de cabello",
@@ -30,15 +30,54 @@ export default function Botonagendarcita({ show, setShow }) {
   ];
 
   const [servicioSeleccionado, setServicioSeleccionado] = useState("");
+  const [fechaSeleccionada, setFechaSeleccionada] = useState("");
+  const [horaSeleccionada, setHoraSeleccionada] = useState("");
 
   const handleAgendar = () => {
     if (!servicioSeleccionado) {
       alert("Por favor selecciona un servicio.");
       return;
     }
+    if (!fechaSeleccionada) {
+      alert("Por favor selecciona una fecha.");
+      return;
+    }
+    if (!horaSeleccionada) {
+      alert("Por favor selecciona una hora.");
+      return;
+    }
+
+    // Crear el objeto de la nueva cita
+    const nuevaCita = {
+      id_cliente: 7, // ID del usuario actual (puedes pasarlo como prop)
+      id_negocio: 1, // ID del negocio (puedes pasarlo como prop)
+      fecha: fechaSeleccionada,
+      hora: `${horaSeleccionada}:00`,
+      estado: "pendiente",
+      nombre_negocio: "Salón de Belleza", // Nombre del negocio (puedes pasarlo como prop)
+      client_name: "Usuario Actual", // Nombre del cliente (puedes pasarlo como prop)
+      client_email: "usuario@email.com", // Email del cliente (puedes pasarlo como prop)
+      business_description: "Servicios de belleza y cuidado personal",
+      business_address: "Calle Principal #123",
+      business_image: "",
+      appointment_id: Date.now(), // ID temporal hasta que se guarde en la API
+      servicio: servicioSeleccionado,
+      costo: servicios.find(s => s.nombre === servicioSeleccionado)?.costo || "0"
+    };
+
+    // Llamar a la función callback para agregar la cita
+    if (onCitaAgendada) {
+      onCitaAgendada(nuevaCita);
+    }
+
     alert(
       `Cita para "${servicioSeleccionado}" agendada correctamente. Se encuentra en estado PENDIENTE. En unos minutos te notificaremos...`
     );
+
+    // Limpiar el formulario
+    setServicioSeleccionado("");
+    setFechaSeleccionada("");
+    setHoraSeleccionada("");
     setShow(false);
   };
 
@@ -55,7 +94,7 @@ export default function Botonagendarcita({ show, setShow }) {
         className="custom-modal"
       >
         <Modal.Header closeButton className="modal-header-custom">
-          <Modal.Title >AGENDA TU CITA FÁCIL</Modal.Title>
+          <Modal.Title>AGENDA TU CITA FÁCIL</Modal.Title>
         </Modal.Header>
         <Modal.Body className="modal-body-custom">
           <Row>
@@ -86,21 +125,31 @@ export default function Botonagendarcita({ show, setShow }) {
 
                 <Form.Group className="mb-3">
                   <Form.Label>Fecha</Form.Label>
-                  <Form.Control type="date" />
+                  <Form.Control 
+                    type="date" 
+                    value={fechaSeleccionada}
+                    onChange={(e) => setFechaSeleccionada(e.target.value)}
+                  />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
                   <Form.Label>Hora</Form.Label>
-                  <Form.Select>
+                  <Form.Select
+                    value={horaSeleccionada}
+                    onChange={(e) => setHoraSeleccionada(e.target.value)}
+                  >
                     <option value="">Selecciona una hora</option>
                     <option value="10:00">10:00 AM</option>
                     <option value="11:00">11:00 AM</option>
                     <option value="13:00">1:00 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                    <option value="15:00">3:00 PM</option>
+                    <option value="16:00">4:00 PM</option>
                   </Form.Select>
                 </Form.Group>
               </Form>
             </Col>
-            <Col md={6} className=" p-3 rounded">
+            <Col md={6} className="p-3 rounded">
               <h5 className="">Disponibilidad próximos 3 días</h5>
               <br />
               <ul>
@@ -146,7 +195,7 @@ export default function Botonagendarcita({ show, setShow }) {
         }
         .servicio-info {
           background-color: rgba(255, 255, 255, 0.05);
-          color: #ccc;npm run dev
+          color: #ccc;
           border: 1px solid rgba(255,255,255,0.1);
         }
       `}</style>

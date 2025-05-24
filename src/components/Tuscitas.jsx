@@ -3,7 +3,7 @@ import axios from 'axios';
 import AgendadeCitas from '../Pages/Calendar/AgendaDeCitas';
 import Botonagendarcita from './Botonagendarcita';
 
-export default function TusCitas() {
+export default function TusCitas({ onCitaAgendada }) {
   const [showModal, setShowModal] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [businesses, setBusinesses] = useState([]);
@@ -120,6 +120,27 @@ export default function TusCitas() {
     });
   };
 
+  // Función para manejar cuando se agenda una nueva cita
+  const handleCitaAgendada = (nuevaCita) => {
+    if (onCitaAgendada) {
+      onCitaAgendada(nuevaCita);
+    }
+    // Recargar las citas después de agendar una nueva
+    const fetchAppointments = async () => {
+      try {
+        const response = await axios.get('http://localhost:8081/api/Appointments/user/2');
+        const transformedData = transformAppointmentData(response.data);
+        setAppointments(transformedData);
+        
+        const uniqueBusinesses = extractUniqueBusinesses(response.data);
+        setBusinesses(uniqueBusinesses);
+      } catch (err) {
+        console.error('Error al recargar citas:', err);
+      }
+    };
+    fetchAppointments();
+  };
+
   // Mostrar loading
   if (loading) {
     return (
@@ -152,9 +173,13 @@ export default function TusCitas() {
 
   return (
     <>
+    <br />
       <div className="d-flex content-section">
         {/* Left Column */}
         <div className="flex-grow-1">
+
+
+
           <div className="p-3 mb-4 rounded" style={{ background: "rgba(35, 35, 60, 0.8)" }}>
             <AgendadeCitas appointments={appointments} />
           </div>
@@ -305,8 +330,12 @@ export default function TusCitas() {
           )}
         </div>
 
-        {/* Modal para agendar */}
-        {showModal && <Botonagendarcita show={showModal} setShow={setShowModal} />}
+        {/* Modal para agendar cita */}
+        <Botonagendarcita 
+          show={showModal} 
+          setShow={setShowModal}
+          onCitaAgendada={handleCitaAgendada}
+        />
       </div>
 
       <style>{`

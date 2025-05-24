@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export default function AgendadeCitas() {
+export default function AgendadeCitas({ nuevasCitas = [] }) {
   // Estado para las citas
   const [appointments, setAppointments] = useState([]);
   // Estado para filtrar por estado
@@ -50,6 +50,11 @@ export default function AgendadeCitas() {
     }));
   };
 
+  // Función para agregar una nueva cita
+  const agregarNuevaCita = (nuevaCita) => {
+    setAppointments(prevAppointments => [nuevaCita, ...prevAppointments]);
+  };
+
   // Cargar citas desde la API
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -69,6 +74,14 @@ export default function AgendadeCitas() {
 
     fetchAppointments();
   }, []);
+
+  // Efecto para agregar nuevas citas cuando se pasa el prop
+  useEffect(() => {
+    if (nuevasCitas.length > 0) {
+      const ultimaCita = nuevasCitas[nuevasCitas.length - 1];
+      agregarNuevaCita(ultimaCita);
+    }
+  }, [nuevasCitas]);
 
   // Funciones para cambiar el mes
   const prevMonth = () => {
@@ -142,6 +155,16 @@ export default function AgendadeCitas() {
               <div className="mb-2">
                 <strong>Negocio:</strong> {selectedAppointment.nombre_negocio}
               </div>
+              {selectedAppointment.servicio && (
+                <div className="mb-2">
+                  <strong>Servicio:</strong> {selectedAppointment.servicio}
+                </div>
+              )}
+              {selectedAppointment.costo && (
+                <div className="mb-2">
+                  <strong>Costo:</strong> ${selectedAppointment.costo}
+                </div>
+              )}
               {selectedAppointment.business_description && (
                 <div className="mb-2">
                   <strong>Descripción:</strong> {selectedAppointment.business_description}
@@ -180,6 +203,9 @@ export default function AgendadeCitas() {
     );
   };
 
+  // Exponer la función para agregar citas (puedes usar useImperativeHandle si necesitas)
+  // Para este ejemplo, vamos a usar el prop nuevasCitas
+  
   return (
     <div className="container py-4">
       {/* Barra de controles */}
@@ -211,7 +237,9 @@ export default function AgendadeCitas() {
 
       {/* Lista de citas */}
       <div className="appointments-list mt-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '5px', backdropFilter: 'blur(5px)' }}>
-        <h3 className="text-white" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' }}>Mis Citas</h3>
+        <h3 className="text-white" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' }}>
+          Mis Citas ({appointments.length})
+        </h3>
         
         {/* Loading state */}
         {isLoading && (
@@ -247,7 +275,8 @@ export default function AgendadeCitas() {
                   cursor: 'pointer',
                   backgroundColor: 'rgba(16, 10, 46, 0.5)',
                   color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  marginBottom: '5px'
                 }}
               >
                 <div className="d-flex w-100 justify-content-between">
@@ -255,9 +284,17 @@ export default function AgendadeCitas() {
                   <small>{app.fecha} - {app.hora.substring(0, 5)}</small>
                 </div>
                 <p className="mb-1 small">Cliente: {app.client_name}</p>
-                <span className={`badge ${getStatusColor(app.estado)}`}>
-                  {getStatusText(app.estado)}
-                </span>
+                {app.servicio && (
+                  <p className="mb-1 small">Servicio: {app.servicio}</p>
+                )}
+                <div className="d-flex justify-content-between align-items-center">
+                  <span className={`badge ${getStatusColor(app.estado)}`}>
+                    {getStatusText(app.estado)}
+                  </span>
+                  {app.costo && (
+                    <small className="text-light">Costo: ${app.costo}</small>
+                  )}
+                </div>
               </div>
             ))}
           </div>

@@ -10,10 +10,35 @@ import ConfigUser from '../components/ConfigUser';
 export default function HomePageuser() {
     const [currentView, setCurrentView] = useState('tuscitas');
     const [filtroBusqueda, setFiltroBusqueda] = useState("");
+    // Estado para manejar las nuevas citas agendadas
+    const [nuevasCitas, setNuevasCitas] = useState([]);
 
     const handleNavigate = (view) => {
         console.log(`Navigating to: ${view}`);
         setCurrentView(view);
+    };
+
+    // Función que se ejecuta cuando se agenda una nueva cita
+    const handleCitaAgendada = (nuevaCita) => {
+        console.log('Nueva cita agendada:', nuevaCita);
+        setNuevasCitas(prevCitas => [...prevCitas, nuevaCita]);
+        
+        // Aquí puedes hacer la llamada a la API para guardar la cita
+        /*
+        try {
+            const response = await axios.post('http://localhost:8081/api/Appointments', {
+                clientId: nuevaCita.id_cliente,
+                businessId: nuevaCita.id_negocio,
+                fecha: nuevaCita.fecha,
+                hora: nuevaCita.hora,
+                servicio: nuevaCita.servicio,
+                estado: 'pendiente'
+            });
+            console.log('Cita guardada en la API:', response.data);
+        } catch (error) {
+            console.error('Error al guardar la cita:', error);
+        }
+        */
     };
 
     return (
@@ -31,8 +56,18 @@ export default function HomePageuser() {
                         }}
                     />
 
-                    {currentView === 'tuscitas' && <TusCitas />}
-                    {currentView === 'categorias' && <Categories filtroBusqueda={filtroBusqueda} />}
+                    {currentView === 'tuscitas' && (
+                        <TusCitas 
+                            nuevasCitas={nuevasCitas}
+                            onCitaAgendada={handleCitaAgendada}
+                        />
+                    )}
+                    {currentView === 'categorias' && (
+                        <Categories 
+                            filtroBusqueda={filtroBusqueda}
+                            onCitaAgendada={handleCitaAgendada}
+                        />
+                    )}
                     {currentView === 'calendar' && <UserCalendar />}
                     {currentView === 'mapa' && <BusinessMap />}
                     {currentView === 'configuser' && <ConfigUser />}
