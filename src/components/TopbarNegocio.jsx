@@ -1,6 +1,8 @@
 
 
 export default function TopbarNegocio({ onNavigate }) {
+    const user = JSON.parse(localStorage.getItem("user"));
+    
     return (
         <>
             <div className="topbar d-flex justify-content-between align-items-center p-3">
@@ -12,7 +14,7 @@ export default function TopbarNegocio({ onNavigate }) {
 
                 </div>
                 <div className="d-flex align-items-center gap-3">
-                    <h3 className="btn btn-sm btn-outline-light topbar-btn">Nombre del Usuario</h3>
+                    <h3 className="btn btn-sm btn-outline-light topbar-btn">{user.nombre}</h3>
                     <img
                         src="https://randomuser.me/api/portraits/men/75.jpg"
                         alt="User"
