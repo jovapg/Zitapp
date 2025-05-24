@@ -1,28 +1,22 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ModalLogin from "./ModalLogin";
 import ModalNegocio from "./ModalNegocio";
-import "../css/data.css";
-
-const API_URL = "http://localhost:8081/api/business";
 
 export default function Negocios() {
   const [negocios, setNegocios] = useState([]);
-  const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarModalLogin, setMostrarModalLogin] = useState(false);
+  const [mostrarModalNegocio, setMostrarModalNegocio] = useState(false);
+  const [usuarioLogueado, setUsuarioLogueado] = useState(null);
   const [negocioSeleccionado, setNegocioSeleccionado] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
+  // Obtener lista negocios
   const fetchNegocios = async () => {
-    setLoading(true);
-    setError(null);
     try {
-      const response = await axios.get(API_URL);
-      setNegocios(response.data);
+      const res = await axios.get("http://localhost:8081/api/business");
+      setNegocios(res.data);
     } catch (error) {
-      setError("Error al obtener negocios");
-      console.error(error);
-    } finally {
-      setLoading(false);
+      console.error("Error al cargar negocios", error);
     }
   };
 
@@ -30,24 +24,34 @@ export default function Negocios() {
     fetchNegocios();
   }, []);
 
-  const handleCrear = () => {
+  // Abrir modal login para crear negocio
+  const handleCrearClick = () => {
+    setUsuarioLogueado(null);
+    setMostrarModalLogin(true);
+  };
+
+  // Login exitoso, abrir modal negocio
+  const handleLoginSuccess = (user) => {
+    setUsuarioLogueado(user);
+    setMostrarModalLogin(false);
+    setMostrarModalNegocio(true);
     setNegocioSeleccionado(null);
-    setMostrarModal(true);
   };
 
-  const handleEditar = (negocio) => {
-    setNegocioSeleccionado(negocio);
-    setMostrarModal(true);
-  };
-
-  const handleGuardar = async (datos) => {
+  // Guardar negocio con idUsuario del usuario logueado
+  const handleGuardarNegocio = async (datos) => {
     try {
+      const datosConUsuario = { ...datos, idUsuario: usuarioLogueado.id };
+
       if (negocioSeleccionado) {
-        await axios.put(`${API_URL}/${negocioSeleccionado.id}`, datos);
+        await axios.put(
+          `http://localhost:8081/api/business/${negocioSeleccionado.id}`,
+          datosConUsuario
+        );
       } else {
-        await axios.post(API_URL, datos);
+        await axios.post("http://localhost:8081/api/business", datosConUsuario);
       }
-      setMostrarModal(false);
+      setMostrarModalNegocio(false);
       fetchNegocios();
     } catch (error) {
       alert("Error guardando negocio");
@@ -55,10 +59,18 @@ export default function Negocios() {
     }
   };
 
+  // Editar negocio (sin login)
+  const handleEditar = (negocio) => {
+    setUsuarioLogueado({ id: negocio.idUsuario, tipo: "negocio" });
+    setNegocioSeleccionado(negocio);
+    setMostrarModalNegocio(true);
+  };
+
+  // Eliminar negocio
   const handleEliminar = async (id) => {
     if (!window.confirm("¿Seguro que quieres eliminar este negocio?")) return;
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      await axios.delete(`http://localhost:8081/api/business/${id}`);
       fetchNegocios();
     } catch (error) {
       alert("Error eliminando negocio");
@@ -69,18 +81,12 @@ export default function Negocios() {
   return (
     <>
       <div className="table-container p-3">
-        <div className="encabezado mb-3">
+        <div className="encabezado mb-3 d-flex justify-content-between align-items-center">
           <h2 className="titulo">Negocios</h2>
-          <button className="btn btn-primary" onClick={handleCrear}>
-
-            <i class="bi bi-plus-circle"> Crear Negocio</i>
+          <button className="btn btn-primary" onClick={handleCrearClick}>
+            <i className="bi bi-plus-circle"></i> Crear Negocio
           </button>
         </div>
-
-        {loading && (
-          <div className="alert alert-info">Cargando negocios...</div>
-        )}
-        {error && <div className="alert alert-danger">{error}</div>}
 
         <table className="table table-custom">
           <thead>
@@ -90,10 +96,18 @@ export default function Negocios() {
               <th>Descripción</th>
               <th>Dirección</th>
               <th>Imagen</th>
+              <th>ID Usuario</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
+            {negocios.length === 0 && (
+              <tr>
+                <td colSpan={7} className="text-center">
+                  No hay negocios para mostrar
+                </td>
+              </tr>
+            )}
             {negocios.map((n) => (
               <tr key={n.id}>
                 <td>{n.nombre}</td>
@@ -105,17 +119,14 @@ export default function Negocios() {
                     <img
                       src={n.imagenUrl}
                       alt={n.nombre}
-                      style={{
-                        width: "80px",
-                        height: "50px",
-                        objectFit: "cover",
-                      }}
+                      style={{ width: "80px", height: "50px", objectFit: "cover" }}
                     />
                   ) : (
                     "No image"
                   )}
                 </td>
-                <td  className="d-flex"> 
+                <td>{n.idUsuario}</td>
+                <td className="d-flex">
                   <button
                     className="btn btn-sm btn-warning me-1"
                     onClick={() => handleEditar(n)}
@@ -126,28 +137,27 @@ export default function Negocios() {
                     className="btn btn-sm btn-danger"
                     onClick={() => handleEliminar(n.id)}
                   >
-                   <i className="bi bi-trash"></i>
+                    <i className="bi bi-trash"></i>
                   </button>
                 </td>
               </tr>
             ))}
-            {negocios.length === 0 && !loading && (
-              <tr>
-                <td colSpan={6} className="text-center">
-                  No hay negocios para mostrar
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
 
-      {/* Renderizamos el modal fuera del container */}
-      {mostrarModal && (
+      {mostrarModalLogin && (
+        <ModalLogin
+          onLoginSuccess={handleLoginSuccess}
+          onClose={() => setMostrarModalLogin(false)}
+        />
+      )}
+
+      {mostrarModalNegocio && (
         <ModalNegocio
           negocio={negocioSeleccionado}
-          onClose={() => setMostrarModal(false)}
-          onSave={handleGuardar}
+          onClose={() => setMostrarModalNegocio(false)}
+          onSave={handleGuardarNegocio}
         />
       )}
     </>
