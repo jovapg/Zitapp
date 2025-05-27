@@ -3,7 +3,10 @@ import axios from 'axios';
 import { Modal, Button, Form } from 'react-bootstrap';
 
 export default function ConfigUser({ show, handleClose }) {
-  const userId = 2; // Por ahora está fijo, luego puedes usar el ID del usuario logueado dinámicamente
+  // Obtener datos del usuario logueado desde localStorage
+  const userData = JSON.parse(localStorage.getItem('user'));
+  const userId = userData?.id;
+
   const [formData, setFormData] = useState({
     id: userId,
     email: '',
@@ -11,16 +14,16 @@ export default function ConfigUser({ show, handleClose }) {
     telefono: '',
     contrasena: '',
     imagenUrl: '',
-    edad:'',
-    coordenadas:  ''
+    edad: '',
+    coordenadas: ''
   });
 
   // Cargar datos actuales del usuario al abrir el modal
   useEffect(() => {
-    if (show) {
+    if (show && userId) {
       axios.get(`http://localhost:8081/api/users/${userId}`)
         .then((res) => {
-          const { id, email, nombre, telefono, imagenUrl } = res.data;
+          const { id, email, nombre, telefono, imagenUrl, edad, coordenadas } = res.data;
           setFormData({
             id: id || userId,
             email: email || '',
@@ -28,8 +31,8 @@ export default function ConfigUser({ show, handleClose }) {
             telefono: telefono || '',
             contrasena: '',
             imagenUrl: imagenUrl || '',
-            edad: res.data.edad || '',
-            coordenadas: res.data.coordenadas || ''
+            edad: edad || '',
+            coordenadas: coordenadas || ''
           });
         })
         .catch((error) => {
@@ -37,7 +40,7 @@ export default function ConfigUser({ show, handleClose }) {
           alert('No se pudieron cargar los datos del usuario');
         });
     }
-  }, [show]);
+  }, [show, userId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,6 +48,10 @@ export default function ConfigUser({ show, handleClose }) {
   };
 
   const handleSubmit = async () => {
+    if (!userId) {
+      alert('Usuario no identificado');
+      return;
+    }
     try {
       // Obtener datos actuales para mantener "tipo" y otros campos no editables
       const resActual = await axios.get(`http://localhost:8081/api/users/${userId}`);
@@ -79,7 +86,6 @@ export default function ConfigUser({ show, handleClose }) {
     <Modal show={show} onHide={handleClose} centered size="lg" dialogClassName="custom-modal">
       <Modal.Header closeButton className="modal-header-custom">
         <Modal.Title>Actualiza tus datos</Modal.Title>
-        
       </Modal.Header>
       <Modal.Body className="modal-body-custom">
         <Form>
@@ -150,7 +156,8 @@ export default function ConfigUser({ show, handleClose }) {
               className="servicio-info"
             />
           </Form.Group>
-            <Form.Group className="mb-3">
+
+          <Form.Group className="mb-3">
             <Form.Label className="form-label">Coordenadas</Form.Label>
             <Form.Control
               type="text"
@@ -160,13 +167,8 @@ export default function ConfigUser({ show, handleClose }) {
               placeholder="Latitud, Longitud"
               className="servicio-info"
             />
-            </Form.Group>
-
-
-
+          </Form.Group>
         </Form>
-
-        
       </Modal.Body>
       <Modal.Footer className="modal-footer-custom">
         <Button variant="primary" onClick={handleSubmit}>
