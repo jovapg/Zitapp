@@ -17,9 +17,22 @@ export default function BusinessMap() {
           attribution='&copy; OpenStreetMap contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <Marker position={[4.61, -74.07]}>
+        <Marker position={[6.3206591498377644, -75.55768349481691]} placeholder="Negocio">
+            
+          <Popup  
+         
+
+          
+          >
+           negocio prueba
+          </Popup>
+        </Marker>
+                <Marker position={[6.290501425882606, -75.55577671707081]} placeholder="Negocio">
+                  
+                  <Marker position={[6.313015854985283, -75.56184153096683]} placeholder="Negocio"></Marker>
+            
           <Popup>
-            Aquí hay un negocio.
+           negocio prueba
           </Popup>
         </Marker>
       </MapContainer>

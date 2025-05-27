@@ -10,7 +10,9 @@ export default function ConfigUser({ show, handleClose }) {
     nombre: '',
     telefono: '',
     contrasena: '',
-    imagenUrl: ''
+    imagenUrl: '',
+    edad:'',
+    coordenadas:  ''
   });
 
   // Cargar datos actuales del usuario al abrir el modal
@@ -25,7 +27,9 @@ export default function ConfigUser({ show, handleClose }) {
             nombre: nombre || '',
             telefono: telefono || '',
             contrasena: '',
-            imagenUrl: imagenUrl || ''
+            imagenUrl: imagenUrl || '',
+            edad: res.data.edad || '',
+            coordenadas: res.data.coordenadas || ''
           });
         })
         .catch((error) => {
@@ -75,6 +79,7 @@ export default function ConfigUser({ show, handleClose }) {
     <Modal show={show} onHide={handleClose} centered size="lg" dialogClassName="custom-modal">
       <Modal.Header closeButton className="modal-header-custom">
         <Modal.Title>Actualiza tus datos</Modal.Title>
+        
       </Modal.Header>
       <Modal.Body className="modal-body-custom">
         <Form>
@@ -134,7 +139,34 @@ export default function ConfigUser({ show, handleClose }) {
               className="servicio-info"
             />
           </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label className="form-label">Edad</Form.Label>
+            <Form.Control
+              type="text"
+              name="edad"
+              value={formData.edad}
+              onChange={handleChange}
+              className="servicio-info"
+            />
+          </Form.Group>
+            <Form.Group className="mb-3">
+            <Form.Label className="form-label">Coordenadas</Form.Label>
+            <Form.Control
+              type="text"
+              name="coordenadas"
+              value={formData.coordenadas}
+              onChange={handleChange}
+              placeholder="Latitud, Longitud"
+              className="servicio-info"
+            />
+            </Form.Group>
+
+
+
         </Form>
+
+        
       </Modal.Body>
       <Modal.Footer className="modal-footer-custom">
         <Button variant="primary" onClick={handleSubmit}>

@@ -10,15 +10,21 @@ export default function ConfigNegocio() {
   const [editedService, setEditedService] = useState({ nombre: '', descripcion: '', precio: '' });
   const [alert, setAlert] = useState(null);
 
+  const categorias = [
+    'SALUD', 'BELLEZA', 'FITNESS', 'AUTOMOTRIZ', 'BIENESTAR',
+    'COMIDAS', 'REPARACIONES', 'LIMPIEZA', 'ASESORIAS JURIDICAS',
+    'CLASES PARTICULARES', 'MASCOTAS', 'CONTROL DE PLAGAS'
+  ];
+
   const [datosNegocio, setDatosNegocio] = useState({
     id: 1,
     nombre: '',
     categoria: '',
-    coordenadas: '', // Usamos para llenar direccion en backend
+    coordenadas: '',
     descripcion: '',
     imagen: '',
     horariodetencion: '',
-    idUsuario: 1, // Si no tienes esto, asigna el valor adecuado o quita del payload
+    idUsuario: 1,
   });
   const [datosOriginales, setDatosOriginales] = useState({});
 
@@ -145,6 +151,7 @@ export default function ConfigNegocio() {
         imagenUrl: datosNegocio.imagen,
         horariodetencion: datosNegocio.horariodetencion,
         idUsuario: datosNegocio.idUsuario,
+        coordenadas: datosNegocio.coordenadas,
       };
 
       console.log('Payload a enviar:', payload);
@@ -159,7 +166,7 @@ export default function ConfigNegocio() {
         coordenadas: res.data.direccion,
         imagen: res.data.imagenUrl,
         horariodetencion: res.data.horariodetencion,
-        idUsuario: res.data.idUsuario,
+        idUsuario: res.data.idUsuario
       }));
       showAlert('Datos del negocio actualizados con éxito', 'success');
     } catch (error) {
@@ -179,28 +186,9 @@ export default function ConfigNegocio() {
         <div className="col-md-6 border-end">
           <h5>Servicios</h5>
           <p>Agrega los servicios que ofrece tu negocio para que tus clientes puedan agendar una cita.</p>
-          <Form.Control
-            className="mb-2"
-            placeholder="Nombre del servicio"
-            name="nombre"
-            value={newService.nombre || ''}
-            onChange={handleServiceChange}
-          />
-          <Form.Control
-            className="mb-2"
-            placeholder="Descripción del servicio"
-            name="descripcion"
-            value={newService.descripcion || ''}
-            onChange={handleServiceChange}
-          />
-          <Form.Control
-            type="number"
-            className="mb-2"
-            placeholder="Precio"
-            name="precio"
-            value={newService.precio || ''}
-            onChange={handleServiceChange}
-          />
+          <Form.Control className="mb-2" placeholder="Nombre del servicio" name="nombre" value={newService.nombre || ''} onChange={handleServiceChange} />
+          <Form.Control className="mb-2" placeholder="Descripción del servicio" name="descripcion" value={newService.descripcion || ''} onChange={handleServiceChange} />
+          <Form.Control type="number" className="mb-2" placeholder="Precio" name="precio" value={newService.precio || ''} onChange={handleServiceChange} />
           <Button variant="success" onClick={handleCreateService}>Crear servicio</Button>
 
           <div className="mt-4">
@@ -220,19 +208,22 @@ export default function ConfigNegocio() {
 
         <div className="col-md-6">
           <h5>Datos del Negocio</h5>
+          <p>Actualiza la información de tu negocio para que tus clientes puedan encontrarte fácilmente.</p>
+          
           <Form.Control className="mb-2" placeholder="Nombre" name="nombre" value={datosNegocio.nombre || ''} onChange={handleNegocioChange} />
-          <Form.Control className="mb-2" placeholder="Categoría" name="categoria" value={datosNegocio.categoria || ''} onChange={handleNegocioChange} />
+          <Form.Select className="mb-2" name="categoria" value={datosNegocio.categoria || ''} onChange={handleNegocioChange}>
+            <option value="">Selecciona una categoría</option>
+            {categorias.map((cat, idx) => (
+              <option key={idx} value={cat}>{cat}</option>
+            ))}
+          </Form.Select>
+
           <Form.Control className="mb-2" placeholder="Coordenadas (Dirección)" name="coordenadas" value={datosNegocio.coordenadas || ''} onChange={handleNegocioChange} />
           <Form.Control className="mb-2" placeholder="Descripción" name="descripcion" value={datosNegocio.descripcion || ''} onChange={handleNegocioChange} />
           <Form.Control className="mb-2" placeholder="Imagen URL" name="imagen" value={datosNegocio.imagen || ''} onChange={handleNegocioChange} />
           <Form.Control className="mb-2" placeholder="Horario de atención" name="horariodetencion" value={datosNegocio.horariodetencion || ''} onChange={handleNegocioChange} />
 
-          <Button
-            disabled={!hasChanged}
-            className="mt-2"
-            variant="primary"
-            onClick={handleSaveDatos}
-          >
+          <Button disabled={!hasChanged} className="mt-2" variant="primary" onClick={handleSaveDatos}>
             Guardar datos del negocio
           </Button>
         </div>
@@ -244,25 +235,9 @@ export default function ConfigNegocio() {
           <Modal.Title>Editar Servicio</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form.Control
-            className="mb-2"
-            placeholder="Nombre"
-            value={editedService.nombre || ''}
-            onChange={(e) => setEditedService(prev => ({ ...prev, nombre: e.target.value }))}
-          />
-          <Form.Control
-            className="mb-2"
-            placeholder="Descripción"
-            value={editedService.descripcion || ''}
-            onChange={(e) => setEditedService(prev => ({ ...prev, descripcion: e.target.value }))}
-          />
-          <Form.Control
-            type="number"
-            className="mb-2"
-            placeholder="Precio"
-            value={editedService.precio || ''}
-            onChange={(e) => setEditedService(prev => ({ ...prev, precio: e.target.value }))}
-          />
+          <Form.Control className="mb-2" placeholder="Nombre" value={editedService.nombre || ''} onChange={(e) => setEditedService(prev => ({ ...prev, nombre: e.target.value }))} />
+          <Form.Control className="mb-2" placeholder="Descripción" value={editedService.descripcion || ''} onChange={(e) => setEditedService(prev => ({ ...prev, descripcion: e.target.value }))} />
+          <Form.Control type="number" className="mb-2" placeholder="Precio" value={editedService.precio || ''} onChange={(e) => setEditedService(prev => ({ ...prev, precio: e.target.value }))} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>Cancelar</Button>
