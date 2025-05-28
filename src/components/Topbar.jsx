@@ -62,7 +62,9 @@ export default function Topbar({ onNavigate, onSearch }) {
 
         {/* Sección derecha: usuario */}
         <div className="d-flex align-items-center gap-3">
-          <h3 className="btn btn-sm btn-outline-light topbar-btn">{user.nombre}</h3>
+        <h3 className="btn btn-sm btn-outline-light topbar-btn">
+  {user?.nombre}
+</h3>
           <img
             src="https://randomuser.me/api/portraits/men/75.jpg"
             alt="User"

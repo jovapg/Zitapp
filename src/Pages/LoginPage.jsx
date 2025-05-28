@@ -28,7 +28,6 @@ export default function LoginPage() {
 
             let data = response.data;
             
-            console.log(response)
 
             if (response.status === 200) {
                 if (data.tipo === 'CLIENTE') {

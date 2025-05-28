@@ -7,6 +7,16 @@ export default function Nav({ onNavigate }) {
   const navigate = useNavigate();
   const [modalVisible, setModalVisible] = useState(false); // Aquí estaba el error: no se había definido este estado
 
+
+
+  let handleLogout = () => {
+    let confirmarLogin = window.confirm("¿Estás seguro de que deseas cerrar sesión?");
+    if (confirmarLogin) {
+    localStorage.removeItem("user"); // elimina los datos de sesión
+      navigate("/FirsPage"); // redirige al inicio
+    } 
+  };
+
   return (
     <div className="sidebar">
       <div className="mb-4 text-center">
@@ -54,12 +64,11 @@ export default function Nav({ onNavigate }) {
           <i className="bi bi-gear me-2"></i>Settings
         </button>
 
-        <button
-          className="nav-link dashboard-btn btn btn-link text-start mt-2"
-          onClick={() => navigate('/Firspage')}
-        >
-          <i className="bi bi-box-arrow-right me-2"></i>Logout
-        </button>
+      
+      <button className="nav-link btn btn-link text-start" onClick={ handleLogout}>
+        <i className="fas fa-sign-out-alt fa-sm text-white-50"></i> Salir
+          </button>
+            
       </div>
 
       {/* Modal de configuración de usuario */}

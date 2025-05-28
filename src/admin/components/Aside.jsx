@@ -1,12 +1,22 @@
 import logo from "../../assets/img/LOGO Zitapp.png";
 import "./css/Aside.css";
-
+import { useNavigate } from "react-router-dom";
 export default function Aside({ isVisible, onSelectView }) {
   if (!isVisible) return null;
 
-  const handleClick = (view) => (e) => {
+  let handleClick = (view) => (e) => {
     e.preventDefault();
     onSelectView(view);
+  };
+
+  let navigate = useNavigate();
+
+  let handleLogout = () => {
+    let confirmarLogin = window.confirm("¿Estás seguro de que deseas cerrar sesión?");
+    if (confirmarLogin) {
+    localStorage.removeItem("user"); // elimina los datos de sesión
+      navigate("/FirsPage"); // redirige al inicio
+    } 
   };
 
   return (
@@ -28,7 +38,6 @@ export default function Aside({ isVisible, onSelectView }) {
               style={{ width: "70px", height: "70px" }}
             />
           </div>
-     
         </a>
 
         <hr className="sidebar-divider" />
@@ -56,23 +65,24 @@ export default function Aside({ isVisible, onSelectView }) {
           </button>
         </li>
         <li className="nav-item">
-          <a href="#" className="nav-link collapsed" onClick={handleClick("reporte")}>
-            <i className="fas fa-download fa-sm text-white-50"></i> Generar Reporte
+          <a
+            href="#"
+            className="nav-link collapsed"
+            onClick={handleClick("reporte")}
+          >
+            <i className="fas fa-download fa-sm text-white-50"></i> Generar
+            Reporte
           </a>
         </li>
 
         <hr className="sidebar-divider my-4" />
 
         {/* BOTÓN SALIR al fondo */}
-        <li className="nav-item mt-auto">
-          <a
-            href="/FirsPage"
-            className="nav-link"
-            onClick={() => alert("Salir de la sesión")}
-          >
-            <i className="fas fa-sign-out-alt fa-sm text-white-50"></i> Salir
-          </a>
-        </li>
+      <li className="nav-item mt-auto">
+      <button className="nav-link btn btn-link text-start" onClick={ handleLogout}>
+        <i className="fas fa-sign-out-alt fa-sm text-white-50"></i> Salir
+      </button>
+    </li>
       </ul>
     </div>
   );
