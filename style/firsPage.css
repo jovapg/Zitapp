@@ -9,9 +9,20 @@
        background-color: rgba(0, 0, 0, 0.8);
    }
 
+   nav a {
+       font-size: 1rem;
+       color: #ccc;
+       text-decoration: none;
+       padding: 0 10px;
+       line-height: 1;
+       display: inline-block;
+       vertical-align: middle;
+   }
+
    .hero {
        height: 100vh;
-       background-image: url('YOUR_BACKGROUND_IMAGE.jpg');
+       background-image: url('../src/assets/img/fondoPg\ Principsl.jpeg');
+       background-image: ;
        background-size: cover;
        background-position: center;
        display: flex;
@@ -133,4 +144,29 @@
    }
 
 
-  
+   .neon-text {
+       background: transparent;
+       color: #fff;
+       text-shadow: 0 0 5px #ff005e, 0 0 10px #ff005e, 0 0 20px #ff005e, 0 0 40px #ff005e, 0 0 80px #ff005e;
+       animation: glow 1.5s infinite alternate;
+
+       /* NUEVO: Alineación vertical y reset de tamaño */
+       font-size: 1rem;
+       /* o igual al del resto del nav */
+       line-height: 1;
+       /* evita estiramiento vertical */
+       display: inline-block;
+       vertical-align: middle;
+       padding-bottom: 2px;
+       /* Ajusta fino según lo veas */
+   }
+
+   @keyframes glow {
+       0% {
+           text-shadow: 0 0 5px #ff00d9, 0 0 10px #6600ff, 0 0 20px #007bff, 0 0 40px #ff005e, 0 0 80px #ff005e;
+       }
+
+       100% {
+           text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #5eff00, 0 0 80px #00d4ff, 0 0 160px #00d4ff;
+       }
+   }

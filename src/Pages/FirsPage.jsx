@@ -45,11 +45,8 @@ export default function FirsPage() {
                 </button>
               </li>
 
-              <li>
-                <button className="nav-link"
-                  onClick={() => navigate('/LoginPage')}>
-                  Login
-                </button>
+              <li >
+                <a className="neon-text" onClick={() => navigate('/LoginPage')} >LOGIN</a>
               </li>
 
               <li>
