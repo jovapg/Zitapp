@@ -1,0 +1,136 @@
+   body {
+       background: linear-gradient(135deg, #0d0d0d, #1a1a2e);
+       color: #fff;
+       font-family: 'Segoe UI', sans-serif;
+       scroll-behavior: smooth;
+   }
+
+   .navbar {
+       background-color: rgba(0, 0, 0, 0.8);
+   }
+
+   .hero {
+       height: 100vh;
+       background-image: url('YOUR_BACKGROUND_IMAGE.jpg');
+       background-size: cover;
+       background-position: center;
+       display: flex;
+       flex-direction: column;
+       justify-content: center;
+       align-items: center;
+       text-align: center;
+       padding: 2rem;
+   }
+
+   .hero h1 {
+       font-size: 4rem;
+       font-weight: bold;
+   }
+
+   .btn-primary {
+       background-color: #004aad;
+       border: none;
+       border-radius: 30px;
+       padding: 0.6rem 2rem;
+   }
+
+   section {
+       padding: 5rem 2rem;
+
+   }
+
+   .benefit-card {
+       background-color: #1a1a2e;
+       padding: 2rem;
+       border-radius: 20px;
+       text-align: center;
+       transition: transform 0.3s ease;
+       width: 250px;
+   }
+
+   .benefit-card:hover {
+       transform: scale(1.05);
+   }
+
+   .benefit-image {
+       background: linear-gradient(145deg, #3b1c85, #472bb7);
+       padding: 1rem;
+       border-radius: 15px;
+       margin-bottom: 1rem;
+   }
+
+   .bg-purple {
+       background-color: #135fa5;
+   }
+
+   .carousel-control-prev-icon,
+   .carousel-control-next-icon {
+       background-color: rgba(255, 255, 255, 0.3);
+       border-radius: 50%;
+       padding: 10px;
+   }
+
+
+   .card {
+       background-color: #111;
+       border: none;
+       border-radius: 15px;
+       transition: transform 0.3s ease;
+   }
+
+   .card:hover {
+       transform: translateY(-5px);
+   }
+
+   footer {
+       background-color: #000;
+       padding: 2rem 1rem;
+       text-align: center;
+       color: #888;
+   }
+
+   .text-purple {
+       color: #a259ff;
+   }
+
+   .footer-link {
+       color: #ccc;
+       text-decoration: none;
+       transition: color 0.3s;
+   }
+
+   .footer-link:hover {
+       color: #a259ff;
+   }
+
+
+   .fade-in {
+       opacity: 0;
+       transform: translateY(20px);
+       transition: all 0.8s ease-in-out;
+   }
+
+   .fade-in.visible {
+       opacity: 1;
+       transform: translateY(0);
+   }
+
+
+   #backToTop {
+       bottom: 30px;
+       right: 30px;
+       display: none;
+       z-index: 999;
+       background-color: #a259ff;
+       color: white;
+       width: 45px;
+       height: 45px;
+       transition: all 0.3s ease;
+   }
+
+   #backToTop:hover {
+       background-color: #8b3efb;
+   }
+
+
+  
