@@ -48,13 +48,10 @@ export default function FirsPage() {
               <li >
                 <a className="neon-text" onClick={() => navigate('/LoginPage')} >LOGIN</a>
               </li>
-
-              <li>
-                <button className="nav-link"
-                  onClick={() => navigate('/Register')}>
-                  Regístrate
-                </button>
+              <li >
+                <a className="neon-text" onClick={() => navigate('/Register')} >REGISTRATE</a>
               </li>
+
             </ul>
           </div>
         </div>
@@ -63,7 +60,7 @@ export default function FirsPage() {
       {/* Hero */}
 
       <header className="hero text-white">
-        <h1 className="display-4">ZITAPP</h1>
+        <h1 className="masked-text display-4">ZITAPP</h1>
         <p className="lead">Tu solución inteligente para agendar citas fácilmente.</p>
         <a href="#about" className="btn btn-primary mt-3">Conócenos</a>
       </header>

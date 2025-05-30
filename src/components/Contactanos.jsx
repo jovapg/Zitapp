@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import React from 'react'
+
+
 
 export default function Contactanos() {
     const [step, setStep] = useState(1);
@@ -22,7 +23,8 @@ export default function Contactanos() {
                             <div className="row">
                                 {/* Imagen */}
                                 <div className="col-md-5 d-none d-md-block">
-                                    <img src="/ruta/a/tu/imagen-contacto.png" alt="Contacto" className="img-fluid rounded-4" />
+                                    <img src='https://i.pinimg.com/736x/77/37/b4/7737b4798afbbbb10514a9866ed9d91e.jpg' alt="Contacto" className="img-fluid rounded-4 h-100" />
+                                    
                                 </div>
 
                                 {/* Formulario */}
