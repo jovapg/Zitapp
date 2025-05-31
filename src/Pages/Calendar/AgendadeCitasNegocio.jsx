@@ -59,7 +59,7 @@ export default function AgendadeCitasNegocio() {
         setIsLoading(true);
         setError(null);
         
-        const response = await fetch('http://localhost:8081/api/Appointments/busness/1');
+        const response = await fetch('http://localhost:8081/api/Appointments/busness/3');
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
