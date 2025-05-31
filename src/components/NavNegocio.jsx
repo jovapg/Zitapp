@@ -8,7 +8,8 @@ export default function NavNegocio({ onNavigate }) {
       let handleLogout = () => {
     let confirmarLogin = window.confirm("¿Estás seguro de que deseas cerrar sesión?");
     if (confirmarLogin) {
-    localStorage.removeItem("user"); // elimina los datos de sesión
+        localStorage.removeItem("user");
+     localStorage.removeItem("negocioId");    // elimina los datos de sesión
       Navigate("/FirsPage"); // redirige al inicio
     } 
   };

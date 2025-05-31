@@ -33,6 +33,8 @@ export default function Botonagendarcita({ show, setShow, onCitaAgendada }) {
   const [fechaSeleccionada, setFechaSeleccionada] = useState("");
   const [horaSeleccionada, setHoraSeleccionada] = useState("");
 
+   let fechaActual = new Date().toISOString().split('T')[0]
+
   const handleAgendar = () => {
     if (!servicioSeleccionado) {
       alert("Por favor selecciona un servicio.");
@@ -128,6 +130,7 @@ export default function Botonagendarcita({ show, setShow, onCitaAgendada }) {
                   <Form.Control 
                     type="date" 
                     value={fechaSeleccionada}
+                    min={fechaActual}
                     onChange={(e) => setFechaSeleccionada(e.target.value)}
                   />
                 </Form.Group>
