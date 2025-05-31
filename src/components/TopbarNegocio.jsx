@@ -30,6 +30,36 @@ export default function TopbarNegocio({ onNavigate }) {
                 </div>
             </div>
             {/* tus estilos... */}
+             <style>{`
+        .topbar {
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          background-color: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(6px);
+          color: white;
+        }
+
+        .topbar-btn {
+          transition: transform 0.2s ease;
+          cursor: pointer;
+        }
+
+        .topbar-btn:hover {
+          transform: scale(1.1);
+        }
+
+        .search-bar input::placeholder {
+          color: #ccc;
+        }
+
+        .search-bar input:focus {
+          box-shadow: none;
+          outline: none;
+          border-color: #0d6efd;
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+      `}</style>
         </>
     );
 }
