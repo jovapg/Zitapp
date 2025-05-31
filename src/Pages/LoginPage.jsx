@@ -133,6 +133,7 @@ export default function LoginPage() {
 
             {/* Estilos personalizados */}
             <style>{`
+
         .login-container {
           width: 900px;
         }

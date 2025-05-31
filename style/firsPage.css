@@ -1,229 +1,248 @@
-   body {
-       background: linear-gradient(135deg, #0d0d0d, #1a1a2e);
-       color: #fff;
-       font-family: 'Segoe UI', sans-serif;
-       scroll-behavior: smooth;
-   }
+@import "tailwindcss";
 
-   .navbar {
-       background-color: rgba(0, 0, 0, 0.8);
-   }
+body {
+    background: linear-gradient(135deg, #0d0d0d, #1a1a2e);
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    scroll-behavior: smooth;
+}
 
-   nav a {
-       font-size: 1rem;
-       color: #ccc;
-       text-decoration: none;
-       padding: 0 10px;
-       line-height: 1;
-       display: inline-block;
-       vertical-align: middle;
-   }
+.navbar {
+    background-color: rgba(0, 0, 0, 0.8);
+}
 
-   .hero {
-       height: 100vh;
-       background-image: url('../src/assets/img/geoemtry\ GIF.gif');
-       background-size: cover;
-       background-position: center;
-       display: flex;
-       flex-direction: column;
-       justify-content: center;
-       align-items: center;
-       text-align: center;
-       padding: 2rem;
-   }
+.logo {
+    height: 50px;
+}
 
-   .hero h1 {
-       font-size: 150px;
-       font-weight: bold;
-   }
+nav a {
+    font-size: 1rem;
+    color: #ccc;
+    text-decoration: none;
+    padding: 0 10px;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: middle;
+}
 
-   /* Titulo de Zitapp */
-   .masked-text {
-       
-       font-weight: bold;
-       color: transparent;
-       background-image: url('../src/assets/img/fondo\ letra.gif');
-       background-size: 200%;
-       /* Enlarged for smooth animation */
-       background-position: 0 50%;
-       background-clip: text;
-       -webkit-background-clip: text;
-       -webkit-text-fill-color: transparent;
-       animation: animate-background 5s infinite alternate linear;
-   }
+.hero {
+    height: 100vh;
+    background-image: url('../src/assets/img/geoemtry\ GIF.gif');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+}
 
-   @keyframes animate-background {
-       0% {
-           background-position: 0 50%;
-       }
+.hero h1 {
+    font-size: 150px;
+    font-weight: bold;
+}
 
-       100% {
-           background-position: 100% 50%;
-       }
-   }
+/* Titulo de Zitapp */
+.masked-text {
 
+    font-weight: bold;
+    color: transparent;
+    background-image: url('../src/assets/img/fondo\ letra.gif');
+    background-size: 200%;
+    /* Enlarged for smooth animation */
+    background-position: 0 50%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: animate-background 5s infinite alternate linear;
+}
 
-   .btn-primary {
-       background-color: #004aad;
-       border: none;
-       border-radius: 30px;
-       padding: 0.6rem 2rem;
-   }
+@keyframes animate-background {
+    0% {
+        background-position: 0 50%;
+    }
 
-   section {
-       padding: 5rem 2rem;
-
-   }
-
-   .benefit-card {
-       background-color: #1a1a2e;
-       padding: 2rem;
-       border-radius: 20px;
-       text-align: center;
-       transition: transform 0.3s ease;
-       width: 250px;
-   }
-
-   .benefit-card:hover {
-       transform: scale(1.05);
-   }
-
-   .benefit-image {
-       background: linear-gradient(145deg, #3b1c85, #472bb7);
-       padding: 1rem;
-       border-radius: 15px;
-       margin-bottom: 1rem;
-   }
-
-   .bg-purple {
-       background-color: #135fa5;
-   }
-
-   .carousel-control-prev-icon,
-   .carousel-control-next-icon {
-       background-color: rgba(255, 255, 255, 0.3);
-       border-radius: 50%;
-       padding: 10px;
-   }
+    100% {
+        background-position: 100% 50%;
+    }
+}
 
 
-   .card {
-       background-color: #111;
-       border: none;
-       border-radius: 15px;
-       transition: transform 0.3s ease;
-   }
+.btn-primary {
+    background-color: #004aad;
+    border: none;
+    border-radius: 30px;
+    padding: 0.6rem 2rem;
+}
 
-   .card:hover {
-       transform: translateY(-5px);
-   }
+section {
+    padding: 5rem 2rem;
 
-   footer {
-       background-color: #000;
-       padding: 2rem 1rem;
-       text-align: center;
-       color: #888;
-   }
+}
 
-   .text-purple {
-       color: #a259ff;
-   }
+.benefit-card {
+    background-color: #1a1a2e;
+    padding: 2rem;
+    border-radius: 20px;
+    text-align: center;
+    transition: transform 0.3s ease;
+    width: 250px;
+}
 
-   .footer-link {
-       color: #ccc;
-       text-decoration: none;
-       transition: color 0.3s;
-   }
+.benefit-card:hover {
+    transform: scale(1.05);
+}
 
-   .footer-link:hover {
-       color: #a259ff;
-   }
+.benefit-image {
+    background: linear-gradient(145deg, #3b1c85, #472bb7);
+    padding: 1rem;
+    border-radius: 15px;
+    margin-bottom: 1rem;
+}
 
+.bg-purple {
+    background-color: #135fa5;
+}
 
-   .fade-in {
-       opacity: 0;
-       transform: translateY(20px);
-       transition: all 0.8s ease-in-out;
-   }
-
-   .fade-in.visible {
-       opacity: 1;
-       transform: translateY(0);
-   }
-
-
-   #backToTop {
-       bottom: 30px;
-       right: 30px;
-       display: none;
-       z-index: 999;
-       background-color: #a259ff;
-       color: white;
-       width: 45px;
-       height: 45px;
-       transition: all 0.3s ease;
-   }
-
-   #backToTop:hover {
-       background-color: #8b3efb;
-   }
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    padding: 10px;
+}
 
 
-   .neon-text {
-       background: transparent;
-       color: #fff;
-       text-shadow: 0 0 5px #ff005e, 0 0 10px #ff005e, 0 0 20px #ff005e, 0 0 40px #ff005e, 0 0 80px #ff005e;
-       animation: glow 1.5s infinite alternate;
+.card {
+    background-color: #111;
+    border: none;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+}
 
-       /* NUEVO: Alineación vertical y reset de tamaño */
-       font-size: 1rem;
-       /* o igual al del resto del nav */
-       line-height: 1;
-       /* evita estiramiento vertical */
-       display: inline-block;
-       vertical-align: middle;
-       padding-bottom: 2px;
-       /* Ajusta fino según lo veas */
-   }
+.card:hover {
+    transform: translateY(-5px);
+}
 
-   @keyframes glow {
-       0% {
-           text-shadow: 0 0 5px #ff00d9, 0 0 10px #6600ff, 0 0 20px #007bff, 0 0 40px #ff005e, 0 0 80px #ff005e;
-       }
+footer {
+    background-color: #000;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #888;
+}
 
-       100% {
-           text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #5eff00, 0 0 80px #00d4ff, 0 0 160px #00d4ff;
-       }
-   }
+.text-purple {
+    color: #a259ff;
+}
+
+.footer-link {
+    color: #ccc;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-link:hover {
+    color: #a259ff;
+}
 
 
-   /* sobre nostros  */
- @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600");
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease-in-out;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+#backToTop {
+    bottom: 30px;
+    right: 30px;
+    display: none;
+    z-index: 999;
+    background-color: #a259ff;
+    color: white;
+    width: 45px;
+    height: 45px;
+    transition: all 0.3s ease;
+}
+
+#backToTop:hover {
+    background-color: #8b3efb;
+}
+
+
+.neon-text {
+    background: transparent;
+    color: #fff;
+    text-shadow: 0 0 5px #ff005e, 0 0 10px #ff005e, 0 0 20px #ff005e, 0 0 40px #ff005e, 0 0 80px #ff005e;
+    animation: glow 1.5s infinite alternate;
+
+    /* NUEVO: Alineación vertical y reset de tamaño */
+    font-size: 1rem;
+    /* o igual al del resto del nav */
+    line-height: 1;
+    /* evita estiramiento vertical */
+    display: inline-block;
+    vertical-align: middle;
+    padding-bottom: 2px;
+    /* Ajusta fino según lo veas */
+}
+
+@keyframes glow {
+    0% {
+        text-shadow: 0 0 5px #ff00d9, 0 0 10px #6600ff, 0 0 20px #007bff, 0 0 40px #ff005e, 0 0 80px #ff005e;
+    }
+
+    100% {
+        text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #5eff00, 0 0 80px #00d4ff, 0 0 160px #00d4ff;
+    }
+}
+
+
+/* sobre nostros  */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600");
 
 /* Cursor */
-.cursor{
+.cursor {
     position: relative;
     font-family: "Playfair Display", Vidaloka, serif;
     width: 24em;
     margin: 0 auto;
-    border-right: 2px solid rgba(255,255,255,.75);
+    border-right: 2px solid rgba(255, 255, 255, .75);
     font-size: 30px;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
-    transform: translateY(-50%);    
+    transform: translateY(-50%);
 }
+
 /* Animation */
 .typewriter-animation {
-  animation: 
-    typewriter 5s steps(50) 1s 1 normal both, 
-    blinkingCursor 500ms steps(50) infinite normal;
+    animation:
+        typewriter 5s steps(50) 1s 1 normal both,
+        blinkingCursor 500ms steps(50) infinite normal;
 }
+
 @keyframes typewriter {
-  from { width: 0; }
-  to { width: 100%; }
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
 }
-@keyframes blinkingCursor{
-  from { border-right-color: rgba(255,255,255,.75); }
-  to { border-right-color: transparent; }
+
+@keyframes blinkingCursor {
+    from {
+        border-right-color: rgba(255, 255, 255, .75);
+    }
+
+    to {
+        border-right-color: transparent;
+    }
 }

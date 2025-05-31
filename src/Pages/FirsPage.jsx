@@ -15,9 +15,9 @@ export default function FirsPage() {
       <nav className="navbar navbar-expand-lg navbar-dark fixed-top">
         <div className="container">
           <a className="navbar-brand" href="#">
-            <img src={fondologin} alt="Zitapp Logo" height="30" /> Zitapp
+            <img src={fondologin} alt="Zitapp Logo" className='logo' /> Zitapp
           </a>
-          <button
+          {/* <button
             className="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
@@ -27,8 +27,8 @@ export default function FirsPage() {
             aria-label="Toggle navigation"
           >
             <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navMenu">
+          </button> */}
+          <div className="navbar-collapse" id="navMenu">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
                 <a className="nav-link" href="#about">Nosotros</a>
