@@ -195,3 +195,35 @@
            text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #5eff00, 0 0 80px #00d4ff, 0 0 160px #00d4ff;
        }
    }
+
+
+   /* sobre nostros  */
+ @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600");
+
+/* Cursor */
+.cursor{
+    position: relative;
+    font-family: "Playfair Display", Vidaloka, serif;
+    width: 24em;
+    margin: 0 auto;
+    border-right: 2px solid rgba(255,255,255,.75);
+    font-size: 30px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    transform: translateY(-50%);    
+}
+/* Animation */
+.typewriter-animation {
+  animation: 
+    typewriter 5s steps(50) 1s 1 normal both, 
+    blinkingCursor 500ms steps(50) infinite normal;
+}
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+@keyframes blinkingCursor{
+  from { border-right-color: rgba(255,255,255,.75); }
+  to { border-right-color: transparent; }
+}
