@@ -7,14 +7,35 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Botonagendarcita from './Botonagendarcita';
 
 export default function BusinessMap() {
-    const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [businesses, setBusinesses] = useState([]);
   const [filteredCategory, setFilteredCategory] = useState('TODAS');
+  const [userLocation, setUserLocation] = useState(null);
 
+  // Obtener negocios del backend
   useEffect(() => {
     axios.get('http://localhost:8081/api/business')
       .then(response => setBusinesses(response.data))
       .catch(error => console.error('Error al obtener negocios:', error));
+  }, []);
+
+  // Obtener ubicación del usuario
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        error => {
+          console.warn('Permiso denegado o error al obtener ubicación:', error);
+        }
+      );
+    } else {
+      alert('Geolocalización no es compatible con este navegador');
+    }
   }, []);
 
   const categories = [...new Set(businesses.map(b => b.categoria))];
@@ -32,6 +53,13 @@ export default function BusinessMap() {
     });
   };
 
+  const userIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png',
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -28],
+  });
+
   return (
     <div className="container-fluid">
       <br />
@@ -47,24 +75,32 @@ export default function BusinessMap() {
       </div>
 
       <MapContainer
-        center={[6.252849446073776, -75.50892585194177]}
+        center={userLocation ? [userLocation.lat, userLocation.lng] : [6.2528, -75.509]}
         zoom={13}
         scrollWheelZoom={true}
-        style={{ height: '400px', width: '100%' }}>
+        style={{ height: '450px', width: '100%' }}>
 
         <TileLayer
           attribution='&copy; OpenStreetMap contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
+        {/* Marcador de la ubicación del usuario */}
+        {userLocation && (
+          <Marker position={[userLocation.lat, userLocation.lng]} icon={userIcon}>
+            <Popup>
+              <strong>Estás aquí</strong>
+            </Popup>
+          </Marker>
+        )}
+
+        {/* Marcadores de negocios */}
         {filteredBusinesses.map((negocio, index) => {
           const [lat, lng] = negocio.direccion.split(',').map(coord => parseFloat(coord.trim()));
-
           return (
             <Marker key={index} position={[lat, lng]} icon={createIcon()}>
               <Popup>
                 <div style={{ width: '220px' }}>
-                  {/* Imagen */}
                   <img
                     src={negocio.imagenUrl || "https://via.placeholder.com/200x100?text=Sin+imagen"}
                     alt={negocio.nombre}
@@ -78,8 +114,9 @@ export default function BusinessMap() {
                   <p className="text-muted" style={{ fontSize: '0.85rem' }}>{negocio.categoria}</p>
                   <div className="d-grid gap-2">
                     <button className="btn btn-primary btn-sm"
-                    onClick={() => setShowModal(true)}
-                    >Agendar cita</button>
+                      onClick={() => setShowModal(true)}>
+                      Agendar cita
+                    </button>
                     <a
                       href={`https://www.google.com/maps?q=${negocio.direccion}`}
                       target="_blank"
@@ -91,15 +128,13 @@ export default function BusinessMap() {
                   </div>
                 </div>
               </Popup>
-
-
             </Marker>
           );
         })}
       </MapContainer>
 
-            {/* Modal de agendamiento */}
-            {showModal && <Botonagendarcita show={showModal} setShow={setShowModal} />}
+      {/* Modal de agendamiento */}
+      {showModal && <Botonagendarcita show={showModal} setShow={setShowModal} />}
     </div>
   );
 }

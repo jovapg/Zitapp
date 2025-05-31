@@ -122,6 +122,7 @@ localStorage.setItem("negocioId", negocio.id.toString());
               </button>
             </div>
 
+
             <p className="mt-4 text-center text-light">
               Don’t have an account?{" "}
               <a
@@ -135,8 +136,11 @@ localStorage.setItem("negocioId", negocio.id.toString());
         </div>
       </div>
 
-      {/* Estilos personalizados */}
-      <style>{`
+    
+
+            {/* Estilos personalizados */}
+            <style>{`
+
         .login-container {
           width: 900px;
         }

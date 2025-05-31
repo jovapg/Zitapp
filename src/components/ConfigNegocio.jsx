@@ -3,11 +3,26 @@ import axios from 'axios';
 import { Modal, Button, Form, Card, Alert } from 'react-bootstrap';
 
 export default function ConfigNegocio() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const idUsuario = user?.id || 1;
+
+  const [datosNegocio, setDatosNegocio] = useState({
+    id: null,
+    nombre: '',
+    categoria: '',
+    coordenadas: '',
+    descripcion: '',
+    imagen: '',
+    horariodetencion: '',
+    idUsuario,
+  });
+
+  const [datosOriginales, setDatosOriginales] = useState({});
   const [services, setServices] = useState([]);
-  const [newService, setNewService] = useState({ nombre: '', descripcion: '', precio: '' });
+  const [newService, setNewService] = useState({ nombre: '', descripcion: '', precio: '', tiemposervicio: '' });
   const [showModal, setShowModal] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
-  const [editedService, setEditedService] = useState({ nombre: '', descripcion: '', precio: '' });
+  const [editedService, setEditedService] = useState({});
   const [alert, setAlert] = useState(null);
 
   const categorias = [
@@ -16,61 +31,43 @@ export default function ConfigNegocio() {
     'CLASES PARTICULARES', 'MASCOTAS', 'CONTROL DE PLAGAS'
   ];
 
-  const [datosNegocio, setDatosNegocio] = useState({
-    id: 1,
-    nombre: '',
-    categoria: '',
-    coordenadas: '',
-    descripcion: '',
-    imagen: '',
-    horariodetencion: '',
-    idUsuario: 1,
-  });
-  const [datosOriginales, setDatosOriginales] = useState({});
-
   useEffect(() => {
     fetchDatosNegocio();
-    fetchServices();
   }, []);
 
   const fetchDatosNegocio = async () => {
     try {
-      const res = await axios.get(`http://localhost:8081/api/business/1`);
+      const res = await axios.get(`http://localhost:8081/api/business/user/${idUsuario}`);
+      const negocio = res.data;
       setDatosNegocio({
-        ...res.data,
-        coordenadas: res.data.direccion || '',
-        imagen: res.data.imagenUrl || '',
-        idUsuario: res.data.idUsuario || 1,
+        ...negocio,
+        coordenadas: negocio.direccion,
+        imagen: negocio.imagenUrl,
+        idUsuario: negocio.idUsuario
       });
-      setDatosOriginales(res.data);
+      setDatosOriginales(negocio);
+      fetchServices(negocio.id);
     } catch (error) {
       console.error('Error al cargar datos del negocio:', error);
     }
   };
 
-  const fetchServices = async () => {
+  const fetchServices = async (negocioId) => {
     try {
-      const res = await axios.get(`http://localhost:8081/api/services/businesses/1/services`);
+      const res = await axios.get(`http://localhost:8081/api/services/businesses/${negocioId}/services`);
       setServices(res.data);
     } catch (error) {
       console.error('Error al cargar servicios:', error);
     }
   };
 
-  const handleServiceChange = (e) => {
-    const { name, value } = e.target;
-    setNewService(prev => ({ ...prev, [name]: value }));
-  };
-
   const handleCreateService = async () => {
-    if (!newService.nombre || !newService.descripcion || !newService.precio) return;
+    if (!newService.nombre || !newService.descripcion || !newService.precio || !newService.tiemposervicio) return;
 
     try {
-      const res = await axios.post(`http://localhost:8081/api/services/businesses/1`, {
-        ...newService,
-      });
+      const res = await axios.post(`http://localhost:8081/api/services/businesses/${datosNegocio.id}`, newService);
       setServices(prev => [...prev, res.data]);
-      setNewService({ nombre: '', descripcion: '', precio: '' });
+      setNewService({ nombre: '', descripcion: '', precio: '', tiemposervicio: '' });
       showAlert('Servicio creado con éxito', 'success');
     } catch (error) {
       console.error('Error al crear servicio:', error);
@@ -99,9 +96,7 @@ export default function ConfigNegocio() {
 
   const handleSaveEdit = async () => {
     try {
-      const res = await axios.put(`http://localhost:8081/api/services/${editedService.id}`, {
-        ...editedService,
-      });
+      const res = await axios.put(`http://localhost:8081/api/services/${editedService.id}`, editedService);
       const updated = [...services];
       updated[editIndex] = res.data;
       setServices(updated);
@@ -113,14 +108,45 @@ export default function ConfigNegocio() {
     }
   };
 
-  const showAlert = (message, variant) => {
-    setAlert({ message, variant });
-    setTimeout(() => setAlert(null), 3000);
-  };
-
   const handleNegocioChange = (e) => {
     const { name, value } = e.target;
     setDatosNegocio(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleServiceChange = (e) => {
+    const { name, value } = e.target;
+    setNewService(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveDatos = async () => {
+    try {
+      const payload = {
+        nombre: datosNegocio.nombre,
+        categoria: datosNegocio.categoria,
+        descripcion: datosNegocio.descripcion,
+        direccion: datosNegocio.coordenadas,
+        imagenUrl: datosNegocio.imagen,
+        horariodetencion: datosNegocio.horariodetencion,
+        idUsuario: datosNegocio.idUsuario
+      };
+
+      const res = await axios.put(`http://localhost:8081/api/business/${datosNegocio.id}`, payload);
+      setDatosOriginales(res.data);
+      setDatosNegocio({
+        ...res.data,
+        coordenadas: res.data.direccion,
+        imagen: res.data.imagenUrl
+      });
+      showAlert('Datos del negocio actualizados con éxito', 'success');
+    } catch (error) {
+      console.error('Error al actualizar datos del negocio:', error);
+      showAlert('Error al actualizar datos del negocio', 'danger');
+    }
+  };
+
+  const showAlert = (message, variant) => {
+    setAlert({ message, variant });
+    setTimeout(() => setAlert(null), 3000);
   };
 
   const hasChanged = JSON.stringify({
@@ -141,54 +167,20 @@ export default function ConfigNegocio() {
     idUsuario: datosOriginales.idUsuario,
   });
 
-  const handleSaveDatos = async () => {
-    try {
-      const payload = {
-        nombre: datosNegocio.nombre,
-        categoria: datosNegocio.categoria,
-        descripcion: datosNegocio.descripcion,
-        direccion: datosNegocio.coordenadas,
-        imagenUrl: datosNegocio.imagen,
-        horariodetencion: datosNegocio.horariodetencion,
-        idUsuario: datosNegocio.idUsuario,
-        coordenadas: datosNegocio.coordenadas,
-      };
-
-      console.log('Payload a enviar:', payload);
-
-      const res = await axios.put(`http://localhost:8081/api/business/1`, payload);
-      setDatosOriginales(res.data);
-      setDatosNegocio(prev => ({
-        ...prev,
-        nombre: res.data.nombre,
-        categoria: res.data.categoria,
-        descripcion: res.data.descripcion,
-        coordenadas: res.data.direccion,
-        imagen: res.data.imagenUrl,
-        horariodetencion: res.data.horariodetencion,
-        idUsuario: res.data.idUsuario
-      }));
-      showAlert('Datos del negocio actualizados con éxito', 'success');
-    } catch (error) {
-      console.error('Error al actualizar datos del negocio:', error);
-      if (error.response && error.response.data) {
-        console.error('Mensaje backend:', error.response.data);
-      }
-      showAlert('Error al actualizar datos del negocio', 'danger');
-    }
-  };
-
   return (
     <div className="container mt-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)', color: 'white', padding: '20px', borderRadius: '10px' }}>
       <h3 className="text-center mb-4">Actualiza tu información</h3>
       {alert && <Alert variant={alert.variant}>{alert.message}</Alert>}
+
       <div className="row">
         <div className="col-md-6 border-end">
           <h5>Servicios</h5>
           <p>Agrega los servicios que ofrece tu negocio para que tus clientes puedan agendar una cita.</p>
-          <Form.Control className="mb-2" placeholder="Nombre del servicio" name="nombre" value={newService.nombre || ''} onChange={handleServiceChange} />
-          <Form.Control className="mb-2" placeholder="Descripción del servicio" name="descripcion" value={newService.descripcion || ''} onChange={handleServiceChange} />
-          <Form.Control type="number" className="mb-2" placeholder="Precio" name="precio" value={newService.precio || ''} onChange={handleServiceChange} />
+
+          <Form.Control className="mb-2" placeholder="Nombre del servicio" name="nombre" value={newService.nombre} onChange={handleServiceChange} />
+          <Form.Control className="mb-2" placeholder="Descripción" name="descripcion" value={newService.descripcion} onChange={handleServiceChange} />
+          <Form.Control type="number" className="mb-2" placeholder="Precio" name="precio" value={newService.precio} onChange={handleServiceChange} />
+          <Form.Control type="number" className="mb-2" placeholder="Duración en minutos" name="tiemposervicio" value={newService.tiemposervicio} onChange={handleServiceChange} />
           <Button variant="success" onClick={handleCreateService}>Crear servicio</Button>
 
           <div className="mt-4">
@@ -208,36 +200,26 @@ export default function ConfigNegocio() {
 
         <div className="col-md-6">
           <h5>Datos del Negocio</h5>
-          <p>Actualiza la información de tu negocio para que tus clientes puedan encontrarte fácilmente.</p>
-          
-          <Form.Control className="mb-2" placeholder="Nombre" name="nombre" value={datosNegocio.nombre || ''} onChange={handleNegocioChange} />
-          <Form.Select className="mb-2" name="categoria" value={datosNegocio.categoria || ''} onChange={handleNegocioChange}>
+          <Form.Control className="mb-2" placeholder="Nombre" name="nombre" value={datosNegocio.nombre} onChange={handleNegocioChange} />
+          <Form.Select className="mb-2" name="categoria" value={datosNegocio.categoria} onChange={handleNegocioChange}>
             <option value="">Selecciona una categoría</option>
-            {categorias.map((cat, idx) => (
-              <option key={idx} value={cat}>{cat}</option>
-            ))}
+            {categorias.map((cat, idx) => <option key={idx} value={cat}>{cat}</option>)}
           </Form.Select>
-
-          <Form.Control className="mb-2" placeholder="Coordenadas (Dirección)" name="coordenadas" value={datosNegocio.coordenadas || ''} onChange={handleNegocioChange} />
-          <Form.Control className="mb-2" placeholder="Descripción" name="descripcion" value={datosNegocio.descripcion || ''} onChange={handleNegocioChange} />
-          <Form.Control className="mb-2" placeholder="Imagen URL" name="imagen" value={datosNegocio.imagen || ''} onChange={handleNegocioChange} />
-          <Form.Control className="mb-2" placeholder="Horario de atención" name="horariodetencion" value={datosNegocio.horariodetencion || ''} onChange={handleNegocioChange} />
-
-          <Button disabled={!hasChanged} className="mt-2" variant="primary" onClick={handleSaveDatos}>
-            Guardar datos del negocio
-          </Button>
+          <Form.Control className="mb-2" placeholder="Coordenadas (Dirección)" name="coordenadas" value={datosNegocio.coordenadas} onChange={handleNegocioChange} />
+          <Form.Control className="mb-2" placeholder="Descripción" name="descripcion" value={datosNegocio.descripcion} onChange={handleNegocioChange} />
+          <Form.Control className="mb-2" placeholder="Imagen URL" name="imagen" value={datosNegocio.imagen} onChange={handleNegocioChange} />
+          <Form.Control className="mb-2" placeholder="Horario de atención" name="horariodetencion" value={datosNegocio.horariodetencion} onChange={handleNegocioChange} />
+          <Button disabled={!hasChanged} className="mt-2" variant="primary" onClick={handleSaveDatos}>Guardar datos del negocio</Button>
         </div>
       </div>
 
-      {/* Modal para editar servicio */}
+      {/* Modal editar servicio */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Editar Servicio</Modal.Title>
-        </Modal.Header>
+        <Modal.Header closeButton><Modal.Title>Editar Servicio</Modal.Title></Modal.Header>
         <Modal.Body>
-          <Form.Control className="mb-2" placeholder="Nombre" value={editedService.nombre || ''} onChange={(e) => setEditedService(prev => ({ ...prev, nombre: e.target.value }))} />
-          <Form.Control className="mb-2" placeholder="Descripción" value={editedService.descripcion || ''} onChange={(e) => setEditedService(prev => ({ ...prev, descripcion: e.target.value }))} />
-          <Form.Control type="number" className="mb-2" placeholder="Precio" value={editedService.precio || ''} onChange={(e) => setEditedService(prev => ({ ...prev, precio: e.target.value }))} />
+          <Form.Control className="mb-2" placeholder="Nombre" value={editedService.nombre} onChange={(e) => setEditedService(prev => ({ ...prev, nombre: e.target.value }))} />
+          <Form.Control className="mb-2" placeholder="Descripción" value={editedService.descripcion} onChange={(e) => setEditedService(prev => ({ ...prev, descripcion: e.target.value }))} />
+          <Form.Control type="number" className="mb-2" placeholder="Precio" value={editedService.precio} onChange={(e) => setEditedService(prev => ({ ...prev, precio: e.target.value }))} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>Cancelar</Button>
