@@ -67,7 +67,6 @@ function App() {
         />
         <Route path="/ConfigNegocio" element={<ConfigNegocio />} />
         <Route path="/BusinessMap" element={<BusinessMap />} />
-        <Route path="/Categories" element={<Categories />} />
         <Route path="/TopbarNegocio" element={<TopbarNegocio />} />
       </Route>
 
