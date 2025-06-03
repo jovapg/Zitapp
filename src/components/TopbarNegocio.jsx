@@ -1,6 +1,7 @@
 import React from "react";
+import NotificationsDropdown from "./Notifacation/NotificationsDropdown";
 
-export default function TopbarNegocio() {
+export default function TopbarNegocio({ onNavigate }) {
   const user = JSON.parse(localStorage.getItem("user"));
 
   return (
@@ -14,6 +15,7 @@ export default function TopbarNegocio() {
         </div>
 
         <div className="d-flex align-items-center gap-3">
+          <NotificationsDropdown />
           <h3 className="btn btn-sm btn-outline-light topbar-btn">{user?.nombre}</h3>
           <img
             src="https://randomuser.me/api/portraits/men/75.jpg"
@@ -26,6 +28,8 @@ export default function TopbarNegocio() {
 
       {/* Estilos específicos del Topbar */}
       <style>{`
+
+
         .topbar {
           position: sticky;
           top: 0;
@@ -55,6 +59,8 @@ export default function TopbarNegocio() {
           background-color: rgba(255, 255, 255, 0.05);
         }
       `}</style>
+
     </>
   );
 }
+

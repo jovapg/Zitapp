@@ -4,6 +4,16 @@ import { useNavigate } from "react-router-dom";
 
 export default function NavNegocio({ onNavigate }) {
     const Navigate = useNavigate();
+
+      let handleLogout = () => {
+    let confirmarLogin = window.confirm("¿Estás seguro de que deseas cerrar sesión?");
+    if (confirmarLogin) {
+        localStorage.removeItem("user");
+     localStorage.removeItem("negocioId");    // elimina los datos de sesión
+      Navigate("/FirsPage"); // redirige al inicio
+    } 
+  };
+
     return (
         <div className="sidebar">
             <div className="mb-4 text-center">
@@ -43,7 +53,7 @@ export default function NavNegocio({ onNavigate }) {
                     <i className="bi bi-gear me-2"></i>Settings
                 </a>
                 <a  className="nav-link dashboard-btn mt-2"
-                onClick={() => Navigate('/Firspage')}>
+                onClick={handleLogout}>
                     <i className="bi bi-box-arrow-right me-2"
                        ></i>Logout
                 </a>
