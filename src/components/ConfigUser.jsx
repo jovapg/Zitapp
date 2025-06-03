@@ -14,8 +14,8 @@ export default function ConfigUser({ show, handleClose }) {
     telefono: '',
     contrasena: '',
     imagenUrl: '',
-    edad: '',
-    coordenadas: ''
+    edad: ''
+   
   });
 
   // Cargar datos actuales del usuario al abrir el modal
@@ -23,7 +23,7 @@ export default function ConfigUser({ show, handleClose }) {
     if (show && userId) {
       axios.get(`http://localhost:8081/api/users/${userId}`)
         .then((res) => {
-          const { id, email, nombre, telefono, imagenUrl, edad, coordenadas } = res.data;
+          const { id, email, nombre, telefono, imagenUrl, edad} = res.data;
           setFormData({
             id: id || userId,
             email: email || '',
@@ -31,8 +31,8 @@ export default function ConfigUser({ show, handleClose }) {
             telefono: telefono || '',
             contrasena: '',
             imagenUrl: imagenUrl || '',
-            edad: edad || '',
-            coordenadas: coordenadas || ''
+            edad: edad || ''
+           
           });
         })
         .catch((error) => {
@@ -157,17 +157,7 @@ export default function ConfigUser({ show, handleClose }) {
             />
           </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label className="form-label">Coordenadas</Form.Label>
-            <Form.Control
-              type="text"
-              name="coordenadas"
-              value={formData.coordenadas}
-              onChange={handleChange}
-              placeholder="Latitud, Longitud"
-              className="servicio-info"
-            />
-          </Form.Group>
+
         </Form>
       </Modal.Body>
       <Modal.Footer className="modal-footer-custom">
