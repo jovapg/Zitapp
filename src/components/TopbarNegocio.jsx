@@ -6,12 +6,34 @@ export default function TopbarNegocio({ onNavigate }) {
 
   return (
     <>
+    <br />
       <div className="topbar d-flex justify-content-between align-items-center p-3">
         <div>
           <h2 className="mt-2 text-white">¡Haz las cosas sencillas!</h2>
           <p className="text">
             Administra y planea tu agenda de la mejor manera a un click
           </p>
+            <div className="d-flex gap-2 align-items-center flex-wrap mb-2">
+            <span
+              className="badge rounded-pill bg-primary px-3 py-2 topbar-btn"
+              onClick={() => onNavigate?.('mapa')}
+              style={{ cursor: 'pointer' }}
+            >
+              NUEVA CITA
+            </span>
+
+            {/* Barra de búsqueda */}
+            <div className="d-flex align-items-center search-bar px-2 py-1 rounded text-black">
+            <span
+              className="badge rounded-pill bg-primary px-3 py-2 topbar-btn"
+              onClick={() => onNavigate?.('mapa')}
+              style={{ cursor: 'pointer' }}
+            >
+              REPORTES
+            </span>
+
+            </div>
+          </div>
         </div>
 
         <div className="d-flex align-items-center gap-3">

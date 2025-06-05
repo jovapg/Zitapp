@@ -17,14 +17,24 @@ export default function NavNegocio({ onNavigate }) {
     return (
         <div className="sidebar">
             <div className="mb-4 text-center">
-                <img
-                    src={fondologin}
-                    alt="login icon"
-                    className="img-fluid mt-2"
-                    style={{ width: '90px' }}
-                />
-                <h2 className="text-white fw-bold">ZITAPP</h2>
-            </div>
+              <img
+                src={fondologin}
+                alt="login icon"
+                className="img-fluid mt-2"
+                style={{
+                  width: '150px',
+                  display: 'block',     // Para que 'margin: auto' funcione y centre la imagen
+                  margin: '0 auto',     // Centra la imagen horizontalmente
+                  transition: 'transform 0.3s ease-in-out', // Suaviza la transición al hacer hover
+                  cursor: 'pointer' // Cambia el cursor a una mano para indicar que es interactivo
+                }}
+                // Añadir un manejador de eventos onMouseOver y onMouseOut para el efecto de aumento
+                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'} // Aumenta 10%
+                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}  // Vuelve al tamaño original
+              />
+                      <h2 className="text-white fw-bold">ZITAPP</h2>
+                    </div>
+              <hr className="text-light my-1" /> 
             <ul className="nav nav-pills flex-column mb-auto">
                 <li className="nav-item mb-3">
 
@@ -34,23 +44,34 @@ export default function NavNegocio({ onNavigate }) {
                 </li>
                 <li className="nav-item mb-3">
                     <a href="" className="nav-link dashboard-btn text-white">
-                        <i className="bi bi-circle me-2"></i> Mi Negocio
+                        <i className="-circle me-2"></i> Mi Negocio
                     </a>
                 </li>
+
+
                 <li className="nav-item mb-3">
                     <button
                         onClick={() => onNavigate('calendar')}
                         className="nav-link dashboard-btn text-white btn btn-link text-start"
                     >
-                        <i className="bi bi-circle me-2"></i> Calendar
+                        <i className="-circle me-2"></i> Calendar
                     </button>
                 </li>
                                 <li className="nav-item mb-3">
                     <button
+                        onClick={() => onNavigate('')}
+                        className="nav-link dashboard-btn text-white btn btn-link text-start"
+                    >
+                        <i className="-circle me-2"></i> Ayuda y Servicio al cliente
+                    </button>
+                </li>
+
+                                 <li className="nav-item mb-3">
+                    <button
                         onClick={() => onNavigate('calendar')}
                         className="nav-link dashboard-btn text-white btn btn-link text-start"
                     >
-                        <i className="bi bi-circle me-2"></i> Ayuda y Servicio al cliente
+                        <i className="-circle me-2"></i> Agregar empleados
                     </button>
                 </li>
                 
