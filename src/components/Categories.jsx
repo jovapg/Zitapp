@@ -10,7 +10,7 @@ const Categories = ({ filtroBusqueda }) => {
   useEffect(() => {
     const obtenerNegocios = async () => {
       try {
-        const respuesta = await axios.get("http://localhost:8081/api/business");
+        const respuesta = await axios.get("http://localhost:8081/api/businesses");
         setNegocios(respuesta.data);
       } catch (error) {
         console.error("Error al obtener negocios", error);

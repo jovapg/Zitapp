@@ -37,55 +37,66 @@ export default function UserCalendar() {
   
   // Estado para las citas
   const [appointments, setAppointments] = useState([]);
-  // Estado para filtrar por estado
+  // Estado para filtrar por estado de la cita
   const [statusFilter, setStatusFilter] = useState('all');
-  // Estado para la fecha actual
+  // Estado para la fecha actual que muestra el calendario
   const [currentDate, setCurrentDate] = useState(new Date());
-  // Estado para mostrar el modal de detalles
+  // Estado para mostrar el modal de detalles de cita
   const [showModal, setShowModal] = useState(false);
-  // Estado para la cita seleccionada
+  // Estado para la cita seleccionada cuyo detalle se mostrará en el modal
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-  // Estado para loading
+  // Estado para indicar si está cargando la información
   const [loading, setLoading] = useState(true);
-  // Estado para errores
+  // Estado para manejar errores en la carga
   const [error, setError] = useState(null);
 
-  // Función para transformar los datos de la API al formato esperado por el componente
+  // Función para transformar los datos de la API en el formato esperado por el componente
   const transformAppointmentData = (apiData) => {
     return apiData.map(appointment => {
-      // Convertir el array de fecha [año, mes, día] a string formato YYYY-MM-DD
+      // Convertir el array de fecha [año, mes, día] a string con formato YYYY-MM-DD
       const [year, month, day] = appointment.fecha;
       const fecha = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
       
-      // Convertir el array de hora [horas, minutos] a string formato HH:MM:SS
+      // Convertir el array de hora [horas, minutos] a string con formato HH:MM:SS
       const [hours, minutes] = appointment.hora;
       const hora = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
       
+      // Retornar el objeto transformado con los campos necesarios para mostrar
       return {
-        id_cliente: appointment.client.id,
-        id_negocio: appointment.business.id,
-        id_cita: appointment.id,
-        fecha: fecha,
-        hora: hora,
-        estado: appointment.estado.toLowerCase(), // Convertir a minúsculas para mantener consistencia.
-        nombre_negocio: appointment.business.nombre,
-        cliente_nombre: appointment.client.nombre,
-        cliente_email: appointment.client.email,
-        servicios: appointment.business.services || []
+      id_cita: appointment.id,
+      id_servicio: appointment.service?.id || null,
+      nombre_servicio: appointment.service?.nombre || '',
+      descripcion_servicio: appointment.service?.descripcion || '',
+      precio_servicio: appointment.service?.precio || 0,
+      duracion_servicio: appointment.service?.duracion || 0,
+      fecha,
+      hora,
+      estado: appointment.estado.toLowerCase(),
       };
     });
   };
+  
 
-  // Cargar citas desde la API
+  // Efecto para cargar las citas desde la API usando el ID del usuario guardado en localStorage
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         setLoading(true);
         setError(null);
         
+        // Obtener el usuario almacenado en localStorage
         const user = JSON.parse(localStorage.getItem("user"));
-        const response = await axios.get(`http://localhost:8081/api/Appointments/user/${user.id}`);
+        if (!user?.id) throw new Error("Usuario no encontrado en localStorage");
+        
+        // Hacer petición GET a la API para obtener las citas del usuario
+        const response = await axios.get(`http://localhost:8081/api/appointments/clients/${user.id}`);
+        
+        console.log("Datos recibidos de la API:", response.data);
+
+        // Transformar los datos para adecuarlos al formato del componente
         const transformedData = transformAppointmentData(response.data);
+        
+        // Actualizar el estado con las citas obtenidas
         setAppointments(transformedData);
         
       } catch (err) {
@@ -97,16 +108,11 @@ export default function UserCalendar() {
     };
 
     fetchAppointments();
-  }, []);
+  }, []); // Solo se ejecuta al montar el componente
 
-  // Función para obtener el nombre del mes
+  // Función para obtener el nombre del mes en español
   const getMonthName = (date) => {
-    return date.toLocaleString('default', { month: 'long' });
-  };
-
-  // Función para obtener el año
-  const getYear = (date) => {
-    return date.getFullYear();
+    return date.toLocaleString('es-ES', { month: 'long' });
   };
 
   // Navegar al mes anterior
@@ -119,38 +125,38 @@ export default function UserCalendar() {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
-  // Navegar a hoy
+  // Navegar al mes actual
   const goToToday = () => {
     setCurrentDate(new Date());
   };
 
-  // Función para generar los días del mes
+  // Función para generar los días del mes actual y asociar citas a cada día
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
     
     // Primer día del mes
     const firstDay = new Date(year, month, 1);
-    // Días en el mes
+    // Número de días en el mes actual
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
-    // Día de la semana del primer día (0 = Domingo)
+    // Día de la semana del primer día del mes (0 = Domingo, 6 = Sábado)
     const startDay = firstDay.getDay();
     
-    // Arreglo para los días
+    // Arreglo que contendrá los días para renderizar
     const days = [];
     
-    // Añadir días del mes anterior para completar la primera semana
+    // Añadir días vacíos para completar la semana si el mes no empieza en domingo
     for (let i = 0; i < startDay; i++) {
       days.push({ day: null, appointments: [] });
     }
     
-    // Añadir días del mes actual
+    // Añadir los días del mes con las citas correspondientes
     for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month, day);
-      const dateString = date.toISOString().split('T')[0];
+      const dateObj = new Date(year, month, day);
+      const dateString = dateObj.toISOString().split('T')[0]; // YYYY-MM-DD
       
-      // Filtrar citas para este día
+      // Filtrar las citas para ese día específico
       const dayAppointments = appointments.filter(app => app.fecha === dateString);
       
       days.push({
@@ -163,18 +169,18 @@ export default function UserCalendar() {
     return days;
   };
 
-  // Filtrar citas según el estado seleccionado
+  // Filtrar las citas según el filtro de estado seleccionado
   const filteredAppointments = statusFilter === 'all' 
     ? appointments 
     : appointments.filter(app => app.estado === statusFilter);
 
-  // Mostrar detalles de una cita
+  // Mostrar modal con detalles de la cita seleccionada
   const showAppointmentDetails = (appointment) => {
     setSelectedAppointment(appointment);
     setShowModal(true);
   };
 
-  // Función para obtener el color según el estado de la cita
+  // Obtener clase CSS para el color según el estado de la cita
   const getStatusColor = (status) => {
     switch(status.toLowerCase()) {
       case 'confirmada':
@@ -190,7 +196,7 @@ export default function UserCalendar() {
     }
   };
 
-  // Función para traducir el estado
+  // Traducir el estado para mostrarlo en la UI
   const translateStatus = (status) => {
     switch(status.toLowerCase()) {
       case 'confirmada': return 'Confirmada';
@@ -200,11 +206,12 @@ export default function UserCalendar() {
     }
   };
 
-  // Renderizar el calendario según la vista seleccionada
+  // Renderizar la vista principal del calendario (por ahora solo mes)
   const renderCalendar = () => {
     return renderMonthView();
   };
 
+  // Renderizar la vista de mes con los días y citas
   const renderMonthView = () => {
     const days = getDaysInMonth(currentDate);
     
@@ -222,217 +229,176 @@ export default function UserCalendar() {
         </div>
         
         <div className="calendar-grid">
-          {Array(Math.ceil(days.length / 7)).fill().map((_, rowIndex) => (
-            <div key={`row-${rowIndex}`} className="row mb-3">
-              {days.slice(rowIndex * 7, (rowIndex + 1) * 7).map((dayData, colIndex) => (
-                <div key={`col-${rowIndex}-${colIndex}`} className="col p-0">
-                  <div className={`calendar-day border ${dayData.day ? 'h-100' : ''}`} style={{backgroundColor: dayData.day ? 'rgba(0, 0, 0, 0.3)' : 'transparent'}}>
-                    {dayData.day && (
-                      <>
-                        <div className="day-number p-1 text-end text-white">{dayData.day}</div>
-                        <div className="day-appointments px-1">
-                          {dayData.appointments.map((app, idx) => (
-                            <div 
-                              key={`app-${dayData.day}-${idx}`}
-                              className={`appointment-dot mb-1 p-1 rounded-1 ${getStatusColor(app.estado)} text-white small`}
-                              onClick={() => showAppointmentDetails(app)}
-                              style={{cursor: 'pointer'}}
-                            >
-                              {app.hora.substring(0, 5)} - {app.nombre_negocio}
-                            </div>
-                          ))}
-                        </div>
-                      </>
+          {Array(Math.ceil(days.length / 7)).fill(0).map((_, weekIndex) => {
+            return (
+              <div className="row mb-2" key={`week-${weekIndex}`}>
+                {days.slice(weekIndex * 7, weekIndex * 7 + 7).map((dayObj, idx) => (
+                  <div
+                    key={`day-${weekIndex}-${idx}`}
+                    className={`col border rounded calendar-day p-1 position-relative ${
+                      dayObj.day === new Date().getDate() &&
+                      currentDate.getMonth() === new Date().getMonth() &&
+                      currentDate.getFullYear() === new Date().getFullYear()
+                        ? 'bg-primary text-white'
+                        : 'bg-white text-dark'
+                    }`}
+                    style={{ minHeight: '100px', cursor: dayObj.appointments.length ? 'pointer' : 'default' }}
+                    onClick={() => dayObj.appointments.length ? showAppointmentDetails(dayObj.appointments[0]) : null}
+                  >
+                    <div className="day-number fw-bold">{dayObj.day || ''}</div>
+                    {/* Mostrar hasta 3 citas por día con su estado */}
+                    {dayObj.appointments.slice(0, 3).map(app => (
+                      <div
+                        key={`app-${app.id_cita}`}
+                        className={`appointment-item text-truncate px-1 rounded my-1 text-white ${getStatusColor(app.estado)}`}
+                        title={`${app.nombre_negocio} - ${translateStatus(app.estado)}`}
+                      >
+                        {app.nombre_negocio} ({translateStatus(app.estado)})
+                      </div>
+                    ))}
+                    {dayObj.appointments.length > 3 && (
+                      <div className="text-muted small">+{dayObj.appointments.length - 3} más</div>
                     )}
                   </div>
-                </div>
-              ))}
-            </div>
-          ))}
+                ))}
+              </div>
+            )
+          })}
         </div>
       </div>
-    </>
+      </>
     );
   };
-
-  // Modal para mostrar detalles de la cita
-  const renderAppointmentModal = () => {
-    if (!selectedAppointment) return null;
-    
-    return (
-      <div className={`modal ${showModal ? 'd-block' : ''}`} tabIndex="-1" style={{backgroundColor: 'rgba(0,0,0,0.7)'}}>
-        <div className="modal-dialog">
-          <div className="modal-content" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white', border: '1px solid rgba(255, 255, 255, 0.2)'}}>
-            <div className="modal-header" style={{borderBottom: '1px solid rgba(255, 255, 255, 0.2)'}}>
-              <h5 className="modal-title">Detalles de la Cita</h5>
-              <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
-            </div>
-            <div className="modal-body">
-              <div className="mb-2">
-                <strong>Negocio:</strong> {selectedAppointment.nombre_negocio}
-              </div>
-              <div className="mb-2">
-                <strong>Cliente:</strong> {selectedAppointment.cliente_nombre}
-              </div>
-              <div className="mb-2">
-                <strong>Email:</strong> {selectedAppointment.cliente_email}
-              </div>
-              <div className="mb-2">
-                <strong>Fecha:</strong> {selectedAppointment.fecha}
-              </div>
-              <div className="mb-2">
-                <strong>Hora:</strong> {selectedAppointment.hora}
-              </div>
-              <div className="mb-2">
-                <strong>Estado:</strong> 
-                <span className={`badge ms-2 ${getStatusColor(selectedAppointment.estado)}`}>
-                  {translateStatus(selectedAppointment.estado)}
-                </span>
-              </div>
-              {selectedAppointment.servicios && selectedAppointment.servicios.length > 0 && (
-                <div className="mb-2">
-                  <strong>Servicios:</strong>
-                  <ul className="list-unstyled ms-3">
-                    {selectedAppointment.servicios.map((service, idx) => (
-                      <li key={idx}>
-                        {service.nombre} - ${service.precio}
-                        {service.descripcion && <small className="text-muted d-block">{service.descripcion}</small>}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-            <div className="modal-footer" style={{borderTop: '1px solid rgba(255, 255, 255, 0.2)'}}>
-              <button type="button" className="btn btn-outline-light" onClick={() => setShowModal(false)}>Cerrar</button>
-              {selectedAppointment.estado.toLowerCase() !== 'cancelada' && selectedAppointment.estado.toLowerCase() !== 'cancelado' && (
-                <button type="button" className="btn btn-danger">Cancelar Cita</button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Lista de citas (para vista móvil o complementaria)
-  const renderAppointmentsList = () => {
-    return (
-      <div className="appointments-list mt-4">
-        <h3>Mis Citas</h3>
-        {filteredAppointments.length === 0 ? (
-          <div className="alert alert-info">No hay citas para mostrar.</div>
-        ) : (
-          <div className="list-group">
-            {filteredAppointments.map((app, idx) => (
-              <div 
-                key={`list-app-${idx}`} 
-                className="list-group-item list-group-item-action"
-                onClick={() => showAppointmentDetails(app)}
-                style={{cursor: 'pointer'}}
-              >
-                <div className="d-flex w-100 justify-content-between">
-                  <h5 className="mb-1">{app.nombre_negocio}</h5>
-                  <small>{app.fecha} - {app.hora.substring(0, 5)}</small>
-                </div>
-                <span className={`badge ${getStatusColor(app.estado)}`}>
-                  {translateStatus(app.estado)}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Estilo para el contenedor del calendario
-  const containerStyle = {
-    backgroundColor: 'rgba(18, 27, 70, 0.7)',
-    color: 'white',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-    marginTop: '2rem',
-    marginBottom: '2rem'
-  };
-
-  // Mostrar loading mientras se cargan los datos
-  if (loading) {
-    return (
-      <div className="container" style={containerStyle}>
-        <div className="text-center">
-          <div className="spinner-border text-light" role="status">
-            <span className="visually-hidden">Cargando...</span>
-          </div>
-          <p className="mt-3 text-white">Cargando citas...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Mostrar error si ocurre algún problema
-  if (error) {
-    return (
-      <div className="container" style={containerStyle}>
-        <div className="alert alert-danger" role="alert">
-          <h4 className="alert-heading">Error</h4>
-          <p>{error}</p>
-          <button 
-            className="btn btn-outline-danger" 
-            onClick={() => window.location.reload()}
-          >
-            Reintentar
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="container" style={containerStyle}>
+    <>
+      <div className="container py-4 text-white" style={{ maxWidth: '900px' }}>
+        <h2 className="mb-3">Mi Calendario de Citas</h2>
 
-      <h1 className="mb-4 text-white" style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)'}}>Mis Citas</h1>
-      
-      {/* Barra de controles */}
-      <div className="row mb-4">
-        <div className="col-md-6">
-          <div className="btn-group" role="group">
-            <button className="btn btn-outline-light" onClick={prevMonth}>←</button>
-            <button className="btn btn-outline-light" onClick={goToToday}>Hoy</button>
-            <button className="btn btn-outline-light" onClick={nextMonth}>→</button>
-          </div>
-          <h2 className="d-inline-block ms-3 text-white" style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)'}}>
-            {getMonthName(currentDate)} {getYear(currentDate)}
-          </h2>
+        {/* Controles de navegación del mes */}
+        <div className="d-flex align-items-center mb-3 gap-3">
+          <button className="btn btn-outline-light" onClick={prevMonth}>Anterior</button>
+          <button className="btn btn-outline-light" onClick={goToToday}>Hoy</button>
+          <button className="btn btn-outline-light" onClick={nextMonth}>Siguiente</button>
+          <h4 className="mb-0 ms-auto me-auto">
+            {getMonthName(currentDate).toUpperCase()} {currentDate.getFullYear()}
+          </h4>
         </div>
-        <div className="col-md-6 text-md-end">
-          <select 
-            className="form-select d-inline-block w-auto bg-transparent text-white border-light"
+
+        {/* Filtro de estado */}
+        <div className="mb-3">
+          <label htmlFor="statusFilter" className="form-label">Filtrar por estado:</label>
+          <select
+            id="statusFilter"
+            className="form-select w-auto"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
           >
-            <option value="all" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Todos los estados</option>
-            <option value="confirmada" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Confirmadas</option>
-            <option value="pendiente" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Pendientes</option>
-            <option value="cancelada" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Canceladas</option>
+            <option value="all">Todos</option>
+            <option value="pendiente">Pendientes</option>
+            <option value="confirmada">Confirmadas</option>
+            <option value="cancelada">Canceladas</option>
           </select>
         </div>
+
+        {/* Mostrar loading, error o calendario */}
+        {loading ? (
+          <p>Cargando citas...</p>
+        ) : error ? (
+          <p className="text-danger">{error}</p>
+        ) : (
+          <>
+            {appointments.length === 0 ? (
+              <p>No tienes citas agendadas.</p>
+            ) : (
+              renderCalendar()
+            )}
+          </>
+        )}
+
+        {/* Modal para mostrar detalles de la cita */}
+        {showModal && selectedAppointment && (
+          <div
+            className="modal fade show d-block"
+            tabIndex="-1"
+            role="dialog"
+            style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+            onClick={() => setShowModal(false)}
+          >
+            <div
+              className="modal-dialog modal-dialog-centered modal-lg"
+              role="document"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-content text-dark">
+                <div className="modal-header">
+                  <h5 className="modal-title">Detalles de la Cita</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    aria-label="Cerrar"
+                    onClick={() => setShowModal(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <p><strong>Negocio:</strong> {selectedAppointment.nombre_negocio}</p>
+                  <p><strong>Fecha:</strong> {selectedAppointment.fecha}</p>
+                  <p><strong>Hora:</strong> {selectedAppointment.hora}</p>
+                  <p><strong>Estado:</strong> {translateStatus(selectedAppointment.estado)}</p>
+                  <p><strong>Cliente:</strong> {selectedAppointment.cliente_nombre}</p>
+                  <p><strong>Email Cliente:</strong> {selectedAppointment.cliente_email}</p>
+                  <hr />
+                  <h6>Servicios solicitados:</h6>
+                  {selectedAppointment.servicios.length > 0 ? (
+                    <ul>
+                      {selectedAppointment.servicios.map(serv => (
+                        <li key={serv.id}>{serv.nombre} - ${serv.precio}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No hay servicios asociados.</p>
+                  )}
+                </div>
+                <div className="modal-footer">
+                  <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Cerrar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
-      
-      {/* Calendario */}
-      <div className="calendar-container mb-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '5px', backdropFilter: 'blur(5px)'}}>
-        {renderCalendar()}
-      </div>
-      
-      {/* Modal de detalles */}
-      {renderAppointmentModal()}
-      
-      {/* Bootstrap JS via CDN */}
-      <script 
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" 
-      />
-    </div>
+
+      <style>{`
+        .calendar-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .calendar-day {
+          min-height: 100px;
+          cursor: pointer;
+          user-select: none;
+        }
+        .appointment-item {
+          font-size: 0.75rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .bg-success {
+          background-color: #198754 !important;
+        }
+        .bg-warning {
+          background-color: #ffc107 !important;
+        }
+        .bg-danger {
+          background-color: #dc3545 !important;
+        }
+        .bg-secondary {
+          background-color: #6c757d !important;
+        }
+      `}</style>
+    </>
   );
 }

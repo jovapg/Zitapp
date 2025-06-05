@@ -14,7 +14,7 @@ export default function BusinessMap() {
 
   // Obtener negocios del backend
   useEffect(() => {
-    axios.get('http://localhost:8081/api/business')
+    axios.get('http://localhost:8081/api/businesses')
       .then(response => setBusinesses(response.data))
       .catch(error => console.error('Error al obtener negocios:', error));
   }, []);

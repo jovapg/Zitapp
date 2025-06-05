@@ -2,127 +2,94 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function AgendadeCitas({ nuevasCitas = [] }) {
-  // Estado para las citas
+  // Estado para almacenar las citas transformadas
   const [appointments, setAppointments] = useState([]);
-  // Estado para filtrar por estado
+
+  // Estado para filtrar por estado (confirmada, pendiente, cancelada, etc.)
   const [statusFilter, setStatusFilter] = useState('all');
-  // Estado para la fecha actual
+
+  // Estado para manejar la fecha actual (puede servir para filtros por fecha futura)
   const [currentDate, setCurrentDate] = useState(new Date());
-  // Estado para mostrar el modal de detalles
+
+  // Estado para controlar la visibilidad del modal de detalles
   const [showModal, setShowModal] = useState(false);
-  // Estado para la cita seleccionada
+
+  // Estado para guardar la cita seleccionada que se muestra en el modal
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-  // Estado para loading
+
+  // Estado para indicar si se está cargando la información
   const [isLoading, setIsLoading] = useState(true);
-  // Estado para errores
+
+  // Estado para errores de carga
   const [error, setError] = useState(null);
 
-  // Función para formatear la fecha del array a string
-  const formatDateFromArray = (dateArray) => {
-    if (!Array.isArray(dateArray) || dateArray.length < 3) return '';
-    const [year, month, day] = dateArray;
-    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+  // Función para formatear la fecha desde un array [YYYY, MM, DD] a string "YYYY-MM-DD"
+  const formatDate = (dateArray) => {
+    if (!Array.isArray(dateArray)) return '';
+    const [y, m, d] = dateArray;
+    return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
   };
 
-  // Función para formatear la hora del array a string
-  const formatTimeFromArray = (timeArray) => {
-    if (!Array.isArray(timeArray) || timeArray.length < 2) return '';
-    const [hour, minute] = timeArray;
-    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
+  // Función para formatear la hora desde un array [HH, MM] a string "HH:MM"
+  const formatTime = (timeArray) => {
+    if (!Array.isArray(timeArray)) return '';
+    const [h, m] = timeArray;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   };
 
-  // Función para transformar los datos de la API al formato esperado por el componente
-  const transformAppointmentData = (apiData) => {
-    return apiData.map(appointment => ({
-      id_cliente: appointment.client.id,
-      id_negocio: appointment.business.id,
-      fecha: formatDateFromArray(appointment.fecha),
-      hora: formatTimeFromArray(appointment.hora),
-      estado: appointment.estado.toLowerCase(),
-      nombre_negocio: appointment.business.nombre,
-      // Datos adicionales que podrían ser útiles
-      client_name: appointment.client.nombre,
-      client_email: appointment.client.email,
-      business_description: appointment.business.descripcion,
-      business_address: appointment.business.direccion,
-      business_image: appointment.business.imagenUrl,
-      appointment_id: appointment.id
+  // Función para transformar la respuesta del backend a un formato que podamos mostrar fácilmente
+  const transformAppointments = (data) => {
+    return data.map(appt => ({
+      appointment_id: appt.id,
+      fecha: formatDate(appt.fecha),
+      hora: formatTime(appt.hora),
+      estado: appt.estado.toLowerCase(),
+      servicio: appt.servicio?.nombre || '',
+      costo: appt.servicio?.precio || null,
+      nombre_negocio: appt.business?.nombre || '',
+      business_description: appt.business?.descripcion || '',
+      business_address: appt.business?.direccion || '',
+      business_image: appt.business?.imagenUrl || '',
+      client_name: appt.client?.nombre || '',
+      client_email: appt.client?.email || '',
     }));
   };
 
-  // Función para agregar una nueva cita
-  const agregarNuevaCita = (nuevaCita) => {
-    setAppointments(prevAppointments => [nuevaCita, ...prevAppointments]);
-  };
-
-  // Cargar citas desde la API
+  // useEffect para cargar las citas del cliente al cargar el componente
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         setIsLoading(true);
-        setError(null);
-        const user = JSON.parse(localStorage.getItem("user"));
-        const response = await axios.get(`http://localhost:8081/api/Appointments/user/${user.id}`);
-        const transformedData = transformAppointmentData(response.data);
-        setAppointments(transformedData);
+        // Obtener el usuario del localStorage
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.id) throw new Error('Usuario no autenticado');
+
+        // Hacer la petición al backend con el ID del cliente
+        const response = await axios.get(`http://localhost:8081/api/appointments/clients/${user.id}`);
+        const transformed = transformAppointments(response.data);
+        setAppointments(transformed); // Guardar citas transformadas
       } catch (err) {
-        console.error('Error fetching appointments:', err);
+        console.error(err);
         setError('Error al cargar las citas. Por favor, intenta de nuevo.');
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Finaliza la carga
       }
     };
 
     fetchAppointments();
   }, []);
 
-  // Efecto para agregar nuevas citas cuando se pasa el prop
+  // useEffect para agregar nuevas citas en tiempo real (si se pasan por props)
   useEffect(() => {
     if (nuevasCitas.length > 0) {
       const ultimaCita = nuevasCitas[nuevasCitas.length - 1];
-      agregarNuevaCita(ultimaCita);
+      setAppointments(prev => [ultimaCita, ...prev]);
     }
   }, [nuevasCitas]);
 
-  // Funciones para cambiar el mes
-  const prevMonth = () => {
-    const prev = new Date(currentDate);
-    prev.setMonth(prev.getMonth() - 1);
-    setCurrentDate(prev);
-  };
-
-  const nextMonth = () => {
-    const next = new Date(currentDate);
-    next.setMonth(next.getMonth() + 1);
-    setCurrentDate(next);
-  };
-
-  const goToToday = () => {
-    setCurrentDate(new Date());
-  };
-
-  const getMonthName = (date) => {
-    return date.toLocaleDateString('es-ES', { month: 'long' });
-  };
-
-  const getYear = (date) => {
-    return date.getFullYear();
-  };
-
-  // Filtrar citas según el estado seleccionado
-  const filteredAppointments = statusFilter === 'all'
-    ? appointments
-    : appointments.filter(app => app.estado === statusFilter);
-
-  // Mostrar detalles de una cita
-  const showAppointmentDetails = (appointment) => {
-    setSelectedAppointment(appointment);
-    setShowModal(true);
-  };
-
-  // Función para obtener el color según el estado de la cita
-  const getStatusColor = (status) => {
-    switch (status) {
+  // Función para asignar un color según el estado de la cita
+  const getStatusColor = (estado) => {
+    switch (estado) {
       case 'confirmada': return 'bg-success';
       case 'pendiente': return 'bg-warning text-dark';
       case 'cancelada': return 'bg-danger';
@@ -130,72 +97,48 @@ export default function AgendadeCitas({ nuevasCitas = [] }) {
     }
   };
 
-  // Función para obtener el texto del estado en español
-  const getStatusText = (status) => {
-    switch (status) {
+  // Función para mostrar el texto legible del estado
+  const getStatusText = (estado) => {
+    switch (estado) {
       case 'confirmada': return 'Confirmada';
       case 'pendiente': return 'Pendiente';
       case 'cancelada': return 'Cancelada';
-      default: return status;
+      default: return estado;
     }
   };
 
-  // Modal para mostrar detalles de la cita
-  const renderAppointmentModal = () => {
+  // Función para mostrar el modal de detalles al seleccionar una cita
+  const showAppointmentDetails = (appt) => {
+    setSelectedAppointment(appt);
+    setShowModal(true);
+  };
+
+  // Función para renderizar el modal con los detalles de la cita seleccionada
+  const renderModal = () => {
     if (!selectedAppointment) return null;
 
     return (
-      <div className={`modal ${showModal ? 'd-block' : ''}`} tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
+      <div className={`modal ${showModal ? 'd-block' : ''}`} style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
         <div className="modal-dialog">
-          <div className="modal-content" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)', color: 'white', border: '1px solid rgba(255, 255, 255, 0.2)' }}>
-            <div className="modal-header" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.2)' }}>
+          <div className="modal-content text-white bg-dark">
+            <div className="modal-header">
               <h5 className="modal-title">Detalles de la Cita</h5>
-              <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
+              <button className="btn-close btn-close-white" onClick={() => setShowModal(false)} />
             </div>
             <div className="modal-body">
-              <div className="mb-2">
-                <strong>Negocio:</strong> {selectedAppointment.nombre_negocio}
-              </div>
-              {selectedAppointment.servicio && (
-                <div className="mb-2">
-                  <strong>Servicio:</strong> {selectedAppointment.servicio}
-                </div>
-              )}
-              {selectedAppointment.costo && (
-                <div className="mb-2">
-                  <strong>Costo:</strong> ${selectedAppointment.costo}
-                </div>
-              )}
-              {selectedAppointment.business_description && (
-                <div className="mb-2">
-                  <strong>Descripción:</strong> {selectedAppointment.business_description}
-                </div>
-              )}
-              {selectedAppointment.business_address && (
-                <div className="mb-2">
-                  <strong>Dirección:</strong> {selectedAppointment.business_address}
-                </div>
-              )}
-              <div className="mb-2">
-                <strong>Fecha:</strong> {selectedAppointment.fecha}
-              </div>
-              <div className="mb-2">
-                <strong>Hora:</strong> {selectedAppointment.hora.substring(0, 5)}
-              </div>
-              <div className="mb-2">
-                <strong>Cliente:</strong> {selectedAppointment.client_name}
-              </div>
-              <div className="mb-2">
-                <strong>Estado:</strong>
-                <span className={`badge ms-2 ${getStatusColor(selectedAppointment.estado)}`}>
-                  {getStatusText(selectedAppointment.estado)}
-                </span>
-              </div>
+              <p><strong>Negocio:</strong> {selectedAppointment.nombre_negocio}</p>
+              <p><strong>Servicio:</strong> {selectedAppointment.servicio}</p>
+              <p><strong>Precio:</strong> ${selectedAppointment.costo}</p>
+              <p><strong>Dirección:</strong> {selectedAppointment.business_address}</p>
+              <p><strong>Fecha:</strong> {selectedAppointment.fecha}</p>
+              <p><strong>Hora:</strong> {selectedAppointment.hora}</p>
+              <p><strong>Estado:</strong> <span className={`badge ${getStatusColor(selectedAppointment.estado)}`}>{getStatusText(selectedAppointment.estado)}</span></p>
             </div>
-            <div className="modal-footer" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.2)' }}>
-              <button type="button" className="btn btn-outline-light" onClick={() => setShowModal(false)}>Cerrar</button>
+            <div className="modal-footer">
+              <button className="btn btn-outline-light" onClick={() => setShowModal(false)}>Cerrar</button>
+              {/* Si la cita no está cancelada, mostrar botón para cancelarla */}
               {selectedAppointment.estado !== 'cancelada' && (
-                <button type="button" className="btn btn-danger">Cancelar Cita</button>
+                <button className="btn btn-danger">Cancelar Cita</button>
               )}
             </div>
           </div>
@@ -204,106 +147,56 @@ export default function AgendadeCitas({ nuevasCitas = [] }) {
     );
   };
 
-  // Exponer la función para agregar citas (puedes usar useImperativeHandle si necesitas)
-  // Para este ejemplo, vamos a usar el prop nuevasCitas
-  
+  // Filtrar las citas según el filtro seleccionado
+  const filteredAppointments = statusFilter === 'all'
+    ? appointments
+    : appointments.filter(a => a.estado === statusFilter);
+
   return (
     <div className="container py-4">
-      {/* Barra de controles */}
-      <div className="row mb-4">
-        <div className="col-md-6">
-          <div className="btn-group" role="group">
-            <button className="btn btn-outline-light" onClick={prevMonth}>←</button>
-            <button className="btn btn-outline-light" onClick={goToToday}>Hoy</button>
-            <button className="btn btn-outline-light" onClick={nextMonth}>→</button>
-          </div>
-          <h2 className="d-inline-block ms-3 text-white" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}>
-            {getMonthName(currentDate)} {getYear(currentDate)}
-          </h2>
-        </div>
-        <div className="col-md-6 text-md-end">
-          <select
-            className="form-select d-inline-block w-auto bg-transparent text-white border-light"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-          >
-            <option value="all" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Todos los estados</option>
-            <option value="confirmada" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Confirmadas</option>
-            <option value="pendiente" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Pendientes</option>
-            <option value="cancelada" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Canceladas</option>
-          </select>
-        </div>
+      {/* Título y selector de filtro */}
+      <div className="d-flex justify-content-between mb-3">
+        <h2 className="text-white">Mis Citas</h2>
+        <select
+          className="form-select w-auto bg-dark text-white"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="all">Todas</option>
+          <option value="confirmada">Confirmadas</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="cancelada">Canceladas</option>
+        </select>
       </div>
+
+      {/* Mostrar mensajes de carga o error */}
+      {isLoading && <div className="text-white">Cargando citas...</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
+      {!isLoading && !error && filteredAppointments.length === 0 && (
+        <div className="alert alert-info">No hay citas disponibles.</div>
+      )}
 
       {/* Lista de citas */}
-      <div className="appointments-list mt-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '5px', backdropFilter: 'blur(5px)' }}>
-        <h3 className="text-white" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' }}>
-          Mis Citas ({appointments.length})
-        </h3>
-        
-        {/* Loading state */}
-        {isLoading && (
-          <div className="text-center text-white">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Cargando...</span>
+      <div className="list-group">
+        {filteredAppointments.map((appt) => (
+          <div
+            key={appt.appointment_id}
+            className="list-group-item list-group-item-action"
+            style={{ backgroundColor: 'rgba(0,0,0,0.5)', color: 'white' }}
+            onClick={() => showAppointmentDetails(appt)}
+          >
+            <div className="d-flex justify-content-between">
+              <h5>{appt.nombre_negocio}</h5>
+              <small>{appt.fecha} {appt.hora}</small>
             </div>
-            <p className="mt-2">Cargando citas...</p>
+            <p className="mb-1">{appt.servicio} - ${appt.costo}</p>
+            <span className={`badge ${getStatusColor(appt.estado)}`}>{getStatusText(appt.estado)}</span>
           </div>
-        )}
-
-        {/* Error state */}
-        {error && (
-          <div className="alert alert-danger" role="alert">
-            {error}
-          </div>
-        )}
-
-        {/* No appointments */}
-        {!isLoading && !error && filteredAppointments.length === 0 && (
-          <div className="alert alert-info">No hay citas para mostrar.</div>
-        )}
-
-        {/* Appointments list */}
-        {!isLoading && !error && filteredAppointments.length > 0 && (
-          <div className="list-group">
-            {filteredAppointments.map((app, idx) => (
-              <div
-                key={`list-app-${app.appointment_id || idx}`}
-                className="list-group-item list-group-item-action"
-                onClick={() => showAppointmentDetails(app)}
-                style={{
-                  cursor: 'pointer',
-                  backgroundColor: 'rgba(16, 10, 46, 0.5)',
-                  color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  marginBottom: '5px'
-                }}
-              >
-                <div className="d-flex w-100 justify-content-between">
-                  <h5 className="mb-1">{app.nombre_negocio}</h5>
-                  <small>{app.fecha} - {app.hora.substring(0, 5)}</small>
-                </div>
-                <p className="mb-1 small">Cliente: {app.client_name}</p>
-                {app.servicio && (
-                  <p className="mb-1 small">Servicio: {app.servicio}</p>
-                )}
-                <div className="d-flex justify-content-between align-items-center">
-                  <span className={`badge ${getStatusColor(app.estado)}`}>
-                    {getStatusText(app.estado)}
-                  </span>
-                  {app.costo && (
-                    <small className="text-light">Costo: ${app.costo}</small>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        ))}
       </div>
 
-      {/* Modal de detalles */}
-      {renderAppointmentModal()}
+      {/* Renderizar modal si está activo */}
+      {renderModal()}
     </div>
   );
 }
