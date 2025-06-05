@@ -1,40 +1,44 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NotificationsDropdown  from './Notifacation/NotificationsDropdown';
+import NotificationsDropdown from './Notifacation/NotificationsDropdown';
+import ConfigUser from './ConfigUser';
 
 export default function Topbar({ onNavigate, onSearch }) {
   const [busqueda, setBusqueda] = useState('');
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
+    const [modalVisible, setModalVisible] = useState(false); 
+
+  // URL de imagen de perfil del usuario o una por defecto
+  // Tus datos de localStorage muestran que tienes 'imagenPerfil', así que lo usamos.
+  const userProfileImage = user?.imagenPerfil || "https://via.placeholder.com/50x50?text=Usuario"; 
 
   const manejarBusqueda = () => {
     if (busqueda.trim() !== '') {
       onSearch(busqueda.toLowerCase());
-    }else {
-      onSearch('');  // Aviso para filtro vacío
+    } else {
+      onSearch('');
     }
   };
 
   return (
     <>
-    <br />
+      <br />
       <div className="topbar d-flex justify-content-between align-items-center p-3">
         {/* Sección izquierda */}
-        
         <div>
           <h2 className="mt-2 text-white">¡Haz las cosas sencillas!</h2>
           <p className="text">
             Administra y planea tus citas de la mejor manera a un click
           </p>
           <div className="d-flex gap-2 align-items-center flex-wrap mb-2">
-<span
-  className="badge rounded-pill bg-primary px-3 py-2 topbar-btn"
-  onClick={() => onNavigate?.('mapa')}
-  style={{ cursor: 'pointer' }}
->
-  CERCA DE TI
-</span>
-
+            <span
+              className="badge rounded-pill bg-primary px-3 py-2 topbar-btn"
+              onClick={() => onNavigate?.('mapa')}
+              style={{ cursor: 'pointer' }}
+            >
+              CERCA DE TI
+            </span>
 
             {/* Barra de búsqueda */}
             <div className="d-flex align-items-center search-bar px-2 py-1 rounded text-black">
@@ -45,9 +49,9 @@ export default function Topbar({ onNavigate, onSearch }) {
                 style={{ minWidth: "270px", borderRadius: "50px" }}
                 value={busqueda}
                 onChange={(e) => {
-        setBusqueda(e.target.value);
-        onSearch(e.target.value);  // Actualiza filtro en tiempo real
-      }}
+                  setBusqueda(e.target.value);
+                  onSearch(e.target.value);
+                }}
                 onKeyDown={(e) => e.key === 'Enter' && manejarBusqueda()}
               />
               <button
@@ -63,18 +67,27 @@ export default function Topbar({ onNavigate, onSearch }) {
 
         {/* Sección derecha: usuario */}
         <div className="d-flex align-items-center gap-3">
-                <NotificationsDropdown />
-        <h3 className="btn btn-sm btn-outline-light topbar-btn">
-  {user?.nombre}
-</h3>
+          <NotificationsDropdown />
+          <h4 className="  light topbar-btn"
+          onClick={() => setModalVisible(true)}
+          >
+            {user?.nombre}
+          </h4>
           <img
-            src="https://randomuser.me/api/portraits/men/75.jpg"
-            alt="User"
+            src={userProfileImage}
+            alt="User Profile"
             className="rounded-circle"
-            style={{ width: "50px" }}
+            style={{ width: "50px", height: "50px", objectFit: "cover" }}
+            onError={(e) => {
+                e.target.onerror = null; 
+                e.target.src = "https://via.placeholder.com/50x50?text=Error"; 
+            }}
           />
         </div>
       </div>
+            {/* Modal de configuración de usuario */}
+            <ConfigUser show={modalVisible} handleClose={() => setModalVisible(false)} />
+
 
       {/* Estilos específicos */}
       <style>{`

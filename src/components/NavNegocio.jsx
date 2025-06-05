@@ -45,6 +45,16 @@ export default function NavNegocio({ onNavigate }) {
                         <i className="bi bi-circle me-2"></i> Calendar
                     </button>
                 </li>
+                                <li className="nav-item mb-3">
+                    <button
+                        onClick={() => onNavigate('calendar')}
+                        className="nav-link dashboard-btn text-white btn btn-link text-start"
+                    >
+                        <i className="bi bi-circle me-2"></i> Ayuda y Servicio al cliente
+                    </button>
+                </li>
+                
+                
             </ul>
             <div className="mt-auto">
                 <a  className="nav-link dashboard-btn"
