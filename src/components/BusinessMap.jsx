@@ -8,6 +8,8 @@ import Botonagendarcita from './Botonagendarcita';
 
 export default function BusinessMap() {
   const [showModal, setShowModal] = useState(false);
+  // Nuevo estado para almacenar el objeto completo del negocio seleccionado
+  const [selectedBusiness, setSelectedBusiness] = useState(null); 
   const [businesses, setBusinesses] = useState([]);
   const [filteredCategory, setFilteredCategory] = useState('TODAS');
   const [userLocation, setUserLocation] = useState(null);
@@ -60,6 +62,18 @@ export default function BusinessMap() {
     popupAnchor: [0, -28],
   });
 
+  // Función para abrir el modal y guardar el negocio seleccionado
+  const handleOpenModal = (business) => {
+    setSelectedBusiness(business);
+    setShowModal(true);
+  };
+
+  // Función para cerrar el modal y limpiar el negocio seleccionado
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedBusiness(null); // Limpiar el negocio cuando se cierra el modal
+  };
+
   return (
     <div className="container-fluid">
       <br />
@@ -78,10 +92,10 @@ export default function BusinessMap() {
         center={userLocation ? [userLocation.lat, userLocation.lng] : [6.2528, -75.509]}
         zoom={13}
         scrollWheelZoom={true}
-        style={{ height: '450px', width: '100%' }}>
+        style={{ height: '380px', width: '100%' }}>
 
         <TileLayer
-          attribution='&copy; OpenStreetMap contributors'
+          attribution='© OpenStreetMap contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
@@ -96,7 +110,16 @@ export default function BusinessMap() {
 
         {/* Marcadores de negocios */}
         {filteredBusinesses.map((negocio, index) => {
-          const [lat, lng] = negocio.direccion.split(',').map(coord => parseFloat(coord.trim()));
+          // Es crucial que negocio.direccion contenga latitud,longitud
+          // y que estos valores sean números válidos.
+          const [lat, lng] = negocio.direccion ? negocio.direccion.split(',').map(coord => parseFloat(coord.trim())) : [0, 0];
+          
+          // Solo renderizar el marcador si las coordenadas son válidas
+          if (isNaN(lat) || isNaN(lng)) {
+            console.warn(`Coordenadas inválidas para el negocio: ${negocio.nombre}`, negocio.direccion);
+            return null; // No renderizar este marcador
+          }
+
           return (
             <Marker key={index} position={[lat, lng]} icon={createIcon()}>
               <Popup>
@@ -113,12 +136,14 @@ export default function BusinessMap() {
                   <h6>{negocio.nombre}</h6>
                   <p className="text-muted" style={{ fontSize: '0.85rem' }}>{negocio.categoria}</p>
                   <div className="d-grid gap-2">
-                    <button className="btn btn-primary btn-sm"
-                      onClick={() => setShowModal(true)}>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => handleOpenModal(negocio)} // Llama a handleOpenModal con el negocio
+                    >
                       Agendar cita
                     </button>
                     <a
-                      href={`https://www.google.com/maps?q=${negocio.direccion}`}
+                      href={`https://maps.google.com/?q=${lat},${lng}`} // URL de Google Maps para direcciones
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn btn-outline-success btn-sm"
@@ -133,8 +158,14 @@ export default function BusinessMap() {
         })}
       </MapContainer>
 
-      {/* Modal de agendamiento */}
-      {showModal && <Botonagendarcita show={showModal} setShow={setShowModal} />}
+      {/* Modal de agendamiento - Solo se renderiza si showModal es true y un negocio está seleccionado */}
+      {showModal && selectedBusiness && (
+        <Botonagendarcita
+          show={showModal}
+          handleClose={handleCloseModal} // Pasa la función de cierre correcta
+          business={selectedBusiness} // Pasa el objeto completo del negocio
+        />
+      )}
     </div>
   );
 }

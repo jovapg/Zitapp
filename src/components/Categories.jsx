@@ -5,6 +5,7 @@ import Botonagendarcita from "./Botonagendarcita";
 const Categories = ({ filtroBusqueda }) => {
   const [negocios, setNegocios] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [selectedBusiness, setSelectedBusiness] = useState(null);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("todas");
 
   useEffect(() => {
@@ -18,12 +19,16 @@ const Categories = ({ filtroBusqueda }) => {
     };
     obtenerNegocios();
   }, []);
-const categoriasUnicas = [...new Set(
-  negocios.map(n => n.categoria?.toLowerCase()).filter(Boolean)
-)];
 
+  const categoriasUnicas = [...new Set(
+    negocios.map(n => n.categoria?.toLowerCase()).filter(Boolean)
+  )];
 
-  // Nuevo filtro combinado por búsqueda y categoría seleccionada
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedBusiness(null);
+  };
+
   const negociosFiltrados = negocios.filter((negocio) => {
     const nombre = negocio.nombre?.toLowerCase() || '';
     const categoria = negocio.categoria?.toLowerCase() || '';
@@ -42,7 +47,8 @@ const categoriasUnicas = [...new Set(
 
   return (
     <div style={{
-      background: "rgba(45, 45, 70, 0.85)",
+      // --- RESTAURADO A LA VERSIÓN ANTERIOR ---
+      background: "rgba(45, 45, 70, 0.85)", // Este era el valor original
       color: "white",
       padding: "20px",
       borderRadius: "16px",
@@ -93,7 +99,13 @@ const categoriasUnicas = [...new Set(
             <ul style={{ paddingLeft: "18px" }}>
               {negocioDestacado.servicios?.map((s, i) => <li key={i}>{s}</li>)}
             </ul>
-            <button className="btn btn-primary mt-2" onClick={() => setShowModal(true)}>
+            <button
+              className="btn btn-primary mt-2"
+              onClick={() => {
+                setSelectedBusiness(negocioDestacado);
+                setShowModal(true);
+              }}
+            >
               Agendar cita
             </button>
           </div>
@@ -105,7 +117,8 @@ const categoriasUnicas = [...new Set(
         {negociosFiltrados.slice(1).map((negocio, index) => (
           <div key={index} className="card text-white"
             style={{
-              background: "rgba(70, 70, 100, 0.8)",
+              // --- RESTAURADO A LA VERSIÓN ANTERIOR ---
+              background: "rgba(70, 70, 100, 0.8)", // Este era el valor original
               width: "220px",
               border: "none",
               borderRadius: "16px"
@@ -126,7 +139,10 @@ const categoriasUnicas = [...new Set(
               </ul>
               <button
                 className="btn btn-sm btn-outline-light mt-2 w-100"
-                onClick={() => setShowModal(true)}
+                onClick={() => {
+                  setSelectedBusiness(negocio);
+                  setShowModal(true);
+                }}
               >
                 Agendar cita
               </button>
@@ -136,7 +152,13 @@ const categoriasUnicas = [...new Set(
       </div>
 
       {/* Modal de agendamiento */}
-      {showModal && <Botonagendarcita show={showModal} setShow={setShowModal} />}
+      {showModal && selectedBusiness && (
+        <Botonagendarcita
+          show={showModal}
+          handleClose={handleCloseModal}
+          business={selectedBusiness}
+        />
+      )}
     </div>
   );
 };

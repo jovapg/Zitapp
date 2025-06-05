@@ -1,207 +1,303 @@
-import { Modal, Button, Form, Row, Col } from "react-bootstrap";
-import { useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { Modal, Button, Form, ListGroup, Row, Col } from 'react-bootstrap';
 
-export default function Botonagendarcita({ show, setShow, onCitaAgendada }) {
-  const servicios = [
-    {
-      nombre: "Corte de cabello",
-      descripcion: "Corte clásico y moderno",
-      duracion: "30 minutos",
-      costo: "150.000"
-    },
-    {
-      nombre: "Peinado",
-      descripcion: "Peinado para eventos especiales",
-      duracion: "45 minutos",
-      costo: "150.000"
-    },
-    {
-      nombre: "Coloración",
-      descripcion: "Aplicación de color permanente",
-      duracion: "1 hora",
-      costo: "150.000"
+// Recibe 'business' (objeto completo del negocio) en lugar de solo 'businessId'
+const Botonagendarcita = ({ show, handleClose, business }) => {
+  // Estados para almacenar los datos del modal
+  const [services, setServices] = useState([]);
+  const [selectedServices, setSelectedServices] = useState([]);
+  const [fecha, setFecha] = useState('');
+  const [hora, setHora] = useState('');
+  const [loadingServices, setLoadingServices] = useState(false);
+  const [errorServices, setErrorServices] = useState(null);
+
+  // Estados para la disponibilidad de horas
+  const [availableHours, setAvailableHours] = useState([]);
+  const [loadingAvailability, setLoadingAvailability] = useState(false);
+  const [errorAvailability, setErrorAvailability] = useState(null);
+
+  // Obtener la información del usuario del localStorage
+  const user = JSON.parse(localStorage.getItem('user') || '{}'); // Corregido: leer de 'user'
+  const isUserLoggedIn = !!user.id;
+
+  // Función auxiliar para obtener la fecha actual en formato YYYY-MM-DD
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  const todayDate = getTodayDate();
+
+  // Efecto para cargar los servicios del negocio
+  useEffect(() => {
+    if (show && business && business.id) {
+      setLoadingServices(true);
+      setErrorServices(null);
+
+      const serviceApiUrl = `http://localhost:8081/api/services/businesses/${business.id}/services`;
+
+      fetch(serviceApiUrl)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`Error HTTP: ${res.status} ${res.statusText}`);
+          }
+          return res.json();
+        })
+        .then(data => {
+          setServices(data);
+          setLoadingServices(false);
+        })
+        .catch(err => {
+          console.error("Error al obtener servicios:", err);
+          setErrorServices("No se pudieron cargar los servicios. " + err.message);
+          setLoadingServices(false);
+        });
+    } else if (!show) {
+      setSelectedServices([]);
+      setFecha('');
+      setHora('');
+      setServices([]);
+      setLoadingServices(false);
+      setErrorServices(null);
+      setAvailableHours([]);
+      setLoadingAvailability(false);
+      setErrorAvailability(null);
     }
-  ];
+  }, [show, business]);
 
-  const disponibilidad = [
-    { dia: "Hoy", horas: ["10:00 AM", "11:00 AM", "1:00 PM"] },
-    { dia: "Mañana", horas: ["9:00 AM", "12:00 PM", "3:00 PM"] },
-    { dia: "Pasado Mañana", horas: ["11:00 AM", "2:00 PM"] }
-  ];
+  // Efecto para cargar la disponibilidad de horas
+  useEffect(() => {
+    if (show && business && business.id && fecha) {
+      setLoadingAvailability(true);
+      setErrorAvailability(null);
+      setAvailableHours([]);
 
-  const [servicioSeleccionado, setServicioSeleccionado] = useState("");
-  const [fechaSeleccionada, setFechaSeleccionada] = useState("");
-  const [horaSeleccionada, setHoraSeleccionada] = useState("");
+      const availabilityApiUrl = `http://localhost:8081/api/availability/businesses/${business.id}/available-hours?date=${fecha}`;
 
-   let fechaActual = new Date().toISOString().split('T')[0]
-
-  const handleAgendar = () => {
-    if (!servicioSeleccionado) {
-      alert("Por favor selecciona un servicio.");
-      return;
+      fetch(availabilityApiUrl)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`Error al verificar disponibilidad: ${res.status} ${res.statusText}`);
+          }
+          return res.json();
+        })
+        .then(data => {
+          setAvailableHours(data);
+          setLoadingAvailability(false);
+          if (hora && !data.includes(hora)) {
+            setHora('');
+          }
+        })
+        .catch(err => {
+          console.error("Error al obtener disponibilidad:", err);
+          setErrorAvailability("No se pudo obtener la disponibilidad para esta fecha. " + err.message);
+          setLoadingAvailability(false);
+          setAvailableHours([]);
+          setHora('');
+        });
+    } else {
+      setAvailableHours([]);
+      setLoadingAvailability(false);
+      setErrorAvailability(null);
+      setHora('');
     }
-    if (!fechaSeleccionada) {
-      alert("Por favor selecciona una fecha.");
-      return;
-    }
-    if (!horaSeleccionada) {
-      alert("Por favor selecciona una hora.");
-      return;
-    }
+  }, [fecha, business, show]);
 
-    // Crear el objeto de la nueva cita
-    const nuevaCita = {
-      id_cliente: 7, // ID del usuario actual (puedes pasarlo como prop)
-      id_negocio: 1, // ID del negocio (puedes pasarlo como prop)
-      fecha: fechaSeleccionada,
-      hora: `${horaSeleccionada}:00`,
-      estado: "pendiente",
-      nombre_negocio: "Salón de Belleza", // Nombre del negocio (puedes pasarlo como prop)
-      client_name: "Usuario Actual", // Nombre del cliente (puedes pasarlo como prop)
-      client_email: "usuario@email.com", // Email del cliente (puedes pasarlo como prop)
-      business_description: "Servicios de belleza y cuidado personal",
-      business_address: "Calle Principal #123",
-      business_image: "",
-      appointment_id: Date.now(), // ID temporal hasta que se guarde en la API
-      servicio: servicioSeleccionado,
-      costo: servicios.find(s => s.nombre === servicioSeleccionado)?.costo || "0"
-    };
-
-    // Llamar a la función callback para agregar la cita
-    if (onCitaAgendada) {
-      onCitaAgendada(nuevaCita);
-    }
-
-    alert(
-      `Cita para "${servicioSeleccionado}" agendada correctamente. Se encuentra en estado PENDIENTE. En unos minutos te notificaremos...`
+  const toggleService = (service) => {
+    setSelectedServices(prev =>
+      prev.find(s => s.id === service.id)
+        ? prev.filter(s => s.id !== service.id)
+        : [...prev, service]
     );
-
-    // Limpiar el formulario
-    setServicioSeleccionado("");
-    setFechaSeleccionada("");
-    setHoraSeleccionada("");
-    setShow(false);
   };
 
-  const servicioInfo = servicios.find(s => s.nombre === servicioSeleccionado);
+  const handleSubmit = async () => {
+    if (!isUserLoggedIn) {
+      alert('Debes iniciar sesión para agendar una cita.');
+      return;
+    }
+    if (selectedServices.length === 0 || !fecha || !hora) {
+      alert('Por favor, selecciona al menos un servicio, la fecha y la hora.');
+      return;
+    }
+    if (!availableHours.includes(hora)) {
+      alert('La hora seleccionada no está disponible. Por favor, elige otra de las opciones.');
+      return;
+    }
+
+    try {
+      await Promise.all(selectedServices.map(async (service) => {
+        const cita = {
+          fecha,
+          hora,
+          // CAMBIO AQUÍ: Cambiar 'idServicio' a 'serviceId' para que coincida con el DTO del backend
+          serviceId: service.id,
+          clientId: user.id, // CAMBIO AQUÍ: Cambiar 'idCliente' a 'clientId' para que coincida con el DTO
+          businessId: business.id // CAMBIO AQUÍ: Cambiar 'idNegocio' a 'businessId' para que coincida con el DTO
+        };
+
+        const appointmentApiUrl = 'http://localhost:8081/api/appointments';
+
+        const response = await fetch(appointmentApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(cita),
+        });
+
+        if (!response.ok) {
+          let errorMessage = `Error desconocido al agendar cita para ${service.nombre}.`;
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorData.error || response.statusText;
+          } catch (jsonError) {
+            errorMessage = response.statusText;
+          }
+          throw new Error(errorMessage);
+        }
+      }));
+
+      alert('Cita(s) agendada(s) con éxito.');
+      handleClose();
+    } catch (err) {
+      console.error('Error al agendar cita:', err);
+      alert(`Error al agendar la cita: ${err.message || 'Por favor, inténtalo de nuevo.'}`);
+    }
+  };
+
+  const handleWhatsAppClick = () => {
+    const phoneNumber = business.telefono || '573001234567';
+    const message = encodeURIComponent(`Hola, tengo una duda sobre la cita en ${business.nombre}.`);
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+  };
 
   return (
-    <>
-      <Modal
-        show={show}
-        onHide={() => setShow(false)}
-        size="xl"
-        centered
-        backdrop="static"
-        className="custom-modal"
-      >
-        <Modal.Header closeButton className="modal-header-custom">
-          <Modal.Title>AGENDA TU CITA FÁCIL</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="modal-body-custom">
-          <Row>
-            <Col md={6}>
-              <Form>
-                <Form.Group className="mb-3">
-                  <Form.Label>Servicio</Form.Label>
-                  <Form.Select
-                    value={servicioSeleccionado}
-                    onChange={(e) => setServicioSeleccionado(e.target.value)}
+    <Modal show={show} onHide={handleClose} size="lg" centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Agendar Cita</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {business && (
+          <div className="mb-4 text-center">
+            <img
+              src={business.imagenUrl || "https://via.placeholder.com/800x300?text=Imagen+Negocio"}
+              alt={business.nombre}
+              className="mb-2"
+              style={{ width: '100%', height: '250px', objectFit: 'cover', borderRadius: '8px' }}
+            />
+            <h4>{business.nombre}</h4>
+            <p>{business.descripcion}</p>
+            <hr />
+          </div>
+        )}
+
+        <Row>
+          <Col md={7}>
+            <h5>Selecciona Servicios</h5>
+            {loadingServices ? (
+              <p>Cargando servicios...</p>
+            ) : errorServices ? (
+              <p className="text-danger">{errorServices}</p>
+            ) : services.length > 0 ? (
+              <ListGroup>
+                {services.map(service => (
+                  <ListGroup.Item
+                    key={service.id}
+                    onClick={() => toggleService(service)}
+                    active={selectedServices.some(s => s.id === service.id)}
+                    action
                   >
-                    <option value="">Selecciona un servicio</option>
-                    {servicios.map((servicio, idx) => (
-                      <option key={idx} value={servicio.nombre}>
-                        {servicio.nombre}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-
-                {servicioInfo && (
-                  <div className="mb-3 p-2 rounded servicio-info">
-                    <p className="mb-1"><strong>Descripción:</strong> {servicioInfo.descripcion}</p>
-                    <p className="mb-1"><strong>Duración:</strong> {servicioInfo.duracion}</p>
-                    <p className="mb-1"><strong>Costo:</strong> ${servicioInfo.costo}</p>
-                  </div>
-                )}
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Fecha</Form.Label>
-                  <Form.Control 
-                    type="date" 
-                    value={fechaSeleccionada}
-                    min={fechaActual}
-                    onChange={(e) => setFechaSeleccionada(e.target.value)}
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Hora</Form.Label>
-                  <Form.Select
-                    value={horaSeleccionada}
-                    onChange={(e) => setHoraSeleccionada(e.target.value)}
-                  >
-                    <option value="">Selecciona una hora</option>
-                    <option value="10:00">10:00 AM</option>
-                    <option value="11:00">11:00 AM</option>
-                    <option value="13:00">1:00 PM</option>
-                    <option value="14:00">2:00 PM</option>
-                    <option value="15:00">3:00 PM</option>
-                    <option value="16:00">4:00 PM</option>
-                  </Form.Select>
-                </Form.Group>
-              </Form>
-            </Col>
-            <Col md={6} className="p-3 rounded">
-              <h5 className="">Disponibilidad próximos 3 días</h5>
-              <br />
-              <ul>
-                {disponibilidad.map((item, index) => (
-                  <li key={index}>
-                    <strong>{item.dia}:</strong> {item.horas.join(", ")}
-                  </li>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <strong>{service.nombre}</strong>
+                        {service.descripcion && <div><small>{service.descripcion}</small></div>}
+                        {service.duracion && <span><small>Duración: {service.duracion} min</small></span>}
+                      </div>
+                      <strong>${service.precio}</strong>
+                    </div>
+                  </ListGroup.Item>
                 ))}
-              </ul>
-            </Col>
-          </Row>
-        </Modal.Body>
-        <Modal.Footer className="modal-footer-custom">
-          <Button variant="secondary" onClick={() => setShow(false)}>
-            Cancelar
-          </Button>
-          <Button variant="success" onClick={handleAgendar}>
-            Agendar Cita
-          </Button>
-        </Modal.Footer>
-      </Modal>
+              </ListGroup>
+            ) : (
+              <p>No hay servicios disponibles para este negocio.</p>
+            )}
 
-      <style>{`
-        .custom-modal .modal-content {
-          background: rgba(35, 35, 60, 0.92);
-          color: white;
-          border-radius: 15px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
-          box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
-        }
-        .modal-header-custom,
-        .modal-footer-custom {
-          background: rgba(30, 30, 50, 0.85);
-          border: none;
-          text-align: center;
-        }
-        .modal-body-custom {
-          background: rgba(40, 40, 70, 0.85);
-        }
-        .form-label {
-          color: #ddd;
-        }
-        .servicio-info {
-          background-color: rgba(255, 255, 255, 0.05);
-          color: #ccc;
-          border: 1px solid rgba(255,255,255,0.1);
-        }
-      `}</style>
-    </>
+            <Form.Group className="mt-3">
+              <Form.Label>Fecha</Form.Label>
+              <Form.Control
+                type="date"
+                value={fecha}
+                onChange={(e) => {
+                  setFecha(e.target.value);
+                  setHora('');
+                }}
+                min={todayDate}
+              />
+            </Form.Group>
+            <Form.Group className="mt-2">
+              <Form.Label>Hora</Form.Label>
+              <Form.Control
+                as="select"
+                value={hora}
+                onChange={(e) => setHora(e.target.value)}
+                disabled={!fecha || loadingAvailability}
+              >
+                <option value="">Selecciona una hora</option>
+                {loadingAvailability && <option disabled>Cargando disponibilidad...</option>}
+                {errorAvailability && <option disabled className="text-danger">{errorAvailability}</option>}
+                {!loadingAvailability && !errorAvailability && availableHours.length === 0 && fecha &&
+                  <option disabled>No hay horas disponibles para esta fecha.</option>
+                }
+                {availableHours.map((h) => (
+                  <option key={h} value={h}>{h}</option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+          </Col>
+
+          <Col md={5} className="d-flex flex-column">
+            <h5>Resumen de la Cita</h5>
+            <ul className="list-group flex-grow-1 mb-3">
+              {selectedServices.length > 0 ? (
+                selectedServices.map((s, i) => (
+                  <li key={i} className="list-group-item d-flex justify-content-between">
+                    <span>{s.nombre}</span>
+                    <span>${s.precio}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="list-group-item text-muted">No hay servicios seleccionados.</li>
+              )}
+            </ul>
+            <hr />
+            <h6>Total: ${selectedServices.reduce((sum, s) => sum + s.precio, 0)}</h6>
+
+            <div className="mt-auto d-grid gap-2">
+              <Button variant="success" onClick={handleWhatsAppClick} className="d-flex align-items-center justify-content-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="WhatsApp" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+                ¿Dudas con tu cita?
+              </Button>
+            </div>
+          </Col>
+        </Row>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>
+          Cancelar
+        </Button>
+        <Button
+          variant="success"
+          onClick={handleSubmit}
+          disabled={!fecha || !hora || selectedServices.length === 0 || !isUserLoggedIn || !availableHours.includes(hora)}
+        >
+          Confirmar Cita
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
-}
+};
+
+export default Botonagendarcita;
