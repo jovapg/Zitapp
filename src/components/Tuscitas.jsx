@@ -264,7 +264,7 @@ export default function TusCitas({ onCitaAgendada }) {
             {appointments.length > 0 ? (
               <div>
                 <p>
-                  Tienes {appointments.filter((apt) => apt.estado !== 'cancelada').length} citas activas
+                  Tienes {appointments.filter((apt) => apt.estado !== 'cancelada').length} Citas activas
                 </p>
                 {appointments
                   .filter(

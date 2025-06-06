@@ -78,7 +78,7 @@ export default function Nav({ onNavigate }) {
           className="nav-link dashboard-btn btn btn-link text-start"
           onClick={() => setModalVisible(true)}
         >
-          <i className="bi bi-gear me-2"></i>Settings
+          <i className="bi bi-gear me-2"></i>Configuración
         </button>
 
       

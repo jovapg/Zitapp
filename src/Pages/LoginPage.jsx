@@ -95,13 +95,13 @@ export default function LoginPage() {
               style={{ width: "190px" }}
             />
             <h1 className="fw-bold fs-4 mb-2">ZITAPP</h1>
-            <h2 className="fw-bold fs-3 mb-1">Log in</h2>
-            <p className="text-light mb-3">to your account</p>
+            <h2 className="fw-bold fs-3 mb-1">Iniciar sesión</h2>
+            <p className="text-light mb-3">Tu cuenta</p>
           </div>
 
           {/* Right panel */}
           <div className="col-md-6 text-white p-5 glass-panel">
-            <h3 className="mb-4 fw-semibold">Welcome Back</h3>
+            <h3 className="mb-4 fw-semibold">Bienvenido De Nuevo</h3>
             <form onSubmit={handleLogin}>
               <div className="mb-3">
                 <input
@@ -125,7 +125,7 @@ export default function LoginPage() {
                 type="submit"
                 className="btn btn-primary w-100 mb-3"
               >
-                Sign In
+                Iniciar Sesión
               </button>
               {error && <p style={{ color: "red" }}>{error}</p>}
             </form>
@@ -135,21 +135,21 @@ export default function LoginPage() {
             <div className="d-grid gap-3">
               <button className="btn btn-dark border d-flex align-items-center justify-content-center gap-2">
                 <FaGoogle size={20} />
-                Sign in with Google
+                Iniciar Sesión Con Google
               </button>
               <button className="btn btn-dark border d-flex align-items-center justify-content-center gap-2">
                 <FaApple size={20} />
-                Sign in with Apple
+                Iniciar Sesión Con Apple
               </button>
             </div>
 
             <p className="mt-4 text-center text-light">
-              Don’t have an account?{" "}
+              No tienes cuentat?{" "}
               <a
                 className="text-decoration-none text-info"
                 onClick={() => navigate("/Register")}
               >
-                Create Account
+                Crear cuenta
               </a>
             </p>
           </div>
