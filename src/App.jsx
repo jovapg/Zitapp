@@ -23,6 +23,7 @@ import AgendadeCitasNegocio from "./Pages/Calendar/AgendadeCitasNegocio";
 import ConfigNegocio from "./components/ConfigNegocio";
 import ConfigUser from "./components/ConfigUser";
 import Botonagendarcita from "./components/Botonagendarcita";
+import ReportesNegocio from "./Pages/Calendar/ReportesNegocio";
 
 // Admin
 import LoginAdmin from "./Pages/LoginAdmin";
@@ -62,12 +63,11 @@ function App() {
         <Route path="/HomePagenegocio" element={<HomePagenegocio />} />
         <Route path="/calendar/business" element={<BusinessCalendar />} />
         <Route
-          path="/calendar/AgendadeCitasNegocio"
-          element={<AgendadeCitasNegocio />}
-        />
+          path="/calendar/AgendadeCitasNegocio" element={<AgendadeCitasNegocio />}        />
         <Route path="/ConfigNegocio" element={<ConfigNegocio />} />
         <Route path="/BusinessMap" element={<BusinessMap />} />
         <Route path="/TopbarNegocio" element={<TopbarNegocio />} />
+        <Route path="/ReportesNegocio" element={<ReportesNegocio />} />
       </Route>
 
       {/* Admin */}

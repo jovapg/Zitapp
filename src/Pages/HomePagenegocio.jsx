@@ -6,6 +6,7 @@ import Categories from '../components/Categories';
 import CitasNegocio from '../components/CitasNegocio';
 import BusinessCalendar from './Calendar/BusinessCalendar';
 import ConfigNegocio from '../components/ConfigNegocio';
+import ReportesNegocio from './Calendar/ReportesNegocio';
 
 
 export default function HomePagenegocio() {
@@ -26,6 +27,8 @@ export default function HomePagenegocio() {
                     {currentView === 'tuscitas' && <CitasNegocio />}                  
                     {currentView === 'calendar' && <BusinessCalendar />}
                     {currentView === 'config' && <ConfigNegocio />}
+                    {currentView === 'reportes' && <ReportesNegocio />}
+
                 </div>
             </div>
 

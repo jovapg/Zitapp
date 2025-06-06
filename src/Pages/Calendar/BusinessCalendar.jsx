@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import fondoAzuli from '../../assets/img/fondo_azul_editado.png'
+import axios from 'axios'; // Asegúrate de que Axios esté instalado: npm install axios
+import fondoAzuli from '../../assets/img/fondo_azul_editado.png';
 
-// Componente principal del calendario de usuario
+// Componente principal del calendario de negocio
 export default function BusinessCalendar() {
   // Aplicar la imagen de fondo al body cuando se monte el componente
   useEffect(() => {
-    // Guardar el estilo original del body para restaurarlo cuando se desmonte
     const originalBodyStyle = {
       backgroundImage: document.body.style.backgroundImage,
       backgroundSize: document.body.style.backgroundSize,
@@ -16,7 +15,6 @@ export default function BusinessCalendar() {
       margin: document.body.style.margin
     };
     
-    // Aplicar el nuevo estilo al body
     document.body.style.backgroundImage = `url(${fondoAzuli})`;
     document.body.style.backgroundSize = 'cover';
     document.body.style.backgroundPosition = 'center';
@@ -24,7 +22,6 @@ export default function BusinessCalendar() {
     document.body.style.backgroundColor = '#000';
     document.body.style.margin = '0';
     
-    // Limpiar el efecto cuando el componente se desmonte
     return () => {
       document.body.style.backgroundImage = originalBodyStyle.backgroundImage;
       document.body.style.backgroundSize = originalBodyStyle.backgroundSize;
@@ -49,65 +46,124 @@ export default function BusinessCalendar() {
   const [showModal, setShowModal] = useState(false);
   // Estado para la cita seleccionada
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  // Estado para el ID del negocio obtenido de localStorage (¡Nuevo!)
+  const [businessId, setBusinessId] = useState(null);
 
   // Función para transformar los datos de la API al formato esperado
   const transformAppointmentData = (apiData) => {
+    if (!Array.isArray(apiData)) {
+      console.warn("API data is not an array:", apiData);
+      return []; 
+    }
+
     return apiData.map(appointment => {
+      // Manejo seguro de 'fecha' y 'hora' que pueden ser arrays o null
+      const fechaArray = appointment.fecha || [];
+      const horaArray = appointment.hora || [];
+
       // Convertir fecha del array [year, month, day] a string YYYY-MM-DD
-      const [year, month, day] = appointment.fecha;
-      const fechaString = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      const [year, month, day] = fechaArray;
+      const fechaString = (year && month && day) ? `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}` : '';
       
       // Convertir hora del array [hour, minute] a string HH:MM:SS
-      const [hour, minute] = appointment.hora;
-      const horaString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
+      const [hour, minute] = horaArray;
+      const horaString = (hour && minute) ? `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00` : '';
       
-      // Mapear el estado de la API al formato esperado
+      // Manejo seguro de 'client' y 'business' que pueden ser nulos/undefined
+      const client = appointment.client || {};
+      const business = appointment.business || {};
+      const service = appointment.service || {}; // También el servicio, por si acaso
+
+      // Mapear el estado de la API al formato esperado (ej. "PENDIENTE" -> "pendiente")
+      // Asegurarse de que los estados en la API y los de la app coincidan
       const estadoMapping = {
         'CONFIRMADA': 'confirmado',
         'PENDIENTE': 'pendiente',
-        'CANCELADA': 'cancelado'
+        'CANCELADA': 'cancelado',
+        'FINALIZADA': 'finalizado' // Agregando el estado 'finalizada' al mapeo
       };
+      const estado = appointment.estado ? estadoMapping[appointment.estado.toUpperCase()] || appointment.estado.toLowerCase() : 'desconocido';
 
       return {
         id: appointment.id,
-        id_cliente: appointment.client.id,
+        id_cliente: client.id, // Acceso seguro
         fecha: fechaString,
         hora: horaString,
-        estado: estadoMapping[appointment.estado] || 'pendiente',
-        nombre_usuario: appointment.client.nombre,
-        client_email: appointment.client.email,
-        client_telefono: appointment.client.telefono,
-        business_name: appointment.business.nombre,
-        business_categoria: appointment.business.categoria,
-        business_descripcion: appointment.business.descripcion,
-        business_direccion: appointment.business.direccion,
-        services: appointment.business.services
+        estado: estado,
+        nombre_usuario: client.nombre, // Acceso seguro
+        client_email: client.email, // Acceso seguro
+        client_telefono: client.telefono, // Acceso seguro
+        business_id: business.id, // Acceso seguro
+        business_name: business.nombre, // Acceso seguro
+        business_categoria: business.categoria, // Acceso seguro
+        business_descripcion: business.descripcion, // Acceso seguro
+        business_direccion: business.direccion, // Acceso seguro
+        // Aquí pasamos el único servicio asociado a la cita, si lo hay, como un array de un solo elemento
+        // Si quieres que el modal muestre solo el servicio de esa cita, usa [service]
+        services: service.id ? [service] : [] // Acceso seguro, asegura que sea un array
       };
     });
   };
 
-  // Función para cargar las citas desde la API
+  // --- PRIMER useEffect: Cargar el ID del negocio desde localStorage ---
+  useEffect(() => {
+    try {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        if (user.tipo === 'NEGOCIO' && user.businessId) {
+          setBusinessId(user.businessId);
+        } else {
+          setError('No eres un usuario de negocio o no se encontró el ID del negocio asociado.');
+          setLoading(false);
+          // Redireccionar si no es un negocio válido para esta vista
+          // navigate('/acceso-denegado');
+        }
+      } else {
+        setError('No hay sesión iniciada. Por favor, inicia sesión.');
+        setLoading(false);
+        // Redireccionar al login
+        // navigate('/login');
+      }
+    } catch (err) {
+      console.error('Error al parsear datos de usuario de localStorage:', err);
+      setError('Error al leer la información de sesión. Por favor, intente nuevamente.');
+      setLoading(false);
+    }
+  }, []); // Se ejecuta solo una vez al montar
+
+  // Función para cargar las citas desde la API (depende de businessId)
   const loadAppointments = async () => {
+    if (!businessId) {
+      setLoading(false);
+      return; // No intentar cargar si no hay businessId
+    }
+
     try {
       setLoading(true);
       setError(null);
       
-      const response = await axios.get('http://localhost:8081/api/Appointments/busness/1');
+      const response = await axios.get(`http://localhost:8081/api/appointments/business/${businessId}`);
+      
       const transformedData = transformAppointmentData(response.data);
       setAppointments(transformedData);
       
     } catch (err) {
       console.error('Error al cargar las citas:', err);
-      setError('Error al cargar las citas. Por favor, intente nuevamente.');
+      if (err.response && err.response.status === 404) {
+        setError('No se encontraron citas para este negocio. Es posible que aún no tengas citas.');
+      } else {
+        setError('Error al cargar las citas. Por favor, intente nuevamente.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // Cargar datos al montar el componente
+  // --- SEGUNDO useEffect: Cargar datos cuando el businessId esté listo ---
   useEffect(() => {
-    loadAppointments();
-  }, []);
+    loadAppointments(); // Llama a la función para cargar citas
+  }, [businessId, currentDate]); // Depende de businessId y currentDate (para navegar por meses)
 
   // Función para obtener el nombre del mes
   const getMonthName = (date) => {
@@ -139,15 +195,11 @@ export default function BusinessCalendar() {
     const year = date.getFullYear();
     const month = date.getMonth();
     
-    // Primer día del mes
     const firstDay = new Date(year, month, 1);
-    // Días en el mes
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
-    // Día de la semana del primer día (0 = Domingo)
-    const startDay = firstDay.getDay();
+    const startDay = firstDay.getDay(); // Día de la semana del primer día (0 = Domingo)
     
-    // Arreglo para los días
     const days = [];
     
     // Añadir días del mes anterior para completar la primera semana
@@ -158,25 +210,23 @@ export default function BusinessCalendar() {
     // Añadir días del mes actual
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day);
-      const dateString = date.toISOString().split('T')[0];
+      const dateString = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`; // Formato YYYY-MM-DD
       
-      // Filtrar citas para este día
+      // Aquí se filtran las citas para el día, pero NO por estado aún
       const dayAppointments = appointments.filter(app => app.fecha === dateString);
       
       days.push({
         day,
         date: dateString,
-        appointments: dayAppointments
+        appointments: dayAppointments // Contiene TODAS las citas para ese día
       });
     }
     
     return days;
   };
 
-  // Filtrar citas según el estado seleccionado
-  const filteredAppointments = statusFilter === 'all' 
-    ? appointments 
-    : appointments.filter(app => app.estado === statusFilter);
+  // NO necesitas 'filteredAppointments' como estado global aquí.
+  // El filtro se aplicará en el renderizado de cada día.
 
   // Mostrar detalles de una cita
   const showAppointmentDetails = (appointment) => {
@@ -190,22 +240,19 @@ export default function BusinessCalendar() {
       case 'confirmado': return 'bg-success';
       case 'pendiente': return 'bg-warning text-dark';
       case 'cancelado': return 'bg-danger';
+      case 'finalizado': return 'bg-info'; 
       default: return 'bg-secondary';
     }
   };
 
-  // Función para refrescar los datos
+  // Función para refrescar los datos (volver a cargar citas)
   const refreshData = () => {
     loadAppointments();
   };
 
-  // Renderizar el calendario según la vista seleccionada
+  // Renderizar el calendario (vista mensual)
   const renderCalendar = () => {
-    return renderMonthView();
-  };
-
-  const renderMonthView = () => {
-    const days = getDaysInMonth(currentDate);
+    const days = getDaysInMonth(currentDate); // Obtiene todos los días con sus citas (sin filtrar por estado)
     
     return (
       <>
@@ -223,38 +270,50 @@ export default function BusinessCalendar() {
         <div className="calendar-grid">
           {Array(Math.ceil(days.length / 7)).fill().map((_, rowIndex) => (
             <div key={`row-${rowIndex}`} className="row mb-3">
-              {days.slice(rowIndex * 7, (rowIndex + 1) * 7).map((dayData, colIndex) => (
-                <div key={`col-${rowIndex}-${colIndex}`} className="col p-0">
-                  <div className={`calendar-day border ${dayData.day ? 'h-100' : ''}`} style={{backgroundColor: dayData.day ? 'rgba(0, 0, 0, 0.3)' : 'transparent'}}>
-                    {dayData.day && (
-                      <>
-                        <div className="day-number p-1 text-end text-white">{dayData.day}</div>
-                        <div className="day-appointments px-1">
-                          {dayData.appointments.map((app, idx) => (
-                            <div 
-                              key={`app-${dayData.day}-${idx}`}
-                              className={`appointment-dot mb-1 p-1 rounded-1 ${getStatusColor(app.estado)} text-white small`}
-                              onClick={() => showAppointmentDetails(app)}
-                              style={{cursor: 'pointer'}}
-                            >
-                              {app.hora.substring(0, 5)} - {app.nombre_usuario}
-                            </div>
-                          ))}
-                        </div>
-                      </>
-                    )}
+              {days.slice(rowIndex * 7, (rowIndex + 1) * 7).map((dayData, colIndex) => {
+                // Aquí, dentro de cada día, aplicamos el filtro de estado
+                const appointmentsForDay = dayData.appointments.filter(app => 
+                  statusFilter === 'all' || app.estado === statusFilter
+                );
+
+                return (
+                  <div key={`col-${rowIndex}-${colIndex}`} className="col p-0">
+                    <div className={`calendar-day border ${dayData.day ? 'h-100' : ''}`} style={{backgroundColor: dayData.day ? 'rgba(0, 0, 0, 0.3)' : 'transparent'}}>
+                      {dayData.day && (
+                        <>
+                          <div className="day-number p-1 text-end text-white">{dayData.day}</div>
+                          <div className="day-appointments px-1">
+                            {appointmentsForDay.map((app, idx) => ( // <-- Usamos appointmentsForDay aquí
+                              <div 
+                                key={`app-${dayData.day}-${idx}`}
+                                className={`appointment-dot mb-1 p-1 rounded-1 ${getStatusColor(app.estado)} text-white small`}
+                                onClick={() => showAppointmentDetails(app)}
+                                style={{cursor: 'pointer'}}
+                              >
+                                {app.hora.substring(0, 5)} - {app.nombre_usuario}
+                                {app.services && app.services.length > 0 && (
+                                  <span className="ms-1 text-muted">
+                                    ({app.services.map(s => s.nombre).join(', ')})
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ))}
         </div>
       </div>
-    </>
+      </>
     );
   };
 
-  // Modal para mostrar detalles de la cita
+  // Modal para mostrar detalles de la cita (se mantiene igual)
   const renderAppointmentModal = () => {
     if (!selectedAppointment) return null;
     
@@ -267,38 +326,49 @@ export default function BusinessCalendar() {
               <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
             </div>
             <div className="modal-body">
-              <div className="mb-2">
-                <strong>Cliente:</strong> {selectedAppointment.nombre_usuario}
-              </div>
-              {selectedAppointment.client_email && (
+              {/* Información del Cliente en el Modal */}
+              <div className="mb-3">
+                <h6 className="text-info">Información del Cliente</h6>
                 <div className="mb-2">
-                  <strong>Email:</strong> {selectedAppointment.client_email}
+                  <strong>Nombre:</strong> {selectedAppointment.nombre_usuario || 'N/A'}
                 </div>
-              )}
-              {selectedAppointment.client_telefono && (
+                {selectedAppointment.client_email && (
+                  <div className="mb-2">
+                    <strong>Email:</strong> {selectedAppointment.client_email}
+                  </div>
+                )}
+                {selectedAppointment.client_telefono && (
+                  <div className="mb-2">
+                    <strong>Teléfono:</strong> {selectedAppointment.client_telefono}
+                  </div>
+                )}
+              </div>
+
+              {/* Información de la Cita en el Modal */}
+              <div className="mb-3">
+                <h6 className="text-info">Información de la Cita</h6>
                 <div className="mb-2">
-                  <strong>Teléfono:</strong> {selectedAppointment.client_telefono}
+                  <strong>Fecha:</strong> {selectedAppointment.fecha}
                 </div>
-              )}
-              <div className="mb-2">
-                <strong>Fecha:</strong> {selectedAppointment.fecha}
+                <div className="mb-2">
+                  <strong>Hora:</strong> {selectedAppointment.hora.substring(0, 5)}
+                </div>
+                <div className="mb-2">
+                  <strong>Estado:</strong> 
+                  <span className={`badge ms-2 ${getStatusColor(selectedAppointment.estado)}`}>
+                    {selectedAppointment.estado}
+                  </span>
+                </div>
               </div>
-              <div className="mb-2">
-                <strong>Hora:</strong> {selectedAppointment.hora}
-              </div>
-              <div className="mb-2">
-                <strong>Estado:</strong> 
-                <span className={`badge ms-2 ${getStatusColor(selectedAppointment.estado)}`}>
-                  {selectedAppointment.estado}
-                </span>
-              </div>
+
+              {/* Servicios Asociados a la Cita en el Modal */}
               {selectedAppointment.services && selectedAppointment.services.length > 0 && (
-                <div className="mb-2">
-                  <strong>Servicios:</strong>
+                <div className="mb-3">
+                  <h6 className="text-info">Servicios de la Cita</h6>
                   <ul className="list-unstyled ms-3">
                     {selectedAppointment.services.map((service, idx) => (
-                      <li key={idx}>
-                        {service.nombre} - ${service.precio}
+                      <li key={service.id || idx}>
+                        <div><strong>{service.nombre}</strong> - ${service.precio}</div>
                         {service.descripcion && (
                           <small className="text-muted d-block">{service.descripcion}</small>
                         )}
@@ -310,9 +380,14 @@ export default function BusinessCalendar() {
             </div>
             <div className="modal-footer" style={{borderTop: '1px solid rgba(255, 255, 255, 0.2)'}}>
               <button type="button" className="btn btn-outline-light" onClick={() => setShowModal(false)}>Cerrar</button>
-              {selectedAppointment.estado !== 'cancelado' && (
-                <button type="button" className="btn btn-danger">Cancelar Cita</button>
+              {/* Considera agregar funciones para Confirmar/Cancelar/Finalizar cita aquí */}
+              {/* Por ejemplo, como lo tenías en AgendadeCitasNegocio.jsx */}
+              {/* {selectedAppointment.estado === 'pendiente' && (
+                <button type="button" className="btn btn-success" onClick={() => updateAppointmentStatus(selectedAppointment.id, 'confirmado')}>Confirmar Cita</button>
               )}
+              {selectedAppointment.estado !== 'cancelado' && (
+                <button type="button" className="btn btn-danger" onClick={() => updateAppointmentStatus(selectedAppointment.id, 'cancelado')}>Cancelar Cita</button>
+              )} */}
             </div>
           </div>
         </div>
@@ -381,7 +456,7 @@ export default function BusinessCalendar() {
             <button className="btn btn-outline-light" onClick={nextMonth}>→</button>
           </div>
           <h2 className="d-inline-block ms-3 text-white" style={{textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)'}}>
-            {getMonthName(currentDate)} {getYear(currentDate)}
+            {getMonthName(currentDate).toUpperCase()} {getYear(currentDate)}
           </h2>
         </div>
         <div className="col-md-6 text-md-end">
@@ -395,31 +470,32 @@ export default function BusinessCalendar() {
             <option value="confirmado" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Confirmados</option>
             <option value="pendiente" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Pendientes</option>
             <option value="cancelado" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Cancelados</option>
+            <option value="finalizado" style={{backgroundColor: 'rgba(0, 0, 0, 0.8)'}}>Finalizados</option> {/* Agregado el estado finalizado */}
           </select>
         </div>
       </div>
       
-      {/* Mostrar mensaje si no hay citas */}
-      {appointments.length === 0 && (
+      {/* Mostrar mensaje si no hay citas para el mes o filtro actual */}
+      {/* La visibilidad de este mensaje ahora es más compleja, ya que el calendario siempre se renderiza */}
+      {/* y las citas pueden ser filtradas a cero. Podrías mover esta lógica dentro de renderCalendar si es necesario. */}
+      {/* Para simplificar, si no hay citas en el estado 'appointments' (originalmente cargadas), mostramos esto */}
+      {appointments.length === 0 && !loading && !error && (
         <div className="alert alert-info">
           No hay citas registradas para este negocio.
         </div>
       )}
       
       {/* Calendario */}
-      {appointments.length > 0 && (
-        <div className="calendar-container mb-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '5px', backdropFilter: 'blur(5px)'}}>
-          {renderCalendar()}
-        </div>
-      )}
+      {/* Siempre renderizamos el calendario para que la estructura y el espacio se mantengan */}
+      <div className="calendar-container mb-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '5px', backdropFilter: 'blur(5px)'}}>
+        {renderCalendar()}
+      </div>
       
       {/* Modal de detalles */}
       {renderAppointmentModal()}
       
-      {/* Bootstrap JS via CDN */}
-      <script 
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" 
-      />
+      {/* Bootstrap JS via CDN (esto es generalmente para un index.html global, no aquí en un componente) */}
+      {/* <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" /> */}
     </div>
   );
 }
