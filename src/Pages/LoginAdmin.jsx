@@ -80,6 +80,7 @@ export default function LoginAdmin() {
             </form>
           </div>
         </div>
+        <Footer />
       </div>
 
       <style jsx>{`

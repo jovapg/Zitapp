@@ -30,6 +30,7 @@ export default function HomePagenegocio() {
                     {currentView === 'reportes' && <ReportesNegocio />}
 
                 </div>
+                <Footer />
             </div>
 
             <style>{`

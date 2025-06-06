@@ -72,6 +72,7 @@ export default function HomePageuser() {
                     {currentView === 'mapa' && <BusinessMap />}
                     {currentView === 'configuser' && <ConfigUser />}
                 </div>
+                <Footer />
             </div>
 
             <style>{`

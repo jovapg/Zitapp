@@ -25,7 +25,7 @@ export default function ClienteRegister() {
     let handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            let response = await axios.post('http://localhost:8081/api/users',{ //Envia los datos a la API
+            let response = await axios.post('http://localhost:8081/api/users', { //Envia los datos a la API
                 nombre: nombre,
                 email: email,
                 telefono: telefono,
@@ -79,7 +79,7 @@ export default function ClienteRegister() {
                             <div className="form-check">
                                 <input
                                     className="form-check-input"
-                                    type="radio" 
+                                    type="radio"
                                     name="tipo"
                                     value="NEGOCIO"
                                     checked={tipo === 'NEGOCIO'}
@@ -104,8 +104,10 @@ export default function ClienteRegister() {
                         </p>
                     </form>
                 </div>
+                <Footer />
 
-                <style >{`
+            </div>
+            <style >{`
                 .form-control::placeholder {
                     color: rgba(33, 22, 22, 0.7) !important;
                     font-weight: 300;
@@ -121,8 +123,6 @@ export default function ClienteRegister() {
                     max-width: 400px;
                 }
             `}</style>
-            </div>
-
         </>
     );
 }

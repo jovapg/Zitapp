@@ -154,6 +154,7 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
+        <Footer />
       </div>
 
       {/* Estilos personalizados */}
