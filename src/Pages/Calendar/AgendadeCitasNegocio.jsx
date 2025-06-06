@@ -5,7 +5,7 @@ export default function AgendadeCitasNegocio() {
   const [appointments, setAppointments] = useState([]);
   // Estado para filtrar por estado
   const [statusFilter, setStatusFilter] = useState('all');
-  // Estado para la fecha actual
+  // Estado para la fecha actual (manteniendo la funcionalidad del calendario si aplica)
   const [currentDate, setCurrentDate] = useState(new Date());
   // Estado para mostrar el modal de detalles
   const [showModal, setShowModal] = useState(false);
@@ -15,15 +15,17 @@ export default function AgendadeCitasNegocio() {
   const [isLoading, setIsLoading] = useState(true);
   // Estado para errores
   const [error, setError] = useState(null);
+  // Estado para el ID del negocio obtenido de localStorage
+  const [businessId, setBusinessId] = useState(null);
 
-  // Función para formatear la fecha del array a string
+  // Función para formatear la fecha del array a string (ej. [2025, 6, 6] -> "2025-06-06")
   const formatDateFromArray = (dateArray) => {
     if (!Array.isArray(dateArray) || dateArray.length < 3) return '';
     const [year, month, day] = dateArray;
     return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
   };
 
-  // Función para formatear la hora del array a string
+  // Función para formatear la hora del array a string (ej. [9, 30] -> "09:30:00")
   const formatTimeFromArray = (timeArray) => {
     if (!Array.isArray(timeArray) || timeArray.length < 2) return '';
     const [hour, minute] = timeArray;
@@ -31,38 +33,94 @@ export default function AgendadeCitasNegocio() {
   };
 
   // Función para transformar los datos de la API al formato esperado por el componente
+  // ¡Importante!: Maneja casos donde 'client' o 'business' puedan ser nulos/undefined de la API.
   const transformAppointmentData = (apiData) => {
-    return apiData.map(appointment => ({
-      id_cliente: appointment.client.id,
-      id_negocio: appointment.business.id,
-      fecha: formatDateFromArray(appointment.fecha),
-      hora: formatTimeFromArray(appointment.hora),
-      estado: appointment.estado.toLowerCase(),
-      nombre_negocio: appointment.business.nombre,
-      // Datos adicionales del cliente
-      client_name: appointment.client.nombre,
-      client_email: appointment.client.email,
-      client_phone: appointment.client.telefono,
-      // Datos adicionales del negocio
-      business_description: appointment.business.descripcion,
-      business_address: appointment.business.direccion,
-      business_image: appointment.business.imagenUrl,
-      business_services: appointment.business.services || [],
-      appointment_id: appointment.id
-    }));
+    // Aseguramos que apiData es un array antes de mapear
+    if (!Array.isArray(apiData)) {
+      console.warn("API data is not an array:", apiData);
+      return []; 
+    }
+
+    return apiData.map(appointment => {
+      // Usamos el operador OR (|| {}) para asegurar que 'client' y 'business' siempre sean objetos,
+      // incluso si vienen como null o undefined de la API. Esto evita errores de "Cannot read properties of undefined".
+      const client = appointment.client || {}; 
+      const business = appointment.business || {};
+
+      return {
+        id_cliente: client.id, // Acceso seguro a client.id
+        id_negocio: business.id, // Acceso seguro a business.id
+        fecha: formatDateFromArray(appointment.fecha),
+        hora: formatTimeFromArray(appointment.hora),
+        estado: appointment.estado ? appointment.estado.toLowerCase() : 'desconocido', // Manejar estado nulo/indefinido
+        nombre_negocio: business.nombre, // Acceso seguro a business.nombre
+        // Datos adicionales del cliente
+        client_name: client.nombre, // Acceso seguro a client.nombre
+        client_email: client.email,
+        client_phone: client.telefono,
+        // Datos adicionales del negocio
+        business_description: business.descripcion || '',
+        business_address: business.direccion || '',
+        business_image: business.imagenUrl || '',
+        // Asegurarse de que `business_services` sea un array, incluso si está vacío o nulo
+        business_services: business.services || [], // Acceso seguro a business.services
+        appointment_id: appointment.id
+      };
+    });
   };
 
-  // Cargar citas desde la API
+  // --- PRIMER useEffect: Cargar el ID del negocio desde localStorage ---
+  // Este useEffect se ejecuta una sola vez al montar el componente para obtener el businessId.
+  useEffect(() => {
+    try {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        // Validamos que el usuario logueado sea de tipo "NEGOCIO" y que tenga el businessId
+        if (user.tipo === 'NEGOCIO' && user.businessId) {
+          setBusinessId(user.businessId); // ¡Establecemos el ID del negocio aquí!
+        } else {
+          // Si no es un usuario de negocio o falta el businessId
+          setError('No eres un usuario de negocio o no se encontró el ID del negocio asociado.');
+          setIsLoading(false); 
+          // Considera redirigir al usuario si no tiene permisos o sesión válida.
+          // Ej: navigate('/acceso-denegado');
+        }
+      } else {
+        // Si no hay datos de usuario en localStorage (no hay sesión iniciada)
+        setError('No hay sesión iniciada. Por favor, inicia sesión.');
+        setIsLoading(false);
+        // Considera redirigir a la página de login si no hay sesión.
+        // Ej: navigate('/login');
+      }
+    } catch (err) {
+      console.error('Error al parsear datos de usuario de localStorage:', err);
+      setError('Error al leer la información de sesión. Por favor, intenta de nuevo.');
+      setIsLoading(false);
+    }
+  }, []); // El array vacío asegura que esto se ejecuta solo una vez al montar el componente
+
+  // --- SEGUNDO useEffect: Cargar citas cuando el businessId esté disponible ---
+  // Este useEffect se ejecutará cuando `businessId` cambie (es decir, después de que el primer useEffect lo establezca).
   useEffect(() => {
     const fetchAppointments = async () => {
+      // Solo intentamos cargar las citas si businessId tiene un valor válido
+      if (!businessId) {
+        setIsLoading(false); // Detener el loading si no hay ID para buscar
+        return; 
+      }
+
       try {
         setIsLoading(true);
-        setError(null);
+        setError(null); // Limpiar errores previos
         
-        const response = await fetch('http://localhost:8081/api/Appointments/busness/3');
+        // Usamos el businessId obtenido para la llamada a la API
+        // ¡Ruta corregida a minúsculas para coincidir con el backend!
+        const response = await fetch(`http://localhost:8081/api/appointments/business/${businessId}`);
         
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          // Si la respuesta no es OK (ej. 404, 500), lanzamos un error
+          throw new Error(`HTTP error! status: ${response.status} - ${response.statusText || 'Error desconocido'}`);
         }
         
         const data = await response.json();
@@ -70,16 +128,21 @@ export default function AgendadeCitasNegocio() {
         setAppointments(transformedData);
       } catch (err) {
         console.error('Error fetching appointments:', err);
-        setError('Error al cargar las citas. Por favor, intenta de nuevo.');
+        // Mensajes de error más específicos para el usuario
+        if (err.message.includes('404')) {
+          setError('No se encontraron citas para este negocio. Es posible que aún no tengas citas o la ruta de la API sea incorrecta.');
+        } else {
+          setError('Error al cargar las citas. Por favor, verifica la conexión o inténtalo de nuevo más tarde.');
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchAppointments();
-  }, []);
+  }, [businessId]); // Este useEffect se re-ejecuta cada vez que `businessId` cambia
 
-  // Funciones para cambiar el mes
+  // Funciones para cambiar el mes del calendario (no afectan la lógica de carga de datos)
   const prevMonth = () => {
     const prev = new Date(currentDate);
     prev.setMonth(prev.getMonth() - 1);
@@ -104,18 +167,18 @@ export default function AgendadeCitasNegocio() {
     return date.getFullYear();
   };
 
-  // Filtrar citas según el estado seleccionado
+  // Filtrar citas según el estado seleccionado (se mantiene igual)
   const filteredAppointments = statusFilter === 'all'
     ? appointments
     : appointments.filter(app => app.estado === statusFilter);
 
-  // Mostrar detalles de una cita
+  // Mostrar detalles de una cita (se mantiene igual)
   const showAppointmentDetails = (appointment) => {
     setSelectedAppointment(appointment);
     setShowModal(true);
   };
 
-  // Función para obtener el color según el estado de la cita
+  // Función para obtener el color según el estado de la cita (se mantiene igual)
   const getStatusColor = (status) => {
     switch (status) {
       case 'confirmada': return 'bg-success';
@@ -125,7 +188,7 @@ export default function AgendadeCitasNegocio() {
     }
   };
 
-  // Función para obtener el texto del estado en español
+  // Función para obtener el texto del estado en español (se mantiene igual)
   const getStatusText = (status) => {
     switch (status) {
       case 'confirmada': return 'Confirmada';
@@ -135,25 +198,41 @@ export default function AgendadeCitasNegocio() {
     }
   };
 
-  // Función para cambiar el estado de una cita
+  // Función para cambiar el estado de una cita (lógica de UI, placeholder para API)
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
-    try {
-      // Aquí irían las llamadas a la API para actualizar el estado
-      // Por ahora solo actualizamos el estado local
-      setAppointments(prevAppointments =>
-        prevAppointments.map(app =>
-          app.appointment_id === appointmentId
-            ? { ...app, estado: newStatus }
-            : app
-        )
-      );
-      setShowModal(false);
-    } catch (err) {
-      console.error('Error updating appointment status:', err);
-    }
+    // Aquí iría la llamada a tu API para actualizar el estado real en la base de datos
+    // Por ejemplo:
+    // try {
+    //   const response = await fetch(`http://localhost:8081/api/Appointments/${appointmentId}/status`, {
+    //     method: 'PUT', // o PATCH
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ estado: newStatus }),
+    //   });
+    //   if (!response.ok) throw new Error('Error al actualizar el estado de la cita');
+    //   // Si la API responde OK, actualizamos el estado local y cerramos el modal
+    //   setAppointments(prevAppointments =>
+    //     prevAppointments.map(app =>
+    //       app.appointment_id === appointmentId ? { ...app, estado: newStatus } : app
+    //     )
+    //   );
+    //   setShowModal(false);
+    // } catch (err) {
+    //   console.error('Error al actualizar el estado de la cita:', err);
+    //   alert('Hubo un error al actualizar el estado de la cita.');
+    // }
+
+    // Versión actual solo de UI (mantener hasta implementar la API real para esto)
+    setAppointments(prevAppointments =>
+      prevAppointments.map(app =>
+        app.appointment_id === appointmentId
+          ? { ...app, estado: newStatus }
+          : app
+      )
+    );
+    setShowModal(false);
   };
 
-  // Modal para mostrar detalles de la cita
+  // Modal para mostrar detalles de la cita (se mantiene igual)
   const renderAppointmentModal = () => {
     if (!selectedAppointment) return null;
 
@@ -199,9 +278,10 @@ export default function AgendadeCitasNegocio() {
 
               {selectedAppointment.business_services.length > 0 && (
                 <div className="mb-3">
-                  <h6 className="text-info">Servicios Disponibles</h6>
+                  <h6 className="text-info">Servicios de la Cita</h6>
                   {selectedAppointment.business_services.map((service, idx) => (
-                    <div key={idx} className="mb-2 p-2 border rounded" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
+                    // Asegúrate de que los servicios tengan un ID único para la 'key' si es posible
+                    <div key={service.id || idx} className="mb-2 p-2 border rounded" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
                       <div><strong>{service.nombre}</strong></div>
                       <div className="small text-muted">{service.descripcion}</div>
                       <div className="text-success">${service.precio}</div>
@@ -318,7 +398,7 @@ export default function AgendadeCitasNegocio() {
                   </span>
                   {app.business_services.length > 0 && (
                     <small className="text-muted">
-                      {app.business_services.length} servicio{app.business_services.length > 1 ? 's' : ''} disponible{app.business_services.length > 1 ? 's' : ''}
+                      {app.business_services.length} servicio{app.business_services.length > 1 ? 's' : ''}
                     </small>
                   )}
                 </div>

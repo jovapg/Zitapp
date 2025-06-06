@@ -1,3 +1,5 @@
+// src/main/jsx/components/LoginPage.jsx (o donde tengas tu archivo)
+
 import React from "react";
 import { FaGoogle, FaApple } from "react-icons/fa";
 import fondologin from "../assets/img/LOGO Zitapp.png";
@@ -15,7 +17,7 @@ export default function LoginPage() {
   let [error, setError] = useState("");
 
   let handleLogin = async (e) => {
-    e.preventDefault(); //Evita que el formulario regargue la pg al enviarlo
+    e.preventDefault(); // Evita que el formulario recargue la página al enviarlo
     setError(""); // Limpiar error previo
 
     try {
@@ -24,31 +26,51 @@ export default function LoginPage() {
         contrasena: contrasena,
       });
 
-      let data = response.data;
+      let userData = response.data; // Renombrado a userData para mayor claridad
 
       if (response.status === 200) {
-        localStorage.setItem("user", JSON.stringify(data)); // Guardas la info común
+        // Guardas la info común del usuario logueado (ahora con businessId si es negocio)
+        localStorage.setItem("user", JSON.stringify(userData));
 
-        if (data.tipo === "CLIENTE") {
+        if (userData.tipo === "CLIENTE") {
           navigate("/HomePageuser");
-        } else if (data.tipo === "NEGOCIO") {
-          // 🔥 Aquí haces la petición extra para traer el ID del negocio
-          const negocioResponse = await axios.get(
-            `http://localhost:8081/api/business/user/${data.id}`
-          );
-          const negocio = negocioResponse.data;
-
-       // Al guardar (en login o donde tengas el negocioId)
-localStorage.setItem("negocioId", negocio.id.toString());
-
-          navigate("/HomePageNegocio");
+        } else if (userData.tipo === "NEGOCIO") {
+          // 🔥 CAMBIO CLAVE AQUÍ: Accedemos directamente a userData.businessId
+          // Ya no necesitamos hacer una SEGUNDA petición a /api/business/user/{id}
+          
+          if (userData.businessId) {
+            localStorage.setItem("negocioId", userData.businessId.toString());
+            navigate("/HomePageNegocio");
+          } else {
+            // Manejar el caso si el usuario es NEGOCIO pero no tiene businessId (debería ser raro si la BD es consistente)
+            setError("Error: Usuario de negocio sin negocio asociado. Contacte al administrador.");
+            console.error("Usuario NEGOCIO sin businessId en la respuesta de login:", userData);
+          }
         }
       } else {
+        // Este bloque se ejecuta si el status no es 200 (ej. 401, aunque Axios lanza error para 4xx/5xx)
         setError("Correo o contraseña incorrectos");
       }
     } catch (error) {
-      setError("Error de conexión con el servidor");
-      console.error(error);
+      // Este bloque captura errores de red o códigos de estado de error (4xx, 5xx)
+      if (error.response) {
+        // El servidor respondió con un código de estado de error
+        if (error.response.status === 401) {
+          setError("Credenciales inválidas. Por favor, verifica tu correo y contraseña.");
+        } else if (error.response.status === 500) {
+          // Este 500 ya no debería ocurrir en el login si los cambios en Java están correctos
+          setError("Error interno del servidor al procesar el login.");
+        } else {
+          setError(`Error: ${error.response.status} - ${error.response.data.message || error.response.statusText || 'Error desconocido'}`);
+        }
+      } else if (error.request) {
+        // La petición fue hecha pero no se recibió respuesta (ej. backend no corre)
+        setError("No se pudo conectar con el servidor. Verifica que el backend esté funcionando.");
+      } else {
+        // Algo más ocurrió al configurar la petición
+        setError("Error al enviar la petición de login.");
+      }
+      console.error("Error al iniciar sesión:", error);
     }
   };
 
@@ -102,7 +124,6 @@ localStorage.setItem("negocioId", negocio.id.toString());
               <button
                 type="submit"
                 className="btn btn-primary w-100 mb-3"
-                // onClick={() => navigate('/HomePageuser')}
               >
                 Sign In
               </button>
@@ -122,7 +143,6 @@ localStorage.setItem("negocioId", negocio.id.toString());
               </button>
             </div>
 
-
             <p className="mt-4 text-center text-light">
               Don’t have an account?{" "}
               <a
@@ -136,36 +156,28 @@ localStorage.setItem("negocioId", negocio.id.toString());
         </div>
       </div>
 
-    
-
-            {/* Estilos personalizados */}
-            <style>{`
-
+      {/* Estilos personalizados */}
+      <style>{`
         .login-container {
           width: 900px;
         }
-
         .glass-panel {
           background: rgba(0, 0, 0, 0.4);
           backdrop-filter: blur(12px);
         }
-
         .custom-input {
           background-color: rgba(255, 255, 255, 0.05);
           color: white;
           border: 1px solid rgba(255, 255, 255, 0.2);
         }
-
         .custom-input::placeholder {
           color: #bbb;
         }
-
         .custom-input:focus {
           background-color: rgba(255, 255, 255, 0.1);
           color: white;
           box-shadow: none;
         }
-
         a.text-info:hover {
           text-decoration: underline;
         }
