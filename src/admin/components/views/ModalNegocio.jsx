@@ -6,6 +6,7 @@ function ModalNegocio({ negocio, onClose, onSave }) {
     descripcion: "",
     direccion: "",
     imagenUrl: "",
+    telefono:"",
     nombre: "",
   });
 
@@ -15,6 +16,7 @@ function ModalNegocio({ negocio, onClose, onSave }) {
       descripcion: negocio?.descripcion || "",
       direccion: negocio?.direccion || "",
       imagenUrl: negocio?.imagenUrl || "",
+      telefono: negocio?.telefono || "",
       nombre: negocio?.nombre || "",
     });
   }, [negocio]);
@@ -119,6 +121,20 @@ function ModalNegocio({ negocio, onClose, onSave }) {
                   id="imagenUrl"
                   name="imagenUrl"
                   value={formData.imagenUrl}
+                  onChange={handleChange}
+                  className="form-control"
+                  type="url"
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="telefono" className="form-label">
+                telefono
+                </label>
+                <input
+                  id="telefono"
+                  name="telefono"
+                  value={formData.telefono}
                   onChange={handleChange}
                   className="form-control"
                   type="url"

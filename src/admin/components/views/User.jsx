@@ -82,52 +82,73 @@ let handleGUardar = async (data) => {
         )}
         {error && <div className="alert alert-danger">{error}</div>}
 
-        <table className="table table-custom">
-          <thead>
-            <tr>
-              <th>id</th>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Password</th>
-              <th>Telefono</th>
-              <th>Tipo</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((ns) => (
-              <tr key={ns.id}>
-                <td>{ns.id}</td>
-                <td>{ns.nombre}</td>
-                <td>{ns.email}</td>
-                <td>{ns.contrasena}</td>
-                <td>{ns.telefono}</td>
-                <td>{ns.tipo}</td>
-                <td>
-                  <button
-                    className="btn btn-sm btn-warning me-1"
-                    onClick={() => handleEditar(ns)}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => handleEliminar(ns.id)}
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {users.length === 0 && !loading && (
-              <tr>
-                <td colSpan={7} className="text-center">
-                  No hay usuarios
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+       <table className="table table-custom">
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>Imagen</th>  {/* Nueva columna */}
+      <th>Nombre</th>
+      <th>Email</th>
+      <th>Password</th>
+      <th>Telefono</th>
+      <th>Tipo</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {users.map((ns) => (
+      <tr key={ns.id}>
+        <td>{ns.id}</td>
+        <td>
+          {ns.imagenPerfil ? (
+            <img
+              src={ns.imagenPerfil}
+              alt={ns.nombre}
+              style={{
+                width: "50px",
+                height: "50px",
+                objectFit: "cover",
+                borderRadius: "5px",
+                border: "1px solid #ccc",
+              }}
+            />
+          ) : (
+            <span>No imagen</span>
+          )}
+        </td>
+        <td>{ns.nombre}</td>
+        <td>{ns.email}</td>
+        <td>{ns.contrasena}</td>
+        <td>{ns.telefono}</td>
+        <td>{ns.tipo}</td>
+        <td>
+          <button
+            className="btn btn-sm btn-warning me-1"
+            onClick={() => handleEditar(ns)}
+            title="Editar"
+          >
+            <i className="bi bi-pencil-square"></i>
+          </button>
+          <button
+            className="btn btn-sm btn-danger"
+            onClick={() => handleEliminar(ns.id)}
+             title="Eliminar"
+          >
+            <i className="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    ))}
+    {users.length === 0 && !loading && (
+      <tr>
+        <td colSpan={8} className="text-center"> {/* colspan actualizado */}
+          No hay usuarios
+        </td>
+      </tr>
+    )}
+  </tbody>
+</table>
+
       </div>
       {/* // modal */}
       {modal && (
