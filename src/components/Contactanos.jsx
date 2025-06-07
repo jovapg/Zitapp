@@ -1,55 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Modal, Button, Form } from 'react-bootstrap'; // Importamos Modal, Button, Form de react-bootstrap
 
-export default function Contactanos({ show, handleClose }) {
+export default function Contactanos({ show, handleClose }) { // Recibe props 'show' y 'handleClose'
     const [step, setStep] = useState(1);
-    const modalRef = useRef(null);
-    const bsModalInstance = useRef(null);
 
-    useEffect(() => {
-        if (!window.bootstrap) {
-            console.error("Bootstrap JS no está cargado. Asegúrate de incluir bootstrap.bundle.min.js");
-            // Puedes añadir una alerta o manejar esto de forma más robusta
-            return;
-        }
-
-        // Inicializar la instancia de Bootstrap Modal solo una vez por componente
-        // OJO: Si el modal ya está en el DOM por un render previo, getOrCreateInstance es más seguro.
-        // Pero para el primer montaje, new Modal está bien si no hay conflictos de ID.
-        if (!bsModalInstance.current && modalRef.current) {
-            bsModalInstance.current = new window.bootstrap.Modal(modalRef.current, {
-                backdrop: 'static', // Mantiene el backdrop y evita cierre con click fuera
-                keyboard: false     // Evita cierre con ESC
-            });
-
-            // Listener para cuando el modal se oculta (ej. clic en la X del modal).
-            modalRef.current.addEventListener('hidden.bs.modal', handleClose);
-        }
-
-        // Sincronizar la visibilidad del modal con el prop 'show'
-        if (bsModalInstance.current) {
-            if (show) {
-                bsModalInstance.current.show();
-            } else {
-                bsModalInstance.current.hide();
-            }
-        }
-
-        // Limpieza: destruir la instancia del modal y remover listener
-        return () => {
-            if (bsModalInstance.current) {
-                // Si el modal está aún visible al desmontar, ocúltalo primero para evitar errores
-                if (bsModalInstance.current._isShown) {
-                    bsModalInstance.current.hide();
-                }
-                bsModalInstance.current.dispose();
-                bsModalInstance.current = null;
-            }
-            if (modalRef.current) {
-                modalRef.current.removeEventListener('hidden.bs.modal', handleClose);
-            }
-        };
-    }, [show, handleClose]); // Dependencias: `show` para controlar el modal, `handleClose` para el listener
-
+    // useEffect para reiniciar el paso al abrir el modal
     useEffect(() => {
         if (show) {
             setStep(1); // Reiniciar el paso al abrir el modal
@@ -57,142 +12,128 @@ export default function Contactanos({ show, handleClose }) {
     }, [show]);
 
     return (
-        <>
-            <div
-                className="modal fade" // CLASES ORIGINALES DE BOOTSTRAP
-                id="contactModal" // ID original
-                tabIndex="-1"
-                aria-labelledby="contactModalLabel"
-                aria-hidden="true"
-                ref={modalRef} // Referencia para JS de Bootstrap
-            >
-                <div className="modal-dialog modal-lg modal-dialog-centered"> {/* CLASES ORIGINALES */}
-                    <div className="modal-content rounded-4 p-3"> {/* CLASES ORIGINALES */}
-                        <div className="modal-header">
-                            <h5 className="modal-title text-white" id="contactModalLabel">¡Conversemos!</h5>
-                            <button type="button" className="btn-close btn-close-white" onClick={handleClose}></button>
-                        </div>
-                        <div className="modal-body"> {/* El color de texto se controlará con CSS */}
-                            <div className="row">
-                                <div className="col-md-5 d-none d-md-block">
-                                    <img src='https://i.pinimg.com/736x/77/37/b4/7737b4798afbbbb10514a9866ed9d91e.jpg' alt="Contacto" className="img-fluid rounded-4 h-100" />
-                                </div>
-                                <div className="col-md-7">
-                                    {step === 1 && (
-                                        <div>
-                                            <h4 className="fw-bold mb-2">Ponte en contacto</h4>
-                                            <p>Nos encantaría escucharte. Llena el formulario y nos pondremos en contacto contigo lo antes posible.</p>
-                                            <form onSubmit={(e) => { e.preventDefault(); setStep(2); }}>
-                                                <div className="row mb-3">
-                                                    <div className="col">
-                                                        <input type="text" className="form-control contact-input-custom" placeholder="Nombre*" required />
-                                                    </div>
-                                                    <div className="col">
-                                                        <input type="text" className="form-control contact-input-custom" placeholder="Apellidos" />
-                                                    </div>
-                                                </div>
-                                                <div className="mb-3">
-                                                    <input type="email" className="form-control contact-input-custom" placeholder="Correo*" required />
-                                                </div>
-                                                <div className="mb-3 d-flex">
-                                                    <select className="form-select contact-input-custom me-2" style={{ maxWidth: '80px' }}>
-                                                        <option value="+57" defaultValue>+57</option>
-                                                        <option value="+1">+1</option>
-                                                        <option value="+52">+52</option>
-                                                    </select>
-                                                    <input type="tel" className="form-control contact-input-custom" placeholder="Número de teléfono" />
-                                                </div>
-                                                <div className="mb-3">
-                                                    <select className="form-select contact-input-custom" required>
-                                                        <option value="" disabled defaultValue>¿Cómo conociste el sitio web?</option>
-                                                        <option value="Google">Google</option>
-                                                        <option value="Redes Sociales">Redes Sociales</option>
-                                                        <option value="Recomendacion">Recomendación</option>
-                                                        <option value="Publicidad">Publicidad</option>
-                                                    </select>
-                                                </div>
-                                                <div className="progress mb-3" style={{height: '5px'}}>
-                                                    <div className="progress-bar bg-purple" role="progressbar" style={{ width: '50%' }} aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                                <button type="submit" className="btn btn-purple w-100">Siguiente</button>
-                                            </form>
+        // Usamos el componente Modal de React-Bootstrap
+        // 'show' controla si el modal está visible
+        // 'onHide' es la prop de React-Bootstrap para cerrar el modal (equivalente a tu handleClose)
+        <Modal show={show} onHide={handleClose} size="lg" centered>
+            <Modal.Header closeButton>
+                <Modal.Title className="text-dark">¡Conversemos!</Modal.Title> {/* Asegura que el texto sea visible */}
+            </Modal.Header>
+            <Modal.Body style={{ backgroundColor: '#1a1a2e', color: 'white' }}> {/* Estilos para el body */}
+                <div className="row">
+                    <div className="col-md-5 d-none d-md-block">
+                        <img src='https://i.pinimg.com/736x/77/37/b4/7737b4798afbbbb10514a9866ed9d91e.jpg' alt="Contacto" className="img-fluid rounded-4 h-100" />
+                    </div>
+                    <div className="col-md-7">
+                        {step === 1 && (
+                            <div>
+                                <h4 className="fw-bold mb-2">Ponte en contacto</h4>
+                                <p>Nos encantaría escucharte. Llena el formulario y nos pondremos en contacto contigo lo antes posible.</p>
+                                <Form onSubmit={(e) => { e.preventDefault(); setStep(2); }}>
+                                    <div className="row mb-3">
+                                        <div className="col">
+                                            <Form.Control type="text" className="contact-input-custom" placeholder="Nombre*" required />
                                         </div>
-                                    )}
-
-                                    {step === 2 && (
-                                        <form onSubmit={(e) => { e.preventDefault(); alert('Mensaje enviado!'); handleClose(); }}>
-                                            <div className="mb-3">
-                                                <label className="form-label">¿Eres cliente o empresa?*</label>
-                                                <select className="form-select contact-input-custom" required>
-                                                    <option value="Cliente">Cliente</option>
-                                                    <option value="Empresa">Empresa</option>
-                                                </select>
-                                            </div>
-                                            <div className="mb-3">
-                                                <label className="form-label">Motivo del contacto*</label>
-                                                <select className="form-select contact-input-custom" required>
-                                                    <option value="" disabled defaultValue>Comentarios y sugerencias</option>
-                                                    <option value="Informacion general">Información general</option>
-                                                    <option value="Quejas y reclamos">Quejas y reclamos</option>
-                                                    <option value="Felicitaciones">Felicitaciones</option>
-                                                    <option value="Otros">Otros</option>
-                                                </select>
-                                            </div>
-                                            <div className="mb-3">
-                                                <label className="form-label">Escribe tu mensaje*</label>
-                                                <textarea className="form-control contact-input-custom" rows="3" required></textarea>
-                                            </div>
-                                            <div className="progress mb-3" style={{height: '5px'}}>
-                                                <div className="progress-bar bg-purple" role="progressbar" style={{ width: '100%' }} aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                            <div className="d-flex justify-content-between">
-                                                <button type="button" className="btn btn-secondary text-white" onClick={() => setStep(1)}>Anterior</button>
-                                                <button type="submit" className="btn btn-purple">Enviar</button>
-                                            </div>
-                                        </form>
-                                    )}
-                                </div>
+                                        <div className="col">
+                                            <Form.Control type="text" className="contact-input-custom" placeholder="Apellidos" />
+                                        </div>
+                                    </div>
+                                    <div className="mb-3">
+                                        <Form.Control type="email" className="contact-input-custom" placeholder="Correo*" required />
+                                    </div>
+                                    <div className="mb-3 d-flex">
+                                        <Form.Select className="contact-input-custom me-2" style={{ maxWidth: '80px' }}>
+                                            <option value="+57" defaultValue>+57</option>
+                                            <option value="+1">+1</option>
+                                            <option value="+52">+52</option>
+                                        </Form.Select>
+                                        <Form.Control type="tel" className="contact-input-custom" placeholder="Número de teléfono" />
+                                    </div>
+                                    <div className="mb-3">
+                                        <Form.Select className="contact-input-custom" required>
+                                            <option value="" disabled defaultValue>¿Cómo conociste el sitio web?</option>
+                                            <option value="Google">Google</option>
+                                            <option value="Redes Sociales">Redes Sociales</option>
+                                            <option value="Recomendacion">Recomendación</option>
+                                            <option value="Publicidad">Publicidad</option>
+                                        </Form.Select>
+                                    </div>
+                                    <div className="progress mb-3" style={{ height: '5px' }}>
+                                        <div className="progress-bar bg-purple" role="progressbar" style={{ width: '50%' }} aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <Button type="submit" className="btn-purple w-100">Siguiente</Button>
+                                </Form>
                             </div>
-                        </div>
+                        )}
+
+                        {step === 2 && (
+                            <Form onSubmit={(e) => { e.preventDefault(); alert('Mensaje enviado!'); handleClose(); }}>
+                                <div className="mb-3">
+                                    <Form.Label className="text-white">¿Eres cliente o empresa?*</Form.Label>
+                                    <Form.Select className="contact-input-custom" required>
+                                        <option value="Cliente">Cliente</option>
+                                        <option value="Empresa">Empresa</option>
+                                    </Form.Select>
+                                </div>
+                                <div className="mb-3">
+                                    <Form.Label className="text-white">Motivo del contacto*</Form.Label>
+                                    <Form.Select className="contact-input-custom" required>
+                                        <option value="" disabled defaultValue>Comentarios y sugerencias</option>
+                                        <option value="Informacion general">Información general</option>
+                                        <option value="Quejas y reclamos">Quejas y reclamos</option>
+                                        <option value="Felicitaciones">Felicitaciones</option>
+                                        <option value="Otros">Otros</option>
+                                    </Form.Select>
+                                </div>
+                                <div className="mb-3">
+                                    <Form.Label className="text-white">Escribe tu mensaje*</Form.Label>
+                                    <Form.Control as="textarea" className="contact-input-custom" rows="3" required></Form.Control>
+                                </div>
+                                <div className="progress mb-3" style={{ height: '5px' }}>
+                                    <div className="progress-bar bg-purple" role="progressbar" style={{ width: '100%' }} aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div className="d-flex justify-content-between">
+                                    <Button type="button" variant="secondary" onClick={() => setStep(1)} className="text-white">Anterior</Button>
+                                    <Button type="submit" className="btn-purple">Enviar</Button>
+                                </div>
+                            </Form>
+                        )}
                     </div>
                 </div>
-            </div>
-
-            {/* ESTILOS CSS INLINE PARA SOBRESCRIBIR BOOTSTRAP */}
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>Cerrar</Button>
+            </Modal.Footer>
+            {/* Los estilos permanecen aquí para mantener la personalización */}
             <style>{`
                 /* IMPORTANTE: Estas reglas con ID y clases de Bootstrap y !important
-                   deben tener la máxima especificidad para funcionar. */
+                    deben tener la máxima especificidad para funcionar. */
 
-                /* Fondo del modal (backdrop) */
-                /* Apuntamos al ID del modal para una especificidad alta */
-                #contactModal.modal-backdrop.show { /* Selector combinado para máxima prioridad */
-                    background-color: #000 !important; /* Negro sólido */
-                    opacity: 0.85 !important; /* Más opaco */
-                    z-index: 1040 !important; /* z-index del backdrop de Bootstrap */
-                }
-
-                /* El modal en sí */
-                #contactModal.modal.fade.show { /* Selector combinado para máxima prioridad */
-                    z-index: 1050 !important; /* z-index del modal de Bootstrap, por encima del backdrop */
-                }
-
-                /* Contenido del modal */
-                #contactModal .modal-content { /* Apuntamos al ID y luego a la clase para especificidad */
-                    background-color: #1a1a2e !important; /* ¡Fondo sólido y oscuro! */
+                /* El modal en sí (el componente Modal de React-Bootstrap genera las clases y z-index) */
+                .modal-content {
+                    background-color: #1a1a2e !important; /* Fondo sólido y oscuro! */
                     color: white !important; /* Texto principal del modal en blanco */
-                    border: 1px solid rgba(255, 255, 255, 0.2) !important; /* Asegura el borde */
-                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5) !important; /* Asegura la sombra */
+                    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5) !important;
                 }
                 
                 /* Colores de texto dentro del modal-body */
-                #contactModal .modal-body h4, 
-                #contactModal .modal-body p, 
-                #contactModal .modal-body label {
+                .modal-header .modal-title,
+                .modal-body h4, 
+                .modal-body p, 
+                .modal-body label {
                     color: white !important;
                 }
 
+                /* Estilo del botón de cerrar (la 'x') */
+                .btn-close {
+                    filter: invert(1) brightness(200%) !important; /* Hace la X blanca y más visible */
+                }
+                .btn-close:focus {
+                    box-shadow: none !important; /* Quita el focus por defecto si no lo deseas */
+                }
+                
                 /* Estilo de los inputs y selects PERSONALIZADOS */
-                /* Usamos una clase única 'contact-input-custom' para aislarlos */
                 .form-control.contact-input-custom, 
                 .form-select.contact-input-custom {
                     background-color: rgba(255, 255, 255, 0.1) !important; /* Fondo ligeramente translúcido pero oscuro */
@@ -209,8 +150,8 @@ export default function Contactanos({ show, handleClose }) {
                 
                 /* Opciones del select (dropdown) */
                 .form-select.contact-input-custom option {
-                  background-color: #1a1a2e !important;
-                  color: white !important;
+                    background-color: #1a1a2e !important;
+                    color: white !important;
                 }
                 
                 /* Focus de inputs y selects */
@@ -221,10 +162,7 @@ export default function Contactanos({ show, handleClose }) {
                     box-shadow: 0 0 0 0.25rem rgba(0, 64, 255, 0.25) !important;
                 }
 
-                /* Otros estilos que no necesitan tanta especificidad si no hay conflictos */
-                .btn-close-white {
-                    filter: invert(1) brightness(200%) !important; /* Hace la X blanca y más visible */
-                }
+                /* Botones personalizados */
                 .btn-purple {
                     background-color: #0177e5e0 !important;
                     color: black !important;
@@ -243,14 +181,14 @@ export default function Contactanos({ show, handleClose }) {
                     background-color: #5a6268 !important;
                     border-color: #545b62 !important;
                 }
-                /* Eliminado .border-purple ya que contact-input-custom lo maneja */
+                /* Barra de progreso */
                 .bg-purple {
                     background-color: #0d48ad !important;
                 }
                 .progress-bar {
-                  background-color: #0177e5e0 !important;
+                    background-color: #0177e5e0 !important;
                 }
             `}</style>
-        </>
+        </Modal>
     );
 }

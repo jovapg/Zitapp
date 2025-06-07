@@ -7,6 +7,8 @@ export default function ModalUser({ users, onClose, onSave }) {
     contrasena: "",
     telefono: "",
     tipo: "",
+    imagenPerfil: "",
+    edad: "",
   });
 
   useEffect(() => {
@@ -15,7 +17,9 @@ export default function ModalUser({ users, onClose, onSave }) {
       email: users?.email || "",
       contrasena: users?.contrasena || "",
       telefono: users?.telefono || "",
-      tipo: users?.tipo || "cliente", // valor por defecto si está vacío
+      tipo: users?.tipo || "cliente",
+      imagenPerfil: users?.imagenPerfil || "",
+      edad: users?.edad || "",
     });
   }, [users]);
 
@@ -25,7 +29,7 @@ export default function ModalUser({ users, onClose, onSave }) {
   };
 
   const handleSubmit = (e) => {
-      e.preventDefault();
+    e.preventDefault();
     onSave(formData);
   };
 
@@ -42,7 +46,7 @@ export default function ModalUser({ users, onClose, onSave }) {
       <div
         className="modal-dialog"
         role="document"
-        onClick={(e) => e.stopPropagation()} // 🔧 CORREGIDO
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-content">
           <form onSubmit={handleSubmit}>
@@ -112,6 +116,32 @@ export default function ModalUser({ users, onClose, onSave }) {
                 />
               </div>
               <div className="mb-3">
+                <label htmlFor="imagenPerfil" className="form-label">
+                  imagenPerfil
+                </label>
+                <input
+                  id="imagenPerfil"
+                  name="imagenPerfil"
+                  value={formData.imagenPerfil}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="edad" className="form-label">
+                  Edad
+                </label>
+                <input
+                  id="edad"
+                  name="edad"
+                  value={formData.edad}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                />
+              </div>
+              <div className="mb-3">
                 <label htmlFor="tipo" className="form-label">
                   Tipo
                 </label>
@@ -120,12 +150,16 @@ export default function ModalUser({ users, onClose, onSave }) {
                   id="tipo"
                   value={formData.tipo}
                   onChange={handleChange}
-                  className="form-control"
+                  className="form-select"
+                  aria-label="Seleccionar tipo de usuario"
                   required
                 >
-                  <option value="ADMIN">ADMIN</option>
-                  <option value="CLIENTE">CLIENTE</option>
-                  <option value="NEGOCIO">NEGOCIO</option>
+                  <option value="">-- Seleccione un tipo --</option>
+                  <option disabled>──────────</option>{" "}
+                  {/* línea separadora solo visual */}
+                  <option value="ADMIN">Admin</option>
+                  <option value="CLIENTE">Cliente</option>
+                  <option value="NEGOCIO">Negocio</option>
                 </select>
               </div>
             </div>

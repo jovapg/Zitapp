@@ -6,7 +6,6 @@ import Contactanos from '../components/Contactanos';
 import { useNavigate } from 'react-router-dom';
 
 
-
 export default function FirsPage() {
   const navigate = useNavigate(); // <-- inicializa navigate
   return (

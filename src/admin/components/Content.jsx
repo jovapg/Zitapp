@@ -5,8 +5,9 @@ import Grafica from "./Grafica";
 import Info from "./Info";
 import Negocios from "./views/Negocios";
 import User from "./views/User";
-import  Citas from "./views/Citas";
+import Citas from "./views/Citas";
 import fondoAzul from "../../assets/img/fondo_azul_editado.png";
+import Reportes from "./views/Reportes";
 
 export default function Content({ toggleSidebar, style, selectedView }) {
   const renderView = () => {
@@ -18,7 +19,7 @@ export default function Content({ toggleSidebar, style, selectedView }) {
       case "citas":
         return <div><Citas/></div>; 
       case "reporte":
-        return <div>Generar Reporte</div>;
+        return <div><Reportes/></div>;
 
       case "home":
       default:
@@ -28,7 +29,7 @@ export default function Content({ toggleSidebar, style, selectedView }) {
            <Card
         title="Usuarios Negocios"
         icon="fa-store"
-        apiEndpoint="http://localhost:8081/api/business"
+        apiEndpoint="http://localhost:8081/api/businesses"
       />
       <Card
         title="Usuarios Totales"
@@ -38,7 +39,7 @@ export default function Content({ toggleSidebar, style, selectedView }) {
       <Card
         title="Citas Registradas"
         icon="fa-calendar-check"
-        apiEndpoint="http://localhost:8081/api/Appointments/todas"
+        apiEndpoint="http://localhost:8081/api/appointments/all"
       />
 
             </div>
