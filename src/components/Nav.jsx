@@ -1,43 +1,42 @@
 import fondologin from '../assets/img/LOGO Zitapp.png';
 import { useNavigate } from "react-router-dom";
 import { useState } from 'react';
-import ConfigUser from './ConfigUser';
+import ConfigUser from './ConfigUser'; // Asegúrate de que esta ruta sea correcta
+import Contactanos from './Contactanos'; // ¡Importa Contactanos!
 
 export default function Nav({ onNavigate }) {
   const navigate = useNavigate();
-  const [modalVisible, setModalVisible] = useState(false); 
-
-
+  const [configModalVisible, setConfigModalVisible] = useState(false); // Renombrado para claridad
+  const [contactModalVisible, setContactModalVisible] = useState(false); // ¡Nuevo estado para el modal de Contactanos!
 
   let handleLogout = () => {
     let confirmarLogin = window.confirm("¿Estás seguro de que deseas cerrar sesión?");
     if (confirmarLogin) {
-    localStorage.removeItem("user"); // elimina los datos de sesión
-      navigate("/FirsPage"); // redirige al inicio
+      localStorage.removeItem("user");
+      navigate("/FirsPage");
     } 
   };
 
   return (
     <div className="sidebar">
       <div className="mb-4 text-center">
-<img
-  src={fondologin}
-  alt="login icon"
-  className="img-fluid mt-2"
-  style={{
-    width: '150px',
-    display: 'block',     // Para que 'margin: auto' funcione y centre la imagen
-    margin: '0 auto',     // Centra la imagen horizontalmente
-    transition: 'transform 0.3s ease-in-out', // Suaviza la transición al hacer hover
-    cursor: 'pointer' // Cambia el cursor a una mano para indicar que es interactivo
-  }}
-  // Añadir un manejador de eventos onMouseOver y onMouseOut para el efecto de aumento
-  onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'} // Aumenta 10%
-  onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}  // Vuelve al tamaño original
-/>
+        <img
+          src={fondologin}
+          alt="login icon"
+          className="img-fluid mt-2"
+          style={{
+            width: '150px',
+            display: 'block',
+            margin: '0 auto',
+            transition: 'transform 0.3s ease-in-out',
+            cursor: 'pointer'
+          }}
+          onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+          onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+        />
         <h2 className="text-white fw-bold">ZITAPP</h2>
       </div>
-<hr className="text-light my-2" /> 
+      <hr className="text-light my-2" /> 
       <ul className="nav nav-pills flex-column mb-auto">
         <li className="nav-item mb-3">
           <button
@@ -63,10 +62,12 @@ export default function Nav({ onNavigate }) {
             <i className="-circle me-2"></i> Calendar
           </button>
         </li>
-                <li className="nav-item mb-3">
+        <li className="nav-item mb-3">
+          {/* ¡CAMBIOS AQUÍ! Controlamos el modal de Contactanos programáticamente */}
           <button
-            onClick={() => onNavigate('')}
+            type="button"
             className="nav-link dashboard-btn text-white btn btn-link text-start"
+            onClick={() => setContactModalVisible(true)} // Cambia el estado para mostrar el modal
           >
             <i className=" -circle me-2"></i> Ayuda y Servicio al cliente
           </button>
@@ -76,20 +77,21 @@ export default function Nav({ onNavigate }) {
       <div className="mt-auto">
         <button
           className="nav-link dashboard-btn btn btn-link text-start"
-          onClick={() => setModalVisible(true)}
+          onClick={() => setConfigModalVisible(true)} // Usando el estado renombrado
         >
           <i className="bi bi-gear me-2"></i>Settings
         </button>
 
-      
-      <button className="nav-link btn btn-link text-start" onClick={ handleLogout}>
-        <i className="fas fa-sign-out-alt fa-sm text-white-50 my-3"></i> Salir
-          </button>
-            
+        <button className="nav-link btn btn-link text-start" onClick={ handleLogout}>
+          <i className="fas fa-sign-out-alt fa-sm text-white-50 my-3"></i> Salir
+        </button>
       </div>
 
       {/* Modal de configuración de usuario */}
-      <ConfigUser show={modalVisible} handleClose={() => setModalVisible(false)} />
+      <ConfigUser show={configModalVisible} handleClose={() => setConfigModalVisible(false)} />
+
+      {/* ¡Renderizar el modal de Contactanos aquí y controlarlo con el estado! */}
+      <Contactanos show={contactModalVisible} handleClose={() => setContactModalVisible(false)} />
 
       {/* Estilos */}
       <style>{`

@@ -35,6 +35,7 @@ import Categories from "./components/Categories";
 import Nav from "./components/Nav";
 import Topbar from "./components/Topbar";
 import TopbarNegocio from "./components/TopbarNegocio";
+import Contactanos from "./components/Contactanos";
 
 function App() {
   return (
@@ -46,6 +47,8 @@ function App() {
         <Route path="/LoginPage" element={<LoginPage />} />
         <Route path="/Register" element={<Register />} />
         <Route path="/Admin" element={<LoginAdmin />} />
+        <Route path="/Contactanos" element={<Contactanos />} />
+        
       </Route>
 
       {/* Usuario */}
