@@ -8,6 +8,7 @@ import BusinessMap from '../components/BusinessMap';
 import ConfigUser from '../components/ConfigUser';
 import Footer from '../components/Footer';
 
+import Contactanos from '../components/Contactanos';
 
 export default function HomePageuser() {
     const [currentView, setCurrentView] = useState('tuscitas');
@@ -73,6 +74,7 @@ export default function HomePageuser() {
                     {currentView === 'calendar' && <UserCalendar />}
                     {currentView === 'mapa' && <BusinessMap />}
                     {currentView === 'configuser' && <ConfigUser />}
+                    {currentView === 'ayuda' && <Contactanos/>}
                 </div>
                 
             </div>
