@@ -54,7 +54,7 @@ export default function NavNegocio({ onNavigate }) {
                         onClick={() => onNavigate('calendar')}
                         className="nav-link dashboard-btn text-white btn btn-link text-start"
                     >
-                        <i className="-circle me-2"></i> Calendar
+                        <i className="-circle me-2"></i> Calendario
                     </button>
                 </li>
                                 <li className="nav-item mb-3">
@@ -81,7 +81,7 @@ export default function NavNegocio({ onNavigate }) {
                 <a  className="nav-link dashboard-btn"
                  onClick={() => onNavigate('config')}
                 >
-                    <i className="bi bi-gear me-2"></i>Settings
+                    <i className="bi bi-gear me-2"></i>Configuración
                 </a>
                 <a  className="nav-link dashboard-btn mt-2"
                 onClick={handleLogout}>

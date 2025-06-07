@@ -48,11 +48,11 @@ export default function LoginAdmin() {
           <div className="col-md-6 d-flex flex-column justify-content-center align-items-center text-white p-4 glass-panel">
             <img src={fondologin} alt="login icon" className="img-fluid mt-2" style={{ width: "190px" }} />
             <h1 className="fw-bold fs-4 mb-2">ZITAPP</h1>
-            <h2 className="fw-bold fs-3 mb-1">Log in</h2>
+            <h2 className="fw-bold fs-3 mb-1">Inicio de Sesión</h2>
           </div>
 
           <div className="col-md-6 text-white p-5 glass-panel">
-            <h3 className="mb-4 fw-semibold">Welcome Back</h3>
+            <h3 className="mb-4 fw-semibold">Bienvenido de vuelta</h3>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <input
@@ -75,11 +75,12 @@ export default function LoginAdmin() {
                 />
               </div>
               <button type="submit" className="btn btn-primary w-100 mb-3">
-                Sign In
+                Iniciar sesión
               </button>
             </form>
           </div>
         </div>
+        <Footer />
       </div>
 
       <style jsx>{`

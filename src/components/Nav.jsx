@@ -79,7 +79,7 @@ export default function Nav({ onNavigate }) {
           className="nav-link dashboard-btn btn btn-link text-start"
           onClick={() => setConfigModalVisible(true)} // Usando el estado renombrado
         >
-          <i className="bi bi-gear me-2"></i>Settings
+          <i className="bi bi-gear me-2"></i>Configuración
         </button>
 
         <button className="nav-link btn btn-link text-start" onClick={ handleLogout}>

@@ -74,6 +74,7 @@ export default function HomePageuser() {
                     {currentView === 'configuser' && <ConfigUser />}
                     {currentView === 'ayuda' && <Contactanos/>}
                 </div>
+                <Footer />
             </div>
 
             <style>{`

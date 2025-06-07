@@ -25,7 +25,7 @@ export default function ClienteRegister() {
     let handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            let response = await axios.post('http://localhost:8081/api/users',{ //Envia los datos a la API
+            let response = await axios.post('http://localhost:8081/api/users', { //Envia los datos a la API
                 nombre: nombre,
                 email: email,
                 telefono: telefono,
@@ -60,8 +60,8 @@ export default function ClienteRegister() {
                     }}>
 
 
-                    <h2 className="text-center text-white mb-2">Create an Account</h2>
-                    <p className="text-center text-light mb-4" style={{ fontSize: '14px' }}>Start your journey with Zitapp</p>
+                    <h2 className="text-center text-white mb-2">Crear una cuenta</h2>
+                    <p className="text-center text-light mb-4" style={{ fontSize: '14px' }}>Comienza tu viaje con Zitapp</p>
 
                     <form onSubmit={handleSubmit}>
                         <div className="d-flex justify-content-around text-white mb-3">
@@ -74,18 +74,18 @@ export default function ClienteRegister() {
                                     checked={tipo === 'CLIENTE'}
                                     onChange={(e) => setTipo(e.target.value)}
                                 />
-                                <label className="form-check-label">Client</label>
+                                <label className="form-check-label">Cliente</label>
                             </div>
                             <div className="form-check">
                                 <input
                                     className="form-check-input"
-                                    type="radio" 
+                                    type="radio"
                                     name="tipo"
                                     value="NEGOCIO"
                                     checked={tipo === 'NEGOCIO'}
                                     onChange={(e) => setTipo(e.target.value)}
                                 />
-                                <label className="form-check-label">Business</label>
+                                <label className="form-check-label">Negocio</label>
                             </div>
                         </div>
 
@@ -97,15 +97,17 @@ export default function ClienteRegister() {
                         </div>
 
                         <div className="d-flex justify-content-center">
-                            <button type="submit" className="btn btn-primary px-5 rounded-pill">Register</button>
+                            <button type="submit" className="btn btn-primary px-5 rounded-pill">Registrar</button>
                         </div>
                         <p className="text-center text-white mt-3">
-                            Already have an account? <a className="text-info" onClick={() => navigate('/LoginPage')}>Log In</a>
+                            ¿Ya tienes una cuenta? <a className="text-info" onClick={() => navigate('/LoginPage')}>Acceso</a>
                         </p>
                     </form>
                 </div>
+                <Footer />
 
-                <style >{`
+            </div>
+            <style >{`
                 .form-control::placeholder {
                     color: rgba(33, 22, 22, 0.7) !important;
                     font-weight: 300;
@@ -121,8 +123,6 @@ export default function ClienteRegister() {
                     max-width: 400px;
                 }
             `}</style>
-            </div>
-
         </>
     );
 }
