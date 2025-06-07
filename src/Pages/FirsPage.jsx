@@ -52,6 +52,10 @@ export default function FirsPage() {
                 <a className="neon-text" onClick={() => navigate('/Register')} >REGISTRATE</a>
               </li>
 
+              <li >
+                <a className="neon-text" onClick={() => navigate('/Admin')} >Admin</a>
+              </li>
+
             </ul>
           </div>
         </div>

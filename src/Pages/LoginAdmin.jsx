@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import fondologin from "../assets/img/logo.png";
 import fondoAzuli from "../assets/img/fondo_azul_editado.png";
 import axios from "axios";
+import Footer from '../components/Footer';
+
 
 export default function LoginAdmin() {
   const navigate = useNavigate();
@@ -80,8 +82,9 @@ export default function LoginAdmin() {
             </form>
           </div>
         </div>
-        <Footer />
       </div>
+        <Footer />
+
 
       <style jsx>{`
         .login-container {

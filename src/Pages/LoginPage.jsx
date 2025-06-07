@@ -4,6 +4,8 @@ import React from "react";
 import { FaGoogle, FaApple } from "react-icons/fa";
 import fondologin from "../assets/img/LOGO Zitapp.png";
 import fondoAzuli from "../assets/img/fondo_azul_editado.png";
+import Footer from '../components/Footer';
+
 
 //hooks
 import { useState } from "react";
@@ -154,8 +156,9 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
-        <Footer />
+        
       </div>
+      <Footer />
 
       {/* Estilos personalizados */}
       <style>{`

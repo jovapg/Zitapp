@@ -7,6 +7,8 @@ import CitasNegocio from '../components/CitasNegocio';
 import BusinessCalendar from './Calendar/BusinessCalendar';
 import ConfigNegocio from '../components/ConfigNegocio';
 import ReportesNegocio from './Calendar/ReportesNegocio';
+import Footer from '../components/Footer';
+
 
 
 export default function HomePagenegocio() {
@@ -30,8 +32,9 @@ export default function HomePagenegocio() {
                     {currentView === 'reportes' && <ReportesNegocio />}
 
                 </div>
-                <Footer />
+                
             </div>
+            <Footer />
 
             <style>{`
                 .page-container {

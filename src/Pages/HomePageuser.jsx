@@ -6,6 +6,8 @@ import TusCitas from '../components/Tuscitas';
 import UserCalendar from './Calendar/UserCalendar';
 import BusinessMap from '../components/BusinessMap';
 import ConfigUser from '../components/ConfigUser';
+import Footer from '../components/Footer';
+
 
 export default function HomePageuser() {
     const [currentView, setCurrentView] = useState('tuscitas');
@@ -72,8 +74,9 @@ export default function HomePageuser() {
                     {currentView === 'mapa' && <BusinessMap />}
                     {currentView === 'configuser' && <ConfigUser />}
                 </div>
-                <Footer />
+                
             </div>
+            <Footer />
 
             <style>{`
                 .dashboard-layout {
