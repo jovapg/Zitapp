@@ -54,6 +54,7 @@ export default function AgendadeCitas({ nuevasCitas = [] }) {
         servicio_nombre: service.nombre || 'N/A', // Usar 'nombre' para el servicio
         servicio_precio: service.precio || 0, // Usar 'precio' para el servicio
         servicio_descripcion: service.descripcion || '', // Usar 'descripcion' para el servicio
+        servicio_duracion: service.duracion || 0, // Agregar duración del servicio
 
         nombre_negocio: business.nombre || 'N/A', // Usar 'nombre' para el negocio
         business_description: business.descripcion || '', // Usar 'descripcion' para el negocio
@@ -67,50 +68,79 @@ export default function AgendadeCitas({ nuevasCitas = [] }) {
     });
   };
 
+  // Función para cancelar cita
+  const handleCancelarCita = async () => {
+    if (!selectedAppointment || !selectedAppointment.appointment_id) {
+      alert("Cita no válida para cancelar");
+      return;
+    }
+
+    const confirmar = window.confirm('¿Estás seguro que quieres cancelar la cita?');
+    if (!confirmar) return;
+
+    try {
+      console.log("Intentando cancelar cita con ID:", selectedAppointment.appointment_id);
+      
+      const response = await axios.put(
+        `http://localhost:8081/api/appointments/${selectedAppointment.appointment_id}/cancelar`
+      );
+      
+      console.log("Respuesta del servidor:", response.data);
+      alert("Cita cancelada exitosamente");
+      
+      // Cerrar modal
+      setShowModal(false);
+      setSelectedAppointment(null);
+      
+      // Recargar las citas para mostrar el cambio de estado
+      fetchAppointments();
+      
+    } catch (error) {
+      console.error("Error al cancelar cita:", error);
+      
+      if (error.response) {
+        console.error("Error del servidor:", error.response.status, error.response.data);
+        alert(`Error del servidor: ${error.response.status} - ${error.response.data?.message || 'Error desconocido'}`);
+      } else if (error.request) {
+        console.error("Error de red:", error.request);
+        alert("Error de conexión. Verifica tu conexión a internet.");
+      } else {
+        console.error("Error:", error.message);
+        alert("Hubo un error al cancelar la cita. Inténtalo nuevamente");
+      }
+    }
+  };
+
+  // Función para cargar citas (movida fuera del useEffect para poder reutilizarla)
+  const fetchAppointments = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      // Obtener el usuario del localStorage
+      const user = JSON.parse(localStorage.getItem('user') || '{}'); // Asegurar parseo seguro
+      if (!user || !user.id) throw new Error('Usuario no autenticado');
+
+      // Hacer la petición al backend con el ID del cliente
+      const response = await axios.get(`http://localhost:8081/api/appointments/clients/${user.id}`);
+      const transformed = transformAppointments(response.data);
+      setAppointments(transformed); // Guardar citas transformadas
+    } catch (err) {
+      console.error("Error al cargar citas en AgendadeCitas:", err);
+      setError('Error al cargar las citas. Por favor, intenta de nuevo.');
+    } finally {
+      setIsLoading(false); // Finaliza la carga
+    }
+  };
+
   // useEffect para cargar las citas del cliente al cargar el componente
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        // Obtener el usuario del localStorage
-        const user = JSON.parse(localStorage.getItem('user') || '{}'); // Asegurar parseo seguro
-        if (!user || !user.id) throw new Error('Usuario no autenticado');
-
-        // Hacer la petición al backend con el ID del cliente
-        const response = await axios.get(`http://localhost:8081/api/appointments/clients/${user.id}`);
-        const transformed = transformAppointments(response.data);
-        setAppointments(transformed); // Guardar citas transformadas
-      } catch (err) {
-        console.error("Error al cargar citas en AgendadeCitas:", err);
-        setError('Error al cargar las citas. Por favor, intenta de nuevo.');
-      } finally {
-        setIsLoading(false); // Finaliza la carga
-      }
-    };
-
     fetchAppointments();
   }, []); // Se ejecuta solo una vez al montar
 
   // useEffect para agregar nuevas citas en tiempo real (si se pasan por props)
-  // Nota: Este prop 'nuevasCitas' se pasa de TusCitas, pero actualmente se usa
-  // para recargar fetchAppointments() en TusCitas. Puedes ajustar esta lógica
-  // si realmente quieres agregar citas individuales a la lista aquí.
   useEffect(() => {
-    // Si la prop 'nuevasCitas' cambia y contiene citas nuevas, podrías agregarlas.
-    // Sin embargo, si 'TusCitas' ya llama a 'fetchAppointments' después de agendar,
-    // este useEffect aquí podría no ser estrictamente necesario para la actualización.
-    // Por simplicidad, se mantiene como estaba, pero ten en cuenta la lógica.
     if (nuevasCitas && nuevasCitas.length > 0) {
-      // Para evitar duplicados o lógica compleja de merge, podrías recargar todo
-      // o agregar de forma más controlada.
-      // Aquí simplemente se añade la última cita como se hacía.
       const ultimaCita = nuevasCitas[nuevasCitas.length - 1];
-      // Para evitar que AgendadeCitas sea el único que "vea" nuevas citas
-      // y si TusCitas ya las trae por su propio fetch, esta línea podría
-      // generar un duplicado temporal si no se maneja bien.
-      // Una opción es recargar todo: fetchAppointments();
-      // Otra es filtrar si la cita ya existe:
       setAppointments(prev => {
         if (!prev.some(appt => appt.appointment_id === ultimaCita.appointment_id)) {
             return [ultimaCita, ...prev];
@@ -185,8 +215,9 @@ export default function AgendadeCitas({ nuevasCitas = [] }) {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>Cerrar</Button>
-          {selectedAppointment.estado !== 'cancelada' && selectedAppointment.estado !== 'finalizada' && (
-            <Button variant="danger">Cancelar Cita</Button> // Implementar lógica de cancelación
+          {/* SOLO MOSTRAR EL BOTÓN DE CANCELAR SI EL ESTADO ES 'PENDIENTE' */}
+          {selectedAppointment.estado === 'pendiente' && (
+            <Button variant="danger" onClick={handleCancelarCita}>Cancelar Cita</Button>
           )}
         </Modal.Footer>
       </Modal>

@@ -2,17 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AgendadeCitas from '../Pages/Calendar/AgendaDeCitas';
 import Botonagendarcita from './Botonagendarcita';
-import { Modal, Button, Form, ListGroup, Row, Col } from 'react-bootstrap'; // Asegúrate de importar esto si no lo hiciste
-
+import { Modal, Button, Form, ListGroup, Row, Col } from 'react-bootstrap';
 
 // Nuevo componente de modal para mostrar los detalles de la cita
-const AppointmentDetailsModal = ({ show, handleClose, appointmentDetails }) => {
+const AppointmentDetailsModal = ({ show, handleClose, appointmentDetails, onCancelarCita }) => {
   if (!appointmentDetails) return null;
 
   return (
     <Modal show={show} onHide={handleClose} size="md" centered style={{ background: 'rgba(0, 0, 128, 0.9)', color: 'white' }}>
       <Modal.Header closeButton>
-        <Modal.Title className="text-light">Detalles de la Cita</Modal.Title>
+        <Modal.Title className="text-black">Detalles de la Cita</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p><strong>Negocio:</strong> {appointmentDetails.nombre_negocio}</p>
@@ -29,12 +28,13 @@ const AppointmentDetailsModal = ({ show, handleClose, appointmentDetails }) => {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>Cerrar</Button>
-        <Button variant="danger" onClick={() => alert('Función de cancelar cita no implementada aún')}>Cancelar Cita</Button>
+        {appointmentDetails.estado !== 'cancelada' && (
+          <Button variant="danger" onClick={onCancelarCita}>Cancelar Cita</Button>
+        )}
       </Modal.Footer>
     </Modal>
   );
 };
-
 
 export default function TusCitas({ onCitaAgendada }) {
   const [showAgendarCitaModal, setShowAgendarCitaModal] = useState(false);
@@ -47,8 +47,6 @@ export default function TusCitas({ onCitaAgendada }) {
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // --- Mover todas las funciones auxiliares AQUÍ, ANTES de los useEffect y del return principal ---
 
   // Formatear fecha a formato legible
   const formatDate = (dateString) => {
@@ -104,19 +102,55 @@ export default function TusCitas({ onCitaAgendada }) {
     setSelectedAppointmentDetails(null);
   };
 
-  // Manejar nueva cita agendada (se llama al cerrar el modal de agendar cita exitosamente)
+  // FUNCIÓN CORREGIDA PARA CANCELAR CITA
+  const handleCancelarCita = async () => {
+    if (!selectedAppointmentDetails || !selectedAppointmentDetails.id_cita) {
+      alert("Cita no válida para cancelar");
+      console.error("Error: selectedAppointmentDetails o id_cita no están definidos", selectedAppointmentDetails);
+      return;
+    }
+
+    const confirmar = window.confirm('¿Estás seguro que quieres cancelar la cita?');
+    if (!confirmar) return;
+
+    try {
+      console.log("Intentando cancelar cita con ID:", selectedAppointmentDetails.id_cita);
+      
+      const response = await axios.put(
+        `http://localhost:8081/api/appointments/${selectedAppointmentDetails.id_cita}/cancelar`
+      );
+      
+      console.log("Respuesta del servidor:", response.data);
+      alert("Cita cancelada exitosamente");
+      handleCloseDetailsModal();
+      fetchAppointments();
+      
+    } catch (error) {
+      console.error("Error al cancelar cita:", error);
+      
+      if (error.response) {
+        console.error("Error del servidor:", error.response.status, error.response.data);
+        alert(`Error del servidor: ${error.response.status} - ${error.response.data?.message || 'Error desconocido'}`);
+      } else if (error.request) {
+        console.error("Error de red:", error.request);
+        alert("Error de conexión. Verifica tu conexión a internet.");
+      } else {
+        console.error("Error:", error.message);
+        alert("Hubo un error al cancelar la cita. Inténtalo nuevamente");
+      }
+    }
+  };
+
+  // Manejar nueva cita agendada
   const handleCitaAgendada = (nuevaCita) => {
     if (onCitaAgendada) {
       onCitaAgendada(nuevaCita);
     }
-    fetchAppointments(); // Vuelve a cargar las citas para actualizar la lista
-    setShowAgendarCitaModal(false); // Cierra el modal
+    fetchAppointments();
+    setShowAgendarCitaModal(false);
   };
   
-  // Función para transformar los datos de la API (DEJAR AQUÍ O ANTES DE fetchAppointments)
-  // La pongo aquí porque usa las funciones de formateo, pero en este caso no causaría error
-  // si estuviera después de fetchAppointments, siempre y cuando fetchAppointments se defina después.
-  // Pero lo más limpio es tenerla aquí.
+  // Función para transformar los datos de la API
   const transformAppointmentData = (apiData) => { 
     return apiData.map((appointment) => {
       // FECHA: Array [año, mes, día] -> String "YYYY-MM-DD"
@@ -129,12 +163,12 @@ export default function TusCitas({ onCitaAgendada }) {
 
       const service = appointment.service || {}; 
       const client = appointment.cliente || {}; 
-      const business = appointment.business || {}; // Acceso directo al objeto business de la cita
+      const business = appointment.business || {};
 
       return {
         id_cliente: client.id || null,
         id_negocio: business.id || null, 
-        id_cita: appointment.id,
+        id_cita: appointment.id, // ¡IMPORTANTE! Usar appointment.id como id_cita
         fecha,
         hora,
         estado: appointment.estado?.toLowerCase() || 'desconocido',
@@ -148,7 +182,7 @@ export default function TusCitas({ onCitaAgendada }) {
         service_descripcion: service.descripcion || '',
         service_duracion: service.duracion || 0,
         
-        business: { // Aseguramos que el objeto business que se pasa sea completo para el modal
+        business: {
           id: business.id || null,
           nombre: business.nombre || 'Negocio desconocido',
           categoria: business.categoria || 'General',
@@ -158,12 +192,12 @@ export default function TusCitas({ onCitaAgendada }) {
           telefono: business.telefono || '',
           services: business.services || []
         },
-        business_info: business // Para el modal de detalles, si quieres toda la info tal cual viene
+        business_info: business
       };
     });
   };
 
-  // Extraer negocios únicos de las citas transformadas (DEJAR AQUÍ)
+  // Extraer negocios únicos de las citas transformadas
   const extractUniqueBusinesses = (appointmentsData) => {
     const businessMap = new Map();
 
@@ -176,8 +210,7 @@ export default function TusCitas({ onCitaAgendada }) {
     return Array.from(businessMap.values());
   };
 
-
-  // Función para cargar las citas desde la API (DEJAR AQUÍ)
+  // Función para cargar las citas desde la API
   const fetchAppointments = async () => {
     try {
       setLoading(true);
@@ -192,11 +225,17 @@ export default function TusCitas({ onCitaAgendada }) {
         return;
       }
 
+      console.log("Cargando citas para cliente ID:", idClient);
+
       const appointmentsResponse = await axios.get(
         `http://localhost:8081/api/appointments/clients/${idClient}`
       );
 
+      console.log("Datos recibidos de la API:", appointmentsResponse.data);
+
       const transformedData = transformAppointmentData(appointmentsResponse.data);
+      console.log("Datos transformados:", transformedData);
+      
       setAppointments(transformedData);
 
       const uniqueBusinesses = extractUniqueBusinesses(transformedData);
@@ -216,13 +255,12 @@ export default function TusCitas({ onCitaAgendada }) {
     }
   };
 
-
-  // Hook para disparar la carga al montar el componente (DEJAR AQUÍ)
+  // Hook para disparar la carga al montar el componente
   useEffect(() => {
     fetchAppointments();
   }, []); 
 
-  // --- Renderizado Condicional ---
+  // Renderizado Condicional
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '300px' }}>
@@ -354,7 +392,7 @@ export default function TusCitas({ onCitaAgendada }) {
                         <div className="mt-3">
                           <h6 className="text-info">Detalle de Citas:</h6>
                           <ListGroup variant="flush">
-                            {businessAppointments.map((apt, idx) => (
+                            {businessAppointments.map((apt) => (
                               <ListGroup.Item 
                                 key={apt.id_cita} 
                                 style={{ background: 'transparent', color: 'white', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)' }}
@@ -363,7 +401,6 @@ export default function TusCitas({ onCitaAgendada }) {
                                 <div>
                                   <small className="d-block">{apt.service_nombre} (${apt.service_precio})</small>
                                   <small className="d-block text-muted">{formatDate(apt.fecha)} - {apt.hora.substring(0,5)}</small>
-                                  {/* Botón para abrir el modal de detalles de la cita específica */}
                                   <button 
                                     className="btn btn-sm btn-outline-info mt-1" 
                                     onClick={() => handleOpenDetailsModal(apt)}
@@ -407,12 +444,13 @@ export default function TusCitas({ onCitaAgendada }) {
         />
       )}
 
-      {/* Nuevo Modal para Detalles de la Cita */}
+      {/* Modal para Detalles de la Cita */}
       {showDetailsModal && selectedAppointmentDetails && (
         <AppointmentDetailsModal
           show={showDetailsModal}
           handleClose={handleCloseDetailsModal}
           appointmentDetails={selectedAppointmentDetails}
+          onCancelarCita={handleCancelarCita}
         />
       )}
     </>
