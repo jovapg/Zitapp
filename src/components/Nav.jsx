@@ -64,13 +64,7 @@ export default function Nav({ onNavigate }) {
         </li>
         <li className="nav-item mb-3">
           {/* ¡CAMBIOS AQUÍ! Controlamos el modal de Contactanos programáticamente */}
-          <button
-            type="button"
-            className="nav-link dashboard-btn text-white btn btn-link text-start"
-            onClick={() => setContactModalVisible(true)} // Cambia el estado para mostrar el modal
-          >
-            <i className=" -circle me-2"></i> Ayuda y Servicio al cliente
-          </button>
+
         </li>
       </ul>
 
@@ -79,7 +73,7 @@ export default function Nav({ onNavigate }) {
           className="nav-link dashboard-btn btn btn-link text-start"
           onClick={() => setConfigModalVisible(true)} // Usando el estado renombrado
         >
-          <i className="bi bi-gear me-2"></i>Configuración
+          <i className="bi bi-gear me-2"></i>Ayuda y Servicio al cliente
         </button>
 
         <button className="nav-link btn btn-link text-start" onClick={ handleLogout}>
