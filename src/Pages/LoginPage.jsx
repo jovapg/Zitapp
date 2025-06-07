@@ -12,7 +12,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+
+// usar la cuenta el login con google
+import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
+
 export default function LoginPage() {
+
   let navigate = useNavigate();
   let [email, setEmail] = useState("");
   let [contrasena, setPassword] = useState("");
@@ -39,7 +46,7 @@ export default function LoginPage() {
         } else if (userData.tipo === "NEGOCIO") {
           // 🔥 CAMBIO CLAVE AQUÍ: Accedemos directamente a userData.businessId
           // Ya no necesitamos hacer una SEGUNDA petición a /api/business/user/{id}
-          
+
           if (userData.businessId) {
             localStorage.setItem("negocioId", userData.businessId.toString());
             navigate("/HomePageNegocio");
@@ -75,6 +82,42 @@ export default function LoginPage() {
       console.error("Error al iniciar sesión:", error);
     }
   };
+
+
+  // configuración firebase
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA0XfVVc9AckaM2olBac9KjYEZgeiDYb4g",
+    authDomain: "zitapp-ce661.firebaseapp.com",
+    projectId: "zitapp-ce661",
+    storageBucket: "zitapp-ce661.firebasestorage.app",
+    messagingSenderId: "717224251626",
+    appId: "1:717224251626:web:9e34d048317a7a0efa4793",
+    measurementId: "G-CEEXBW35PF"
+  };
+
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const googleProvider = new GoogleAuthProvider()
+
+
+
+
+  // inicio con google
+  const loginConGoogle = async () => {
+    return await signInWithPopup(auth, googleProvider);
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await loginConGoogle();
+      const user = result.user;
+      alert(`Bienvenido, ${email}`);
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 
   return (
     <>
@@ -135,16 +178,19 @@ export default function LoginPage() {
             <div className="text-center text-light my-3">or</div>
 
             <div className="d-grid gap-3">
-              <button className="btn btn-dark border d-flex align-items-center justify-content-center gap-2">
+              <button
+                onClick={handleGoogleLogin}
+                className="btn btn-dark border d-flex align-items-center justify-content-center gap-2">
                 <FaGoogle size={20} />
                 Iniciar Sesión Con Google
               </button>
-              <button className="btn btn-dark border d-flex align-items-center justify-content-center gap-2">
+
+              <button
+                className="btn btn-dark border d-flex align-items-center justify-content-center gap-2">
                 <FaApple size={20} />
                 Iniciar Sesión Con Apple
               </button>
             </div>
-
             <p className="mt-4 text-center text-light">
               No tienes cuentat?{" "}
               <a
@@ -156,7 +202,7 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
-        
+
       </div>
       <Footer />
 
@@ -189,3 +235,5 @@ export default function LoginPage() {
     </>
   );
 }
+
+// export { auth, googleProvider };
