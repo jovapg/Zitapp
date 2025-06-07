@@ -6,6 +6,8 @@ import TusCitas from '../components/Tuscitas';
 import UserCalendar from './Calendar/UserCalendar';
 import BusinessMap from '../components/BusinessMap';
 import ConfigUser from '../components/ConfigUser';
+import Footer from '../components/Footer';
+
 import Contactanos from '../components/Contactanos';
 
 export default function HomePageuser() {
@@ -74,8 +76,9 @@ export default function HomePageuser() {
                     {currentView === 'configuser' && <ConfigUser />}
                     {currentView === 'ayuda' && <Contactanos/>}
                 </div>
-                <Footer />
+                
             </div>
+            <Footer />
 
             <style>{`
                 .dashboard-layout {

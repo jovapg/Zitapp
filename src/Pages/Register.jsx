@@ -4,6 +4,8 @@ import fondoAzuli from '../assets/img/fondo_azul_editado.png';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import Footer from '../components/Footer';
+
 
 export default function ClienteRegister() {
     let navigate = useNavigate();
@@ -104,9 +106,9 @@ export default function ClienteRegister() {
                         </p>
                     </form>
                 </div>
-                <Footer />
-
             </div>
+            <Footer />
+
             <style >{`
                 .form-control::placeholder {
                     color: rgba(33, 22, 22, 0.7) !important;
