@@ -6,6 +6,7 @@ export default function ModalCitas({ show, onClose, onSave, cita }) {
     hora: "",
     clientId: "",
     businessId: "",
+    serviceId : "",
     estado: "PENDIENTE",
   });
 
@@ -19,6 +20,7 @@ export default function ModalCitas({ show, onClose, onSave, cita }) {
         hora: cita.hora || "",
         clientId: cita.client?.id || "",
         businessId: cita.business?.id || "",
+        serviceId: cita.service?.id || "",
         estado: cita.estado || "PENDIENTE",
       });
     } else {
@@ -27,6 +29,7 @@ export default function ModalCitas({ show, onClose, onSave, cita }) {
         hora: "",
         clientId: "",
         businessId: "",
+        serviceId : "",
         estado: "PENDIENTE",
       });
     }
@@ -43,7 +46,7 @@ export default function ModalCitas({ show, onClose, onSave, cita }) {
     e.preventDefault();
 
     // Validación básica
-    if (!formData.fecha || !formData.hora || !formData.clientId || !formData.businessId) {
+    if (!formData.fecha || !formData.hora || !formData.clientId || !formData.businessId || !formData.serviceId) {
       alert("Por favor, completa todos los campos.");
       return;
     }
@@ -56,6 +59,7 @@ export default function ModalCitas({ show, onClose, onSave, cita }) {
         estado: formData.estado,
         client: { id: parseInt(formData.clientId, 10) },
         business: { id: parseInt(formData.businessId, 10) },
+        service: { id: parseInt(formData.serviceId, 10) },
       });
     } catch (err) {
       alert("Error al guardar la cita.");
@@ -91,6 +95,11 @@ export default function ModalCitas({ show, onClose, onSave, cita }) {
               <div className="mb-3">
                 <label className="form-label">Negocio ID</label>
                 <input type="number" className="form-control" name="businessId" value={formData.businessId} onChange={handleChange} />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Servicio ID</label>
+                <input type="number" className="form-control" name="serviceId"  value={formData.serviceId} onChange={handleChange} />
+
               </div>
               {/* Spinner centrado (opcional) */}
               {loading && (
