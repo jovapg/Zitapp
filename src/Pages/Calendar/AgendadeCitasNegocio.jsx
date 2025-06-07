@@ -17,6 +17,8 @@ export default function AgendadeCitasNegocio() {
   const [error, setError] = useState(null);
   // Estado para el ID del negocio obtenido de localStorage
   const [businessId, setBusinessId] = useState(null);
+  // Estado para loading de botones individuales
+  const [buttonLoading, setButtonLoading] = useState({});
 
   // Función para formatear la fecha del array a string (ej. [2025, 6, 6] -> "2025-06-06")
   const formatDateFromArray = (dateArray) => {
@@ -33,93 +35,73 @@ export default function AgendadeCitasNegocio() {
   };
 
   // Función para transformar los datos de la API al formato esperado por el componente
-  // ¡Importante!: Maneja casos donde 'client' o 'business' puedan ser nulos/undefined de la API.
   const transformAppointmentData = (apiData) => {
-    // Aseguramos que apiData es un array antes de mapear
     if (!Array.isArray(apiData)) {
       console.warn("API data is not an array:", apiData);
       return []; 
     }
 
     return apiData.map(appointment => {
-      // Usamos el operador OR (|| {}) para asegurar que 'client' y 'business' siempre sean objetos,
-      // incluso si vienen como null o undefined de la API. Esto evita errores de "Cannot read properties of undefined".
       const client = appointment.client || {}; 
       const business = appointment.business || {};
 
       return {
-        id_cliente: client.id, // Acceso seguro a client.id
-        id_negocio: business.id, // Acceso seguro a business.id
+        id_cliente: client.id,
+        id_negocio: business.id,
         fecha: formatDateFromArray(appointment.fecha),
         hora: formatTimeFromArray(appointment.hora),
-        estado: appointment.estado ? appointment.estado.toLowerCase() : 'desconocido', // Manejar estado nulo/indefinido
-        nombre_negocio: business.nombre, // Acceso seguro a business.nombre
-        // Datos adicionales del cliente
-        client_name: client.nombre, // Acceso seguro a client.nombre
+        estado: appointment.estado ? appointment.estado.toLowerCase() : 'pendiente',
+        nombre_negocio: business.nombre,
+        client_name: client.nombre,
         client_email: client.email,
         client_phone: client.telefono,
-        // Datos adicionales del negocio
         business_description: business.descripcion || '',
         business_address: business.direccion || '',
         business_image: business.imagenUrl || '',
-        // Asegurarse de que `business_services` sea un array, incluso si está vacío o nulo
-        business_services: business.services || [], // Acceso seguro a business.services
+        business_services: business.services || [],
         appointment_id: appointment.id
       };
     });
   };
 
   // --- PRIMER useEffect: Cargar el ID del negocio desde localStorage ---
-  // Este useEffect se ejecuta una sola vez al montar el componente para obtener el businessId.
   useEffect(() => {
     try {
       const userData = localStorage.getItem('user');
       if (userData) {
         const user = JSON.parse(userData);
-        // Validamos que el usuario logueado sea de tipo "NEGOCIO" y que tenga el businessId
         if (user.tipo === 'NEGOCIO' && user.businessId) {
-          setBusinessId(user.businessId); // ¡Establecemos el ID del negocio aquí!
+          setBusinessId(user.businessId);
         } else {
-          // Si no es un usuario de negocio o falta el businessId
           setError('No eres un usuario de negocio o no se encontró el ID del negocio asociado.');
-          setIsLoading(false); 
-          // Considera redirigir al usuario si no tiene permisos o sesión válida.
-          // Ej: navigate('/acceso-denegado');
+          setIsLoading(false);
         }
       } else {
-        // Si no hay datos de usuario en localStorage (no hay sesión iniciada)
         setError('No hay sesión iniciada. Por favor, inicia sesión.');
         setIsLoading(false);
-        // Considera redirigir a la página de login si no hay sesión.
-        // Ej: navigate('/login');
       }
     } catch (err) {
       console.error('Error al parsear datos de usuario de localStorage:', err);
       setError('Error al leer la información de sesión. Por favor, intenta de nuevo.');
       setIsLoading(false);
     }
-  }, []); // El array vacío asegura que esto se ejecuta solo una vez al montar el componente
+  }, []);
 
   // --- SEGUNDO useEffect: Cargar citas cuando el businessId esté disponible ---
-  // Este useEffect se ejecutará cuando `businessId` cambie (es decir, después de que el primer useEffect lo establezca).
   useEffect(() => {
     const fetchAppointments = async () => {
-      // Solo intentamos cargar las citas si businessId tiene un valor válido
       if (!businessId) {
-        setIsLoading(false); // Detener el loading si no hay ID para buscar
+        setIsLoading(false);
         return; 
       }
 
       try {
         setIsLoading(true);
-        setError(null); // Limpiar errores previos
+        setError(null);
         
-        // Usamos el businessId obtenido para la llamada a la API
-        // ¡Ruta corregida a minúsculas para coincidir con el backend!
         const response = await fetch(`http://localhost:8081/api/appointments/business/${businessId}`);
         
         if (!response.ok) {
-          // Si la respuesta no es OK (ej. 404, 500), lanzamos un error
           throw new Error(`HTTP error! status: ${response.status} - ${response.statusText || 'Error desconocido'}`);
         }
         
@@ -128,7 +110,6 @@ export default function AgendadeCitasNegocio() {
         setAppointments(transformedData);
       } catch (err) {
         console.error('Error fetching appointments:', err);
-        // Mensajes de error más específicos para el usuario
         if (err.message.includes('404')) {
           setError('No se encontraron citas para este negocio. Es posible que aún no tengas citas o la ruta de la API sea incorrecta.');
         } else {
@@ -140,9 +121,9 @@ export default function AgendadeCitasNegocio() {
     };
 
     fetchAppointments();
-  }, [businessId]); // Este useEffect se re-ejecuta cada vez que `businessId` cambia
+  }, [businessId]);
 
-  // Funciones para cambiar el mes del calendario (no afectan la lógica de carga de datos)
+  // Funciones para cambiar el mes del calendario
   const prevMonth = () => {
     const prev = new Date(currentDate);
     prev.setMonth(prev.getMonth() - 1);
@@ -167,74 +148,142 @@ export default function AgendadeCitasNegocio() {
     return date.getFullYear();
   };
 
-  // Filtrar citas según el estado seleccionado (se mantiene igual)
+  // Filtrar citas según el estado seleccionado
   const filteredAppointments = statusFilter === 'all'
     ? appointments
     : appointments.filter(app => app.estado === statusFilter);
 
-  // Mostrar detalles de una cita (se mantiene igual)
+  // Mostrar detalles de una cita
   const showAppointmentDetails = (appointment) => {
     setSelectedAppointment(appointment);
     setShowModal(true);
   };
 
-  // Función para obtener el color según el estado de la cita (se mantiene igual)
+  // Función para obtener el color según el estado de la cita
   const getStatusColor = (status) => {
     switch (status) {
       case 'confirmada': return 'bg-success';
       case 'pendiente': return 'bg-warning text-dark';
       case 'cancelada': return 'bg-danger';
+      case 'finalizada': return 'bg-info';
       default: return 'bg-secondary';
     }
   };
 
-  // Función para obtener el texto del estado en español (se mantiene igual)
+  // Función para obtener el texto del estado en español
   const getStatusText = (status) => {
     switch (status) {
       case 'confirmada': return 'Confirmada';
       case 'pendiente': return 'Pendiente';
       case 'cancelada': return 'Cancelada';
+      case 'finalizada': return 'Finalizada';
       default: return status;
     }
   };
 
-  // Función para cambiar el estado de una cita (lógica de UI, placeholder para API)
-  const updateAppointmentStatus = async (appointmentId, newStatus) => {
-    // Aquí iría la llamada a tu API para actualizar el estado real en la base de datos
-    // Por ejemplo:
-    // try {
-    //   const response = await fetch(`http://localhost:8081/api/Appointments/${appointmentId}/status`, {
-    //     method: 'PUT', // o PATCH
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ estado: newStatus }),
-    //   });
-    //   if (!response.ok) throw new Error('Error al actualizar el estado de la cita');
-    //   // Si la API responde OK, actualizamos el estado local y cerramos el modal
-    //   setAppointments(prevAppointments =>
-    //     prevAppointments.map(app =>
-    //       app.appointment_id === appointmentId ? { ...app, estado: newStatus } : app
-    //     )
-    //   );
-    //   setShowModal(false);
-    // } catch (err) {
-    //   console.error('Error al actualizar el estado de la cita:', err);
-    //   alert('Hubo un error al actualizar el estado de la cita.');
-    // }
-
-    // Versión actual solo de UI (mantener hasta implementar la API real para esto)
-    setAppointments(prevAppointments =>
-      prevAppointments.map(app =>
-        app.appointment_id === appointmentId
-          ? { ...app, estado: newStatus }
-          : app
-      )
-    );
-    setShowModal(false);
+  // Función genérica para hacer llamadas a la API de cambio de estado
+  const updateAppointmentStatus = async (appointmentId, action) => {
+    const loadingKey = `${appointmentId}-${action}`;
+    
+    try {
+      setButtonLoading(prev => ({ ...prev, [loadingKey]: true }));
+      
+      const response = await fetch(`http://localhost:8081/api/appointments/${appointmentId}/${action}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || `Error al ${action} la cita`);
+      }
+      
+      const updatedAppointment = await response.json();
+      
+      // Actualizar el estado local con la cita actualizada
+      setAppointments(prevAppointments =>
+        prevAppointments.map(app =>
+          app.appointment_id === appointmentId 
+            ? { ...app, estado: updatedAppointment.estado.toLowerCase() }
+            : app
+        )
+      );
+      
+      // Actualizar la cita seleccionada si es la misma
+      if (selectedAppointment && selectedAppointment.appointment_id === appointmentId) {
+        setSelectedAppointment(prev => ({
+          ...prev,
+          estado: updatedAppointment.estado.toLowerCase()
+        }));
+      }
+      
+      // Mostrar mensaje de éxito
+      alert(`Cita ${action}da exitosamente`);
+      
+    } catch (err) {
+      console.error(`Error al ${action} la cita:`, err);
+      alert(`Error: ${err.message}`);
+    } finally {
+      setButtonLoading(prev => ({ ...prev, [loadingKey]: false }));
+    }
   };
 
-  // Modal para mostrar detalles de la cita (se mantiene igual)
+  // Función para determinar qué botones mostrar según el estado
+  const getAvailableActions = (appointment) => {
+    const estado = appointment.estado;
+    const actions = [];
+
+    switch (estado) {
+      case 'pendiente':
+        actions.push(
+          {
+            action: 'confirmar',
+            label: 'Confirmar',
+            className: 'btn-success',
+            icon: '✓'
+          },
+          {
+            action: 'cancelar', 
+            label: 'Cancelar',
+            className: 'btn-danger',
+            icon: '✕'
+          },
+          {
+            action: 'finalizar',
+            label: 'Finalizar',
+            className: 'btn-info',
+            icon: '✓✓'
+          }
+        );
+        break;
+        
+      case 'confirmada':
+        actions.push(
+          {
+            action: 'finalizar',
+            label: 'Finalizar',
+            className: 'btn-info',
+            icon: '✓✓'
+          }
+        );
+        break;
+        
+      case 'cancelada':
+      case 'finalizada':
+        // No hay acciones disponibles para estos estados
+        break;
+    }
+
+    return actions;
+  };
+
+  // Modal para mostrar detalles de la cita
   const renderAppointmentModal = () => {
     if (!selectedAppointment) return null;
+
+    const availableActions = getAvailableActions(selectedAppointment);
 
     return (
       <div className={`modal ${showModal ? 'd-block' : ''}`} tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
@@ -280,7 +329,6 @@ export default function AgendadeCitasNegocio() {
                 <div className="mb-3">
                   <h6 className="text-info">Servicios de la Cita</h6>
                   {selectedAppointment.business_services.map((service, idx) => (
-                    // Asegúrate de que los servicios tengan un ID único para la 'key' si es posible
                     <div key={service.id || idx} className="mb-2 p-2 border rounded" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
                       <div><strong>{service.nombre}</strong></div>
                       <div className="small text-muted">{service.descripcion}</div>
@@ -291,25 +339,36 @@ export default function AgendadeCitasNegocio() {
               )}
             </div>
             <div className="modal-footer" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.2)' }}>
-              <button type="button" className="btn btn-outline-light" onClick={() => setShowModal(false)}>Cerrar</button>
-              {selectedAppointment.estado === 'pendiente' && (
-                <button 
-                  type="button" 
-                  className="btn btn-success"
-                  onClick={() => updateAppointmentStatus(selectedAppointment.appointment_id, 'confirmada')}
-                >
-                  Confirmar Cita
-                </button>
-              )}
-              {selectedAppointment.estado !== 'cancelada' && (
-                <button 
-                  type="button" 
-                  className="btn btn-danger"
-                  onClick={() => updateAppointmentStatus(selectedAppointment.appointment_id, 'cancelada')}
-                >
-                  Cancelar Cita
-                </button>
-              )}
+              <button type="button" className="btn btn-outline-light" onClick={() => setShowModal(false)}>
+                Cerrar
+              </button>
+              
+              {availableActions.map((actionObj) => {
+                const loadingKey = `${selectedAppointment.appointment_id}-${actionObj.action}`;
+                const isLoading = buttonLoading[loadingKey];
+                
+                return (
+                  <button 
+                    key={actionObj.action}
+                    type="button" 
+                    className={`btn ${actionObj.className}`}
+                    disabled={isLoading}
+                    onClick={() => updateAppointmentStatus(selectedAppointment.appointment_id, actionObj.action)}
+                  >
+                    {isLoading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                        Procesando...
+                      </>
+                    ) : (
+                      <>
+                        <span className="me-1">{actionObj.icon}</span>
+                        {actionObj.label}
+                      </>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -339,8 +398,9 @@ export default function AgendadeCitasNegocio() {
             style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
           >
             <option value="all" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Todos los estados</option>
-            <option value="confirmada" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Confirmadas</option>
             <option value="pendiente" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Pendientes</option>
+            <option value="confirmada" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Confirmadas</option>
+            <option value="finalizada" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Finalizadas</option>
             <option value="cancelada" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>Canceladas</option>
           </select>
         </div>
@@ -375,35 +435,73 @@ export default function AgendadeCitasNegocio() {
         {/* Appointments list */}
         {!isLoading && !error && filteredAppointments.length > 0 && (
           <div className="list-group">
-            {filteredAppointments.map((app, idx) => (
-              <div
-                key={`list-app-${app.appointment_id || idx}`}
-                className="list-group-item list-group-item-action"
-                onClick={() => showAppointmentDetails(app)}
-                style={{
-                  cursor: 'pointer',
-                  backgroundColor: 'rgba(16, 10, 46, 0.5)',
-                  color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.2)'
-                }}
-              >
-                <div className="d-flex w-100 justify-content-between">
-                  <h5 className="mb-1">{app.client_name}</h5>
-                  <small>{app.fecha} - {app.hora.substring(0, 5)}</small>
+            {filteredAppointments.map((app, idx) => {
+              const availableActions = getAvailableActions(app);
+              
+              return (
+                <div
+                  key={`list-app-${app.appointment_id || idx}`}
+                  className="list-group-item list-group-item-action"
+                  style={{
+                    backgroundColor: 'rgba(16, 10, 46, 0.5)',
+                    color: 'white',
+                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                  }}
+                >
+                  <div className="d-flex w-100 justify-content-between align-items-start">
+                    <div className="flex-grow-1" onClick={() => showAppointmentDetails(app)} style={{ cursor: 'pointer' }}>
+                      <div className="d-flex w-100 justify-content-between">
+                        <h5 className="mb-1">{app.client_name}</h5>
+                        <small>{app.fecha} - {app.hora.substring(0, 5)}</small>
+                      </div>
+                      <p className="mb-1 small">Email: {app.client_email}</p>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <span className={`badge ${getStatusColor(app.estado)}`}>
+                          {getStatusText(app.estado)}
+                        </span>
+                        {app.business_services.length > 0 && (
+                          <small className="text-muted">
+                            {app.business_services.length} servicio{app.business_services.length > 1 ? 's' : ''}
+                          </small>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Botones de acción */}
+                    {availableActions.length > 0 && (
+                      <div className="ms-3 d-flex gap-2 flex-wrap">
+                        {availableActions.map((actionObj) => {
+                          const loadingKey = `${app.appointment_id}-${actionObj.action}`;
+                          const isLoading = buttonLoading[loadingKey];
+                          
+                          return (
+                            <button
+                              key={actionObj.action}
+                              className={`btn btn-sm ${actionObj.className}`}
+                              disabled={isLoading}
+                              onClick={(e) => {
+                                e.stopPropagation(); // Evitar que se abra el modal
+                                updateAppointmentStatus(app.appointment_id, actionObj.action);
+                              }}
+                              title={`${actionObj.label} cita`}
+                            >
+                              {isLoading ? (
+                                <span className="spinner-border spinner-border-sm" role="status"></span>
+                              ) : (
+                                <>
+                                  <span className="me-1">{actionObj.icon}</span>
+                                  {actionObj.label}
+                                </>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <p className="mb-1 small">Email: {app.client_email}</p>
-                <div className="d-flex justify-content-between align-items-center">
-                  <span className={`badge ${getStatusColor(app.estado)}`}>
-                    {getStatusText(app.estado)}
-                  </span>
-                  {app.business_services.length > 0 && (
-                    <small className="text-muted">
-                      {app.business_services.length} servicio{app.business_services.length > 1 ? 's' : ''}
-                    </small>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
